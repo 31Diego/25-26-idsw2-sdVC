@@ -1,0 +1,48 @@
+@startuml abrirSolicitudEliminacionPerfil
+skinparam linetype polyline
+
+state in1 as "SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS"
+in1 -[#green]-> abrirSolicitudEliminacionPerfil
+note on link
+abrirSolicitudEliminacionPerfil()
+end note
+
+state abrirSolicitudEliminacionPerfil as "abrirSolicitudEliminacionPerfil()" {
+
+    state " " as CargandoDetalle
+
+    [*] -[#green]-> CargandoDetalle
+    note on link
+    <b>Coordinador</b> solicita abrir una solicitud de eliminación de perfil
+    end note
+
+    CargandoDetalle -[#green]-> [*]
+    note on link
+    <b>Sistema</b> presenta y visualiza la solicitud seleccionada con:
+    • ID del investigador
+    • Nombre
+    • Fecha de solicitud
+    • Motivo
+
+    <b>Sistema</b> permite solicitar:
+    • Eliminar perfil
+    • Volver a solicitudes de eliminación de perfil
+    end note
+}
+
+abrirSolicitudEliminacionPerfil -[#green]-> SOLICITUD_ELIMINACION_PERFIL_ABIERTA
+note on link
+Solicitud mostrada
+end note
+
+abrirSolicitudEliminacionPerfil -[#green]-> SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS
+note on link
+abrirSolicitudesEliminacionPerfil()
+end note
+
+abrirSolicitudEliminacionPerfil -[#green]-> SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS
+note on link
+eliminarPerfil()
+end note
+
+@enduml

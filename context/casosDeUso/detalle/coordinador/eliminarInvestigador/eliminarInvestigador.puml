@@ -1,0 +1,71 @@
+@startuml eliminarInvestigador
+
+skinparam linetype polyline
+
+state in1 as "PROYECTO_ABIERTO"
+in1 -[#green]-> eliminarInvestigador
+note on link
+eliminarInvestigador()
+end note
+
+state eliminarInvestigador as "eliminarInvestigador()" {
+
+    state " " as ConfirmandoEliminacion
+    state " " as InvestigadorEliminado
+
+    [*] -[#green]-> ConfirmandoEliminacion
+    note on link
+    <b>Coordinador</b> solicita eliminar investigador de proyecto
+    end note
+
+    ConfirmandoEliminacion -[#green]-> InvestigadorEliminado
+    note on link
+    <b>Sistema</b> presenta confirmación de eliminación
+    <b>Coordinador</b> solicita confirmar eliminación
+    <b>Sistema</b> elimina al investigador del proyecto
+    end note
+
+    ConfirmandoEliminacion -[#red]-> [*]
+    note on link
+    <b>Coordinador</b> solicita cancelar la operación
+    end note
+
+    InvestigadorEliminado -[#green]-> [*]
+    note on link
+    <b>Sistema</b> presenta confirmación de eliminación
+    end note
+}
+
+
+eliminarInvestigador -[#green]-> PROYECTO_ABIERTO
+note on link
+Investigador eliminado del proyecto
+end note
+
+eliminarInvestigador -[#red]-> PROYECTO_ABIERTO
+note on link
+Eliminación cancelada
+end note
+
+eliminarInvestigador -[#green]-> ENTREGABLES_ABIERTOS
+note on link
+abrirEntregables()
+end note
+
+eliminarInvestigador -[#green]-> PROYECTOS_ABIERTOS
+note on link
+abrirProyectos()
+end note
+
+
+
+
+
+
+
+
+
+
+
+
+@enduml
