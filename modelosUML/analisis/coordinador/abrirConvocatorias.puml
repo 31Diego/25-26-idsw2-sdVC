@@ -1,0 +1,35 @@
+@startuml abrirConvocatorias-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+rectangle #CDEBA5 ":CONVOCATORIA_ABIERTA" as ConvocatoriaAbiertaEntrada
+
+package abrirConvocatorias as "abrirConvocatorias()" {
+    rectangle #629EF9 ListarConvocatoriasView
+    rectangle #b5bd68 ConvocatoriasController
+    rectangle #F2AC4E ConvocatoriaRepository
+    rectangle #F2AC4E Convocatoria
+}
+
+rectangle #CDEBA5 "CONVOCATORIAS_ABIERTAS" as ConvocatoriasAbiertas
+rectangle #CDEBA5 ":Collaboration AbrirConvocatoria" as AbrirConvocatoria
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipalSalida
+
+PanelPrincipal -r-> ListarConvocatoriasView: abrirConvocatorias()
+ConvocatoriaAbiertaEntrada -r-> ListarConvocatoriasView: abrirConvocatorias()
+
+ListarConvocatoriasView -d-> ConvocatoriasController: listarConvocatorias() : List<Convocatoria>
+
+ConvocatoriasController --> ConvocatoriaRepository: obtenerTodos() : List<Convocatoria>
+
+ConvocatoriaRepository -- Convocatoria
+
+ListarConvocatoriasView --> ConvocatoriasController: filtrarConvocatorias(texto, area, estado) : List<Convocatoria>
+
+ConvocatoriasController --> ConvocatoriaRepository: buscarPorCriterio(texto, area, estado) : List<Convocatoria>
+
+ListarConvocatoriasView ..> ConvocatoriasAbiertas: listadoMostrado()
+ListarConvocatoriasView ..> AbrirConvocatoria: abrirConvocatoria(id)
+ListarConvocatoriasView ..> PanelPrincipalSalida: abrirPanelPrincipal()
+
+@enduml

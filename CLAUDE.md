@@ -112,9 +112,11 @@ Todo archivo generado va a la carpeta raíz correspondiente a su tipo, mantenien
 | Código fuente (`.py`, `.ts`, etc.) | `src/` |
 
 **Ejemplo para el análisis de `abrirConvocatoria` del coordinador:**
-- `documents/analisis/coordinador/abrirConvocatoria/abrirConvocatoria.md`
-- `modelosUML/analisis/coordinador/abrirConvocatoria/abrirConvocatoria.puml`
-- `images/analisis/coordinador/abrirConvocatoria/abrirConvocatoria-analisis.svg` (generado por el usuario)
+- `documents/analisis/coordinador/abrirConvocatoria.md`
+- `modelosUML/analisis/coordinador/abrirConvocatoria.puml`
+- `images/analisis/abrirConvocatoria-analisis.svg` (generado por el usuario)
+
+**Regla:** el archivo va directamente en la carpeta del actor, sin crear una subcarpeta adicional con el nombre del caso de uso.
 
 Las rutas de imágenes en los `.md` deben apuntar siempre a `images/...`.
 
