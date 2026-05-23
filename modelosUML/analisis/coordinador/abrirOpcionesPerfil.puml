@@ -1,0 +1,39 @@
+@startuml abrirOpcionesPerfil-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+rectangle #CDEBA5 ":INVESTIGADOR_ABIERTO" as InvestigadorAbierto
+rectangle #CDEBA5 ":SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS" as SolicitudesEliminacion
+
+package abrirOpcionesPerfil as "abrirOpcionesPerfil()" {
+    rectangle #629EF9 OpcionesPerfilView
+    rectangle #b5bd68 PerfilController
+    rectangle #F2AC4E InvestigadorRepository
+    rectangle #F2AC4E Investigador
+}
+
+rectangle #CDEBA5 ":OPCIONES_PERFIL_ABIERTO" as OpcionesPerfilAbierto
+rectangle #CDEBA5 ":Collaboration EditarPerfil" as ColEditarPerfil
+rectangle #CDEBA5 ":Collaboration SolicitarEliminacion" as ColSolicitarEliminacion
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+rectangle #CDEBA5 ":INVESTIGADOR_ABIERTO" as InvestigadorSalida
+rectangle #CDEBA5 ":SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS" as SolicitudesSalida
+
+PanelPrincipal -r-> OpcionesPerfilView: abrirOpcionesPerfil()
+InvestigadorAbierto -r-> OpcionesPerfilView: abrirOpcionesPerfil(id)
+SolicitudesEliminacion -r-> OpcionesPerfilView: abrirOpcionesPerfil()
+
+OpcionesPerfilView -d-> PerfilController: obtenerPerfil() : Investigador
+
+PerfilController --> InvestigadorRepository: obtenerPorId(id) : Investigador
+
+InvestigadorRepository -- Investigador
+
+OpcionesPerfilView ..> OpcionesPerfilAbierto: perfilMostrado()
+OpcionesPerfilView ..> ColEditarPerfil: editarPerfil()
+OpcionesPerfilView ..> ColSolicitarEliminacion: solicitarEliminacionPerfil()
+OpcionesPerfilView ..> PanelSalida: abrirPanelPrincipal()
+OpcionesPerfilView ..> InvestigadorSalida: abrirInvestigador(id)
+OpcionesPerfilView ..> SolicitudesSalida: abrirSolicitudesEliminacionPerfil()
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml eliminarInvestigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoAbierto
+
+package eliminarInvestigador as "eliminarInvestigador()" {
+    rectangle #629EF9 EliminarInvestigadorView
+    rectangle #b5bd68 ProyectoController
+    rectangle #F2AC4E InvestigadorRepository
+    rectangle #F2AC4E Investigador
+}
+
+rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoSalida
+
+ProyectoAbierto -r-> EliminarInvestigadorView: eliminarInvestigador()
+
+EliminarInvestigadorView -d-> ProyectoController: eliminarInvestigador(idProyecto, idInvestigador) : void
+
+ProyectoController --> InvestigadorRepository: obtenerPorId(id) : Investigador
+
+InvestigadorRepository -- Investigador
+
+EliminarInvestigadorView ..> ProyectoSalida: investigadorEliminado()
+
+@enduml

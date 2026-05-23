@@ -1,0 +1,29 @@
+@startuml editarEntregable-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":ENTREGABLE_ABIERTO" as EntregableAbierto
+
+package editarEntregable as "editarEntregable()" {
+    rectangle #629EF9 EditarEntregableView
+    rectangle #b5bd68 EntregableController
+    rectangle #F2AC4E EntregableRepository
+    rectangle #F2AC4E Entregable
+}
+
+rectangle #CDEBA5 ":ENTREGABLE_ABIERTO" as EntregableSalida
+
+EntregableAbierto -r-> EditarEntregableView: editarEntregable()
+
+EditarEntregableView -d-> EntregableController: obtenerEntregable(id) : Entregable
+
+EntregableController --> EntregableRepository: obtenerPorId(id) : Entregable
+
+EntregableRepository -- Entregable
+
+EditarEntregableView --> EntregableController: guardarEntregable(datos) : Entregable
+
+EntregableController --> EntregableRepository: actualizar(entregable) : Entregable
+
+EditarEntregableView ..> EntregableSalida: edicionFinalizada()
+
+@enduml

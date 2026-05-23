@@ -1,0 +1,26 @@
+@startuml iniciarSesion-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":SESION_CERRADA" as SesionCerrada
+
+package iniciarSesion as "iniciarSesion()" {
+    rectangle #629EF9 IniciarSesionView
+    rectangle #b5bd68 AutenticacionController
+    rectangle #F2AC4E UsuarioRepository
+    rectangle #F2AC4E Usuario
+}
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+
+SesionCerrada -r-> IniciarSesionView: iniciarSesion()
+
+IniciarSesionView -d-> AutenticacionController: autenticar(usuario, contrasena) : boolean
+
+AutenticacionController --> UsuarioRepository: buscarPorCredenciales(usuario, contrasena) : Usuario
+
+UsuarioRepository -- Usuario
+
+IniciarSesionView ..> PanelPrincipal: sesionIniciada()
+IniciarSesionView ..> IniciarSesionView: credencialesIncorrectas()
+
+@enduml

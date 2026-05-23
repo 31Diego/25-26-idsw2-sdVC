@@ -1,0 +1,33 @@
+@startuml abrirPublicaciones-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+
+package abrirPublicaciones as "abrirPublicaciones()" {
+    rectangle #629EF9 PublicacionesView
+    rectangle #b5bd68 PublicacionController
+    rectangle #F2AC4E PublicacionRepository
+    rectangle #F2AC4E Publicacion
+}
+
+rectangle #CDEBA5 ":PUBLICACIONES_ABIERTAS" as PublicacionesAbiertas
+rectangle #CDEBA5 ":Collaboration AbrirPublicacion" as ColPublicacion
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+PanelPrincipal -r-> PublicacionesView: abrirPublicaciones()
+
+PublicacionesView -d-> PublicacionController: obtenerPublicaciones() : List<Publicacion>
+
+PublicacionController --> PublicacionRepository: obtenerTodos() : List<Publicacion>
+
+PublicacionRepository -- Publicacion
+
+PublicacionesView --> PublicacionController: filtrarPublicaciones(criterio) : List<Publicacion>
+
+PublicacionController --> PublicacionRepository: buscarPorCriterio(criterio) : List<Publicacion>
+
+PublicacionesView ..> PublicacionesAbiertas: publicacionesCargadas()
+PublicacionesView ..> ColPublicacion: abrirPublicacion(id)
+PublicacionesView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

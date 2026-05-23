@@ -1,0 +1,33 @@
+@startuml abrirOpcionesCargaTrabajo-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+
+package abrirOpcionesCargaTrabajo as "abrirOpcionesCargaTrabajo()" {
+    rectangle #629EF9 CargaTrabajoView
+    rectangle #b5bd68 CargaTrabajoController
+    rectangle #F2AC4E InvestigadorRepository
+    rectangle #F2AC4E Investigador
+}
+
+rectangle #CDEBA5 ":OPCIONES_CARGA_TRABAJO_ABIERTAS" as CargaTrabajoAbierta
+rectangle #CDEBA5 ":Collaboration EditarCargaTrabajo" as ColEditar
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+PanelPrincipal -r-> CargaTrabajoView: abrirOpcionesCargaTrabajo()
+
+CargaTrabajoView -d-> CargaTrabajoController: obtenerResumenCargaTrabajo() : List<Investigador>
+
+CargaTrabajoController --> InvestigadorRepository: obtenerTodos() : List<Investigador>
+
+InvestigadorRepository -- Investigador
+
+CargaTrabajoView --> CargaTrabajoController: filtrarCargaTrabajo(criterio) : List<Investigador>
+
+CargaTrabajoController --> InvestigadorRepository: buscarPorCriterio(criterio) : List<Investigador>
+
+CargaTrabajoView ..> CargaTrabajoAbierta: cargaTrabajoCargada()
+CargaTrabajoView ..> ColEditar: editarCargaTrabajo()
+CargaTrabajoView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

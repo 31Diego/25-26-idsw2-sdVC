@@ -1,0 +1,25 @@
+@startuml eliminarPublicacion-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PUBLICACION_ABIERTA" as PublicacionAbierta
+
+package eliminarPublicacion as "eliminarPublicacion()" {
+    rectangle #629EF9 EliminarPublicacionView
+    rectangle #b5bd68 PublicacionController
+    rectangle #F2AC4E PublicacionRepository
+    rectangle #F2AC4E Publicacion
+}
+
+rectangle #CDEBA5 ":PUBLICACIONES_ABIERTAS" as PublicacionesSalida
+
+PublicacionAbierta -r-> EliminarPublicacionView: eliminarPublicacion()
+
+EliminarPublicacionView -d-> PublicacionController: eliminarPublicacion(id) : void
+
+PublicacionController --> PublicacionRepository: eliminarPorId(id) : void
+
+PublicacionRepository -- Publicacion
+
+EliminarPublicacionView ..> PublicacionesSalida: abrirPublicaciones()
+
+@enduml

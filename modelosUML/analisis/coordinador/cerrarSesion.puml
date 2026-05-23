@@ -1,0 +1,21 @@
+@startuml cerrarSesion-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+
+package cerrarSesion as "cerrarSesion()" {
+    rectangle #629EF9 CerrarSesionView
+    rectangle #b5bd68 SesionController
+}
+
+rectangle #CDEBA5 ":SESION_CERRADA" as SesionCerrada
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipalSalida
+
+PanelPrincipal -r-> CerrarSesionView: cerrarSesion()
+
+CerrarSesionView -d-> SesionController: confirmarCierre() : boolean
+
+CerrarSesionView ..> SesionCerrada: sesionCerrada()
+CerrarSesionView ..> PanelPrincipalSalida: cierreCancelado()
+
+@enduml

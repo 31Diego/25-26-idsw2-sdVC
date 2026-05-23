@@ -1,0 +1,27 @@
+@startuml crearInvestigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":INVESTIGADORES_ABIERTOS" as InvestigadoresAbiertos
+
+package crearInvestigador as "crearInvestigador()" {
+    rectangle #629EF9 CrearInvestigadorView
+    rectangle #b5bd68 InvestigadorController
+    rectangle #F2AC4E InvestigadorRepository
+    rectangle #F2AC4E Investigador
+}
+
+rectangle #CDEBA5 ":INVESTIGADORES_ABIERTOS" as InvestigadoresSalida
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+InvestigadoresAbiertos -r-> CrearInvestigadorView: crearInvestigador()
+
+CrearInvestigadorView -d-> InvestigadorController: guardarInvestigador(datos) : Investigador
+
+InvestigadorController --> InvestigadorRepository: crear(investigador) : Investigador
+
+InvestigadorRepository -- Investigador
+
+CrearInvestigadorView ..> InvestigadoresSalida: abrirInvestigadores()
+CrearInvestigadorView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

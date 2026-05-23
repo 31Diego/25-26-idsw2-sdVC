@@ -1,0 +1,29 @@
+@startuml editarProyecto-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoAbierto
+
+package editarProyecto as "editarProyecto()" {
+    rectangle #629EF9 EditarProyectoView
+    rectangle #b5bd68 ProyectoController
+    rectangle #F2AC4E ProyectoRepository
+    rectangle #F2AC4E Proyecto
+}
+
+rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoSalida
+
+ProyectoAbierto -r-> EditarProyectoView: editarProyecto()
+
+EditarProyectoView -d-> ProyectoController: obtenerProyecto(id) : Proyecto
+
+ProyectoController --> ProyectoRepository: obtenerPorId(id) : Proyecto
+
+ProyectoRepository -- Proyecto
+
+EditarProyectoView --> ProyectoController: guardarProyecto(datos) : Proyecto
+
+ProyectoController --> ProyectoRepository: actualizar(proyecto) : Proyecto
+
+EditarProyectoView ..> ProyectoSalida: edicionFinalizada()
+
+@enduml

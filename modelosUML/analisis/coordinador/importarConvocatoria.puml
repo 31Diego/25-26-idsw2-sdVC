@@ -1,0 +1,27 @@
+@startuml importarConvocatoria-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":CONVOCATORIA_ABIERTA" as ConvocatoriaAbierta
+
+package importarConvocatoria as "importarConvocatoria()" {
+    rectangle #629EF9 ImportarConvocatoriaView
+    rectangle #b5bd68 ConvocatoriaController
+    rectangle #F2AC4E ConvocatoriaRepository
+    rectangle #F2AC4E Convocatoria
+}
+
+rectangle #CDEBA5 ":CONVOCATORIA_ABIERTA" as ConvocatoriaSalida
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+ConvocatoriaAbierta -r-> ImportarConvocatoriaView: importarConvocatoria()
+
+ImportarConvocatoriaView -d-> ConvocatoriaController: importarConvocatoria(datos) : Convocatoria
+
+ConvocatoriaController --> ConvocatoriaRepository: crear(convocatoria) : Convocatoria
+
+ConvocatoriaRepository -- Convocatoria
+
+ImportarConvocatoriaView ..> ConvocatoriaSalida: convocatoriaImportada()
+ImportarConvocatoriaView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

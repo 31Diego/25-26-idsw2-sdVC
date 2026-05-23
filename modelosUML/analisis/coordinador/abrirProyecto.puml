@@ -1,0 +1,35 @@
+@startuml abrirProyecto-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PROYECTOS_ABIERTOS" as ProyectosAbiertos
+
+package abrirProyecto as "abrirProyecto()" {
+    rectangle #629EF9 ProyectoView
+    rectangle #b5bd68 ProyectoController
+    rectangle #F2AC4E ProyectoRepository
+    rectangle #F2AC4E Proyecto
+}
+
+rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoAbierto
+rectangle #CDEBA5 ":Collaboration EditarProyecto" as ColEditar
+rectangle #CDEBA5 ":Collaboration EliminarProyecto" as ColEliminar
+rectangle #CDEBA5 ":Collaboration AbrirEntregables" as ColEntregables
+rectangle #CDEBA5 ":Collaboration AgregarInvestigador" as ColAgregar
+rectangle #CDEBA5 ":PROYECTOS_ABIERTOS" as ProyectosSalida
+
+ProyectosAbiertos -r-> ProyectoView: abrirProyecto(id)
+
+ProyectoView -d-> ProyectoController: obtenerProyecto(id) : Proyecto
+
+ProyectoController --> ProyectoRepository: obtenerPorId(id) : Proyecto
+
+ProyectoRepository -- Proyecto
+
+ProyectoView ..> ProyectoAbierto: proyectoMostrado()
+ProyectoView ..> ColEditar: editarProyecto()
+ProyectoView ..> ColEliminar: eliminarProyecto()
+ProyectoView ..> ColEntregables: abrirEntregables()
+ProyectoView ..> ColAgregar: agregarInvestigador()
+ProyectoView ..> ProyectosSalida: abrirProyectos()
+
+@enduml

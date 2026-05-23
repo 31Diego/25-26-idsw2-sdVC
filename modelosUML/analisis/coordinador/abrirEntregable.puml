@@ -1,0 +1,31 @@
+@startuml abrirEntregable-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":ENTREGABLES_ABIERTOS" as EntregablesAbiertos
+
+package abrirEntregable as "abrirEntregable()" {
+    rectangle #629EF9 EntregableView
+    rectangle #b5bd68 EntregableController
+    rectangle #F2AC4E EntregableRepository
+    rectangle #F2AC4E Entregable
+}
+
+rectangle #CDEBA5 ":ENTREGABLE_ABIERTO" as EntregableAbierto
+rectangle #CDEBA5 ":Collaboration EditarEntregable" as ColEditar
+rectangle #CDEBA5 ":Collaboration EliminarEntregable" as ColEliminar
+rectangle #CDEBA5 ":ENTREGABLES_ABIERTOS" as EntregablesSalida
+
+EntregablesAbiertos -r-> EntregableView: abrirEntregable(id)
+
+EntregableView -d-> EntregableController: obtenerEntregable(id) : Entregable
+
+EntregableController --> EntregableRepository: obtenerPorId(id) : Entregable
+
+EntregableRepository -- Entregable
+
+EntregableView ..> EntregableAbierto: entregableMostrado()
+EntregableView ..> ColEditar: editarEntregable()
+EntregableView ..> ColEliminar: eliminarEntregable()
+EntregableView ..> EntregablesSalida: abrirEntregables()
+
+@enduml

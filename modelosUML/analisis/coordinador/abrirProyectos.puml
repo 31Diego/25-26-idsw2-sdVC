@@ -1,0 +1,35 @@
+@startuml abrirProyectos-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+
+package abrirProyectos as "abrirProyectos()" {
+    rectangle #629EF9 ProyectosView
+    rectangle #b5bd68 ProyectosController
+    rectangle #F2AC4E ProyectoRepository
+    rectangle #F2AC4E Proyecto
+}
+
+rectangle #CDEBA5 ":PROYECTOS_ABIERTOS" as ProyectosAbiertos
+rectangle #CDEBA5 ":Collaboration AbrirProyecto" as ColProyecto
+rectangle #CDEBA5 ":Collaboration CrearProyecto" as ColCrearProyecto
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+PanelPrincipal -r-> ProyectosView: abrirProyectos()
+
+ProyectosView -d-> ProyectosController: obtenerProyectos() : List<Proyecto>
+
+ProyectosController --> ProyectoRepository: obtenerTodos() : List<Proyecto>
+
+ProyectoRepository -- Proyecto
+
+ProyectosView --> ProyectosController: filtrarProyectos(criterio) : List<Proyecto>
+
+ProyectosController --> ProyectoRepository: buscarPorCriterio(criterio) : List<Proyecto>
+
+ProyectosView ..> ProyectosAbiertos: proyectosCargados()
+ProyectosView ..> ColProyecto: abrirProyecto(id)
+ProyectosView ..> ColCrearProyecto: crearProyecto()
+ProyectosView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

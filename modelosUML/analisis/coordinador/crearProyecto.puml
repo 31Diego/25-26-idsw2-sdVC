@@ -1,0 +1,27 @@
+@startuml crearProyecto-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PROYECTOS_ABIERTOS" as ProyectosAbiertos
+
+package crearProyecto as "crearProyecto()" {
+    rectangle #629EF9 CrearProyectoView
+    rectangle #b5bd68 ProyectoController
+    rectangle #F2AC4E ProyectoRepository
+    rectangle #F2AC4E Proyecto
+}
+
+rectangle #CDEBA5 ":PROYECTOS_ABIERTOS" as ProyectosSalida
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+ProyectosAbiertos -r-> CrearProyectoView: crearProyecto()
+
+CrearProyectoView -d-> ProyectoController: guardarProyecto(datos) : Proyecto
+
+ProyectoController --> ProyectoRepository: crear(proyecto) : Proyecto
+
+ProyectoRepository -- Proyecto
+
+CrearProyectoView ..> ProyectosSalida: abrirProyectos()
+CrearProyectoView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

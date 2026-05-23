@@ -1,0 +1,25 @@
+@startuml eliminarEntregable-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":ENTREGABLE_ABIERTO" as EntregableAbierto
+
+package eliminarEntregable as "eliminarEntregable()" {
+    rectangle #629EF9 EliminarEntregableView
+    rectangle #b5bd68 EntregableController
+    rectangle #F2AC4E EntregableRepository
+    rectangle #F2AC4E Entregable
+}
+
+rectangle #CDEBA5 ":ENTREGABLES_ABIERTOS" as EntregablesSalida
+
+EntregableAbierto -r-> EliminarEntregableView: eliminarEntregable()
+
+EliminarEntregableView -d-> EntregableController: eliminarEntregable(id) : void
+
+EntregableController --> EntregableRepository: eliminarPorId(id) : void
+
+EntregableRepository -- Entregable
+
+EliminarEntregableView ..> EntregablesSalida: abrirEntregables()
+
+@enduml

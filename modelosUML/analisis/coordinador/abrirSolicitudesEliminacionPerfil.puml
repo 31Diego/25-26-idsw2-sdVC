@@ -1,0 +1,29 @@
+@startuml abrirSolicitudesEliminacionPerfil-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+
+package abrirSolicitudesEliminacionPerfil as "abrirSolicitudesEliminacionPerfil()" {
+    rectangle #629EF9 SolicitudesEliminacionView
+    rectangle #b5bd68 EliminacionController
+    rectangle #F2AC4E SolicitudEliminacionRepository
+    rectangle #F2AC4E SolicitudEliminacion
+}
+
+rectangle #CDEBA5 ":SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS" as SolicitudesAbiertas
+rectangle #CDEBA5 ":Collaboration AbrirSolicitudEliminacionPerfil" as ColSolicitud
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+PanelPrincipal -r-> SolicitudesEliminacionView: abrirSolicitudesEliminacionPerfil()
+
+SolicitudesEliminacionView -d-> EliminacionController: obtenerSolicitudes() : List<SolicitudEliminacion>
+
+EliminacionController --> SolicitudEliminacionRepository: obtenerTodos() : List<SolicitudEliminacion>
+
+SolicitudEliminacionRepository -- SolicitudEliminacion
+
+SolicitudesEliminacionView ..> SolicitudesAbiertas: solicitudesCargadas()
+SolicitudesEliminacionView ..> ColSolicitud: abrirSolicitudEliminacionPerfil(id)
+SolicitudesEliminacionView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

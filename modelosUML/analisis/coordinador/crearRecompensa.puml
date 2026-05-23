@@ -1,0 +1,25 @@
+@startuml crearRecompensa-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":RECOMPENSAS_ABIERTAS" as RecompensasAbiertas
+
+package crearRecompensa as "crearRecompensa()" {
+    rectangle #629EF9 CrearRecompensaView
+    rectangle #b5bd68 RecompensaController
+    rectangle #F2AC4E RecompensaRepository
+    rectangle #F2AC4E Recompensa
+}
+
+rectangle #CDEBA5 ":RECOMPENSAS_ABIERTAS" as RecompensasSalida
+
+RecompensasAbiertas -r-> CrearRecompensaView: crearRecompensa()
+
+CrearRecompensaView -d-> RecompensaController: guardarRecompensa(datos) : Recompensa
+
+RecompensaController --> RecompensaRepository: crear(recompensa) : Recompensa
+
+RecompensaRepository -- Recompensa
+
+CrearRecompensaView ..> RecompensasSalida: abrirRecompensas()
+
+@enduml

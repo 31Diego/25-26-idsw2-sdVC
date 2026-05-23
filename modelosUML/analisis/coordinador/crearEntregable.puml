@@ -1,0 +1,25 @@
+@startuml crearEntregable-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":ENTREGABLES_ABIERTOS" as EntregablesAbiertos
+
+package crearEntregable as "crearEntregable()" {
+    rectangle #629EF9 CrearEntregableView
+    rectangle #b5bd68 EntregableController
+    rectangle #F2AC4E EntregableRepository
+    rectangle #F2AC4E Entregable
+}
+
+rectangle #CDEBA5 ":ENTREGABLES_ABIERTOS" as EntregablesSalida
+
+EntregablesAbiertos -r-> CrearEntregableView: crearEntregable()
+
+CrearEntregableView -d-> EntregableController: guardarEntregable(datos) : Entregable
+
+EntregableController --> EntregableRepository: crear(entregable) : Entregable
+
+EntregableRepository -- Entregable
+
+CrearEntregableView ..> EntregablesSalida: abrirEntregables()
+
+@enduml

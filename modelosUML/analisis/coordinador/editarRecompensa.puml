@@ -1,0 +1,29 @@
+@startuml editarRecompensa-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":RECOMPENSA_ABIERTA" as RecompensaAbierta
+
+package editarRecompensa as "editarRecompensa()" {
+    rectangle #629EF9 EditarRecompensaView
+    rectangle #b5bd68 RecompensaController
+    rectangle #F2AC4E RecompensaRepository
+    rectangle #F2AC4E Recompensa
+}
+
+rectangle #CDEBA5 ":RECOMPENSA_ABIERTA" as RecompensaSalida
+
+RecompensaAbierta -r-> EditarRecompensaView: editarRecompensa()
+
+EditarRecompensaView -d-> RecompensaController: obtenerRecompensa(id) : Recompensa
+
+RecompensaController --> RecompensaRepository: obtenerPorId(id) : Recompensa
+
+RecompensaRepository -- Recompensa
+
+EditarRecompensaView --> RecompensaController: guardarRecompensa(datos) : Recompensa
+
+RecompensaController --> RecompensaRepository: actualizar(recompensa) : Recompensa
+
+EditarRecompensaView ..> RecompensaSalida: edicionFinalizada()
+
+@enduml

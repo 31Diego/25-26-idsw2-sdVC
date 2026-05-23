@@ -1,0 +1,25 @@
+@startuml solicitarEliminacionPerfil-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":OPCIONES_PERFIL_ABIERTO" as OpcionesPerfilAbierto
+
+package solicitarEliminacionPerfil as "solicitarEliminacionPerfil()" {
+    rectangle #629EF9 SolicitarEliminacionView
+    rectangle #b5bd68 EliminacionController
+    rectangle #F2AC4E SolicitudEliminacionRepository
+    rectangle #F2AC4E SolicitudEliminacion
+}
+
+rectangle #CDEBA5 ":OPCIONES_PERFIL_ABIERTO" as OpcionesPerfilSalida
+
+OpcionesPerfilAbierto -r-> SolicitarEliminacionView: solicitarEliminacionPerfil()
+
+SolicitarEliminacionView -d-> EliminacionController: enviarSolicitud(datos) : SolicitudEliminacion
+
+EliminacionController --> SolicitudEliminacionRepository: crear(solicitud) : SolicitudEliminacion
+
+SolicitudEliminacionRepository -- SolicitudEliminacion
+
+SolicitarEliminacionView ..> OpcionesPerfilSalida: abrirOpcionesPerfil()
+
+@enduml

@@ -1,0 +1,31 @@
+@startuml abrirEntregables-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoAbierto
+
+package abrirEntregables as "abrirEntregables()" {
+    rectangle #629EF9 EntregablesView
+    rectangle #b5bd68 EntregableController
+    rectangle #F2AC4E EntregableRepository
+    rectangle #F2AC4E Entregable
+}
+
+rectangle #CDEBA5 ":ENTREGABLES_ABIERTOS" as EntregablesAbiertos
+rectangle #CDEBA5 ":Collaboration AbrirEntregable" as ColEntregable
+rectangle #CDEBA5 ":Collaboration CrearEntregable" as ColCrear
+rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoSalida
+
+ProyectoAbierto -r-> EntregablesView: abrirEntregables()
+
+EntregablesView -d-> EntregableController: obtenerEntregables(idProyecto) : List<Entregable>
+
+EntregableController --> EntregableRepository: obtenerPorProyecto(idProyecto) : List<Entregable>
+
+EntregableRepository -- Entregable
+
+EntregablesView ..> EntregablesAbiertos: entregablesCargados()
+EntregablesView ..> ColEntregable: abrirEntregable(id)
+EntregablesView ..> ColCrear: crearEntregable()
+EntregablesView ..> ProyectoSalida: abrirProyecto(id)
+
+@enduml

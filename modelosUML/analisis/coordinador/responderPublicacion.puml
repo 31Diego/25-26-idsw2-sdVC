@@ -1,0 +1,25 @@
+@startuml responderPublicacion-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PUBLICACION_ABIERTA" as PublicacionAbierta
+
+package responderPublicacion as "responderPublicacion()" {
+    rectangle #629EF9 ResponderPublicacionView
+    rectangle #b5bd68 PublicacionController
+    rectangle #F2AC4E PublicacionRepository
+    rectangle #F2AC4E Publicacion
+}
+
+rectangle #CDEBA5 ":PUBLICACION_ABIERTA" as PublicacionSalida
+
+PublicacionAbierta -r-> ResponderPublicacionView: responderPublicacion()
+
+ResponderPublicacionView -d-> PublicacionController: guardarRespuesta(datos) : Publicacion
+
+PublicacionController --> PublicacionRepository: actualizar(publicacion) : Publicacion
+
+PublicacionRepository -- Publicacion
+
+ResponderPublicacionView ..> PublicacionSalida: respuestaEnviada()
+
+@enduml
