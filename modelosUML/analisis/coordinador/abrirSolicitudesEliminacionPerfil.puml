@@ -1,7 +1,8 @@
 @startuml abrirSolicitudesEliminacionPerfil-analisis
 skinparam linetype polyline
 
-rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+rectangle #CDEBA5 ":OPCIONES_PERFIL_INVESTIGADOR_ABIERTO" as OpcionesPerfilEntrada
+rectangle #CDEBA5 ":SOLICITUD_ELIMINACION_PERFIL_ABIERTA" as SolicitudAbiertoEntrada
 
 package abrirSolicitudesEliminacionPerfil as "abrirSolicitudesEliminacionPerfil()" {
     rectangle #629EF9 SolicitudesEliminacionView
@@ -12,9 +13,10 @@ package abrirSolicitudesEliminacionPerfil as "abrirSolicitudesEliminacionPerfil(
 
 rectangle #CDEBA5 ":SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS" as SolicitudesAbiertas
 rectangle #CDEBA5 ":Collaboration AbrirSolicitudEliminacionPerfil" as ColSolicitud
-rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+rectangle #CDEBA5 ":OPCIONES_PERFIL_INVESTIGADOR_ABIERTO" as OpcionesPerfilSalida
 
-PanelPrincipal -r-> SolicitudesEliminacionView: abrirSolicitudesEliminacionPerfil()
+OpcionesPerfilEntrada -r-> SolicitudesEliminacionView: abrirSolicitudesEliminacionPerfil()
+SolicitudAbiertoEntrada -r-> SolicitudesEliminacionView: abrirSolicitudesEliminacionPerfil()
 
 SolicitudesEliminacionView -d-> EliminacionController: obtenerSolicitudes() : List<SolicitudEliminacion>
 
@@ -24,6 +26,6 @@ SolicitudEliminacionRepository -- SolicitudEliminacion
 
 SolicitudesEliminacionView ..> SolicitudesAbiertas: solicitudesCargadas()
 SolicitudesEliminacionView ..> ColSolicitud: abrirSolicitudEliminacionPerfil(id)
-SolicitudesEliminacionView ..> PanelSalida: abrirPanelPrincipal()
+SolicitudesEliminacionView ..> OpcionesPerfilSalida: abrirOpcionesPerfilInvestigador(id)
 
 @enduml

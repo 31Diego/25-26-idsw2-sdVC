@@ -2,6 +2,7 @@
 skinparam linetype polyline
 
 rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+rectangle #CDEBA5 ":RECOMPENSA_ABIERTA" as RecompensaAbiertoEntrada
 
 package abrirRecompensas as "abrirRecompensas()" {
     rectangle #629EF9 RecompensasView
@@ -16,6 +17,7 @@ rectangle #CDEBA5 ":Collaboration CrearRecompensa" as ColCrear
 rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
 
 PanelPrincipal -r-> RecompensasView: abrirRecompensas()
+RecompensaAbiertoEntrada -r-> RecompensasView: abrirRecompensas()
 
 RecompensasView -d-> RecompensaController: obtenerRecompensas() : List<Recompensa>
 

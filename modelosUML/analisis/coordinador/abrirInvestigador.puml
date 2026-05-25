@@ -2,6 +2,7 @@
 skinparam linetype polyline
 
 rectangle #CDEBA5 ":INVESTIGADORES_ABIERTOS" as InvestigadoresAbiertos
+rectangle #CDEBA5 ":OPCIONES_PERFIL_INVESTIGADOR_ABIERTO" as OpcionesPerfilEntrada
 
 package abrirInvestigador as "abrirInvestigador()" {
     rectangle #629EF9 InvestigadorView
@@ -16,6 +17,7 @@ rectangle #CDEBA5 ":Collaboration AbrirProyectosDeInvestigador" as ColProyectos
 rectangle #CDEBA5 ":INVESTIGADORES_ABIERTOS" as InvestigadoresSalida
 
 InvestigadoresAbiertos -r-> InvestigadorView: abrirInvestigador(id)
+OpcionesPerfilEntrada -r-> InvestigadorView: abrirInvestigador(id)
 
 InvestigadorView -d-> InvestigadorController: obtenerInvestigador(id) : Investigador
 
