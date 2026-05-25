@@ -1,0 +1,58 @@
+@startuml plantillaNavegacion-analisis
+skinparam linetype polyline
+
+'─────────────────────────────────────────────
+' ESTADO DE ENTRADA
+' Pantalla desde la que el usuario dispara este caso de uso.
+' Siempre un estado en MAYÚSCULAS — ya existe, no tiene lógica propia aquí.
+'─────────────────────────────────────────────
+rectangle #CDEBA5 ":ESTADO_ENTRADA" as Entrada
+
+package miCasoDeUso as "miCasoDeUso()" {
+    rectangle #629EF9 MiView
+    rectangle #b5bd68 MiController
+    rectangle #F2AC4E MiRepository
+    rectangle #F2AC4E MiEntidad
+}
+
+'─────────────────────────────────────────────
+' SALIDA A — Estado resultado (este CU terminó su trabajo)
+' El CU cargó datos y los muestra. La pantalla "está lista".
+' → Se usa un estado en MAYÚSCULAS.
+'─────────────────────────────────────────────
+rectangle #CDEBA5 ":MI_ESTADO_ABIERTO" as EstadoResultado
+
+'─────────────────────────────────────────────
+' SALIDA B — Navegación de vuelta (sin lógica nueva)
+' El usuario pulsa "volver". No hay datos que cargar,
+' la pantalla anterior ya estaba en memoria.
+' → Se usa el estado en MAYÚSCULAS directamente.
+'─────────────────────────────────────────────
+rectangle #CDEBA5 ":ESTADO_ANTERIOR" as EstadoAnterior
+
+'─────────────────────────────────────────────
+' SALIDA C — Collaboration (lanza otro caso de uso completo)
+' El usuario inicia una acción que requiere su propio
+' View + Controller + Repository (otro diagrama de colaboración).
+' → Se usa :Collaboration NombreCasoDeUso
+'─────────────────────────────────────────────
+rectangle #CDEBA5 ":Collaboration OtroCasoDeUso" as ColOtro
+rectangle #CDEBA5 ":Collaboration OtroCasoDeUso2" as ColOtro2
+
+Entrada -r-> MiView: miCasoDeUso()
+
+MiView -d-> MiController: obtenerDatos() : List<MiEntidad>
+MiController --> MiRepository: obtenerTodos() : List<MiEntidad>
+MiRepository -- MiEntidad
+
+' A — este CU terminó: la pantalla muestra el resultado
+MiView ..> EstadoResultado: datosCargados()
+
+' B — volver atrás: solo navegación, sin lógica nueva
+MiView ..> EstadoAnterior: volver()
+
+' C — lanzar otro CU: hay trabajo real (datos, lógica de negocio)
+MiView ..> ColOtro: otroCasoDeUso(id)
+MiView ..> ColOtro2: otroCasoDeUso2()
+
+@enduml
