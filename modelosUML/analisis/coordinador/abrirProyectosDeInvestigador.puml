@@ -1,0 +1,29 @@
+@startuml abrirProyectosDeInvestigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":INVESTIGADOR_ABIERTO" as InvestigadorAbierto
+
+package abrirProyectosDeInvestigador as "abrirProyectosDeInvestigador(investigadorId)" {
+    rectangle #629EF9 ProyectosInvestigadorView
+    rectangle #b5bd68 ProyectosController
+    rectangle #F2AC4E ProyectoRepository
+    rectangle #F2AC4E Proyecto
+}
+
+rectangle #CDEBA5 ":PROYECTOS_INVESTIGADOR_ABIERTOS" as ProyectosAbiertos
+rectangle #CDEBA5 ":Collaboration AbrirProyecto" as ColProyecto
+rectangle #CDEBA5 ":INVESTIGADOR_ABIERTO" as InvestigadorSalida
+
+InvestigadorAbierto -r-> ProyectosInvestigadorView: abrirProyectosDeInvestigador(investigadorId)
+
+ProyectosInvestigadorView -d-> ProyectosController: obtenerProyectosPorInvestigador(investigadorId) : List<Proyecto>
+
+ProyectosController --> ProyectoRepository: buscarPorInvestigador(investigadorId) : List<Proyecto>
+
+ProyectoRepository -- Proyecto
+
+ProyectosInvestigadorView ..> ProyectosAbiertos: proyectosCargados()
+ProyectosInvestigadorView ..> ColProyecto: abrirProyecto(id)
+ProyectosInvestigadorView ..> InvestigadorSalida: abrirInvestigador(investigadorId)
+
+@enduml

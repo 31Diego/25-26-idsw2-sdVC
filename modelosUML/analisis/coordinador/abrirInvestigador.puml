@@ -11,7 +11,8 @@ package abrirInvestigador as "abrirInvestigador()" {
 }
 
 rectangle #CDEBA5 ":INVESTIGADOR_ABIERTO" as InvestigadorAbierto
-rectangle #CDEBA5 ":Collaboration AbrirOpcionesPerfil" as ColPerfil
+rectangle #CDEBA5 ":Collaboration AbrirOpcionesPerfilInvestigador" as ColPerfil
+rectangle #CDEBA5 ":Collaboration AbrirProyectosDeInvestigador" as ColProyectos
 rectangle #CDEBA5 ":INVESTIGADORES_ABIERTOS" as InvestigadoresSalida
 
 InvestigadoresAbiertos -r-> InvestigadorView: abrirInvestigador(id)
@@ -23,7 +24,8 @@ InvestigadorController --> InvestigadorRepository: obtenerPorId(id) : Investigad
 InvestigadorRepository -- Investigador
 
 InvestigadorView ..> InvestigadorAbierto: investigadorMostrado()
-InvestigadorView ..> ColPerfil: abrirOpcionesPerfil(id)
+InvestigadorView ..> ColPerfil: abrirOpcionesPerfilInvestigador(id)
+InvestigadorView ..> ColProyectos: abrirProyectosDeInvestigador(id)
 InvestigadorView ..> InvestigadoresSalida: abrirInvestigadores()
 
 @enduml

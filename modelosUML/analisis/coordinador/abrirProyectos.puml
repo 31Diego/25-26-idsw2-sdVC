@@ -2,6 +2,7 @@
 skinparam linetype polyline
 
 rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoAbiertoEntrada
 
 package abrirProyectos as "abrirProyectos()" {
     rectangle #629EF9 ProyectosView
@@ -16,6 +17,7 @@ rectangle #CDEBA5 ":Collaboration CrearProyecto" as ColCrearProyecto
 rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
 
 PanelPrincipal -r-> ProyectosView: abrirProyectos()
+ProyectoAbiertoEntrada -r-> ProyectosView: abrirProyectos()
 
 ProyectosView -d-> ProyectosController: obtenerProyectos() : List<Proyecto>
 

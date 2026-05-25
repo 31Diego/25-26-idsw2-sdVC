@@ -22,7 +22,7 @@ rectangle #CDEBA5 ":Collaboration AbrirConvocatorias" as ColConvocatorias
 rectangle #CDEBA5 ":Collaboration AbrirRecompensas" as ColRecompensas
 rectangle #CDEBA5 ":Collaboration AbrirMisPublicaciones" as ColMisPublicaciones
 rectangle #CDEBA5 ":Collaboration AbrirPublicaciones" as ColPublicaciones
-rectangle #CDEBA5 ":Collaboration AbrirOpcionesPerfil" as ColPerfil
+rectangle #CDEBA5 ":Collaboration AbrirOpcionesPerfilPropio" as ColPerfil
 rectangle #CDEBA5 ":Collaboration AbrirOpcionesCargaTrabajo" as ColCargaTrabajo
 rectangle #CDEBA5 ":Collaboration CerrarSesion" as ColCerrarSesion
 
