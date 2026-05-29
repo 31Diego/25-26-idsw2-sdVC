@@ -1,0 +1,158 @@
+@startuml plantillaSecuencia-diseño
+
+title Plantilla de Patrones — Diagramas de Secuencia\n(Spring Boot + Thymeleaf + H2)
+
+actor "Actor" as Actor
+participant "XxxController\n(@Controller)" as Controller
+participant "XxxService\n(@Service)" as Service
+participant "XxxRepository\n(JpaRepository)" as Repo
+database "Base de Datos\n(H2)" as DB
+
+' ============================================================
+' PATRÓN 1 — LISTAR
+' Cuándo: el CdU muestra una lista de recursos (sin id)
+' Endpoint: GET /recursos
+' ============================================================
+== Patrón 1: Listar ==
+
+Actor -> Controller: GET /recursos
+activate Controller
+Controller -> Service: obtenerTodos()
+activate Service
+Service -> Repo: findAll()
+activate Repo
+Repo -> DB: SELECT * FROM recursos
+activate DB
+DB --> Repo: List<Xxx>
+deactivate DB
+Repo --> Service: List<Xxx>
+deactivate Repo
+Service --> Controller: List<XxxDTO>
+deactivate Service
+Controller --> Actor: recursos.html + List<XxxDTO>
+deactivate Controller
+
+' ============================================================
+' PATRÓN 2 — ABRIR DETALLE
+' Cuándo: el CdU abre un recurso concreto por id
+' Endpoint: GET /recursos/{id}
+' ============================================================
+== Patrón 2: Abrir detalle ==
+
+Actor -> Controller: GET /recursos/{id}
+activate Controller
+Controller -> Service: obtenerRecurso(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM recursos WHERE id = ?
+activate DB
+DB --> Repo: Xxx
+deactivate DB
+Repo --> Service: Optional<Xxx>
+deactivate Repo
+Service --> Controller: XxxDTO
+deactivate Service
+Controller --> Actor: recurso.html + XxxDTO
+deactivate Controller
+
+' ============================================================
+' PATRÓN 3 — CREAR
+' Cuándo: el CdU guarda un nuevo recurso
+' Endpoint: POST /recursos
+' Tras éxito: redirect a GET /recursos (PRG pattern)
+' ============================================================
+== Patrón 3: Crear ==
+
+Actor -> Controller: POST /recursos (XxxDTO)
+activate Controller
+Controller -> Service: crearRecurso(XxxDTO)
+activate Service
+Service -> Repo: save(xxx)
+activate Repo
+Repo -> DB: INSERT INTO recursos (...)
+activate DB
+DB --> Repo: Xxx (con id generado)
+deactivate DB
+Repo --> Service: Xxx
+deactivate Repo
+Service --> Controller: void
+deactivate Service
+Controller --> Actor: redirect: GET /recursos
+deactivate Controller
+
+' ============================================================
+' PATRÓN 4a — EDITAR: cargar formulario
+' Cuándo: el usuario abre el formulario de edición
+' Endpoint: GET /recursos/{id}/editar
+' ============================================================
+== Patrón 4a: Editar — cargar formulario ==
+
+Actor -> Controller: GET /recursos/{id}/editar
+activate Controller
+Controller -> Service: obtenerRecurso(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM recursos WHERE id = ?
+activate DB
+DB --> Repo: Xxx
+deactivate DB
+Repo --> Service: Optional<Xxx>
+deactivate Repo
+Service --> Controller: XxxDTO
+deactivate Service
+Controller --> Actor: recursoForm.html + XxxDTO (pre-rellenado)
+deactivate Controller
+
+' ============================================================
+' PATRÓN 4b — EDITAR: guardar cambios
+' Cuándo: el usuario envía el formulario de edición
+' Endpoint: POST /recursos/{id}
+' Tras éxito: redirect a GET /recursos/{id}
+' ============================================================
+== Patrón 4b: Editar — guardar cambios ==
+
+Actor -> Controller: POST /recursos/{id} (XxxDTO modificado)
+activate Controller
+Controller -> Service: actualizarRecurso(id, XxxDTO)
+activate Service
+Service -> Repo: save(xxx)
+activate Repo
+Repo -> DB: UPDATE recursos SET ... WHERE id = ?
+activate DB
+DB --> Repo: Xxx actualizado
+deactivate DB
+Repo --> Service: Xxx
+deactivate Repo
+Service --> Controller: void
+deactivate Service
+Controller --> Actor: redirect: GET /recursos/{id}
+deactivate Controller
+
+' ============================================================
+' PATRÓN 5 — ELIMINAR
+' Cuándo: el usuario confirma la eliminación
+' Endpoint: POST /recursos/{id}/eliminar
+' Tras éxito: redirect a GET /recursos
+' ============================================================
+== Patrón 5: Eliminar ==
+
+Actor -> Controller: POST /recursos/{id}/eliminar
+activate Controller
+Controller -> Service: eliminarRecurso(id)
+activate Service
+Service -> Repo: deleteById(id)
+activate Repo
+Repo -> DB: DELETE FROM recursos WHERE id = ?
+activate DB
+DB --> Repo: void
+deactivate DB
+Repo --> Service: void
+deactivate Repo
+Service --> Controller: void
+deactivate Service
+Controller --> Actor: redirect: GET /recursos
+deactivate Controller
+
+@enduml

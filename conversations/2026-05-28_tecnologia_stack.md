@@ -1,6 +1,6 @@
 # Sesión — 2026-05-28 · Tecnología · stack
 
-## [~inicio] Orientación inicial
+## [~19:00] Orientación inicial
 
 **Prompt:** "buenas claude"
 
@@ -10,7 +10,7 @@
 
 ---
 
-## [~medio] Consulta sobre tecnología
+## [~19:15] Consulta sobre tecnología
 
 **Prompt:** "vale, primero quiero proceder con el diseño de los casos de uso de coordinador, después el desarrollo, etc" + "me refería más a la tecnología, para este proyecto no tengo que escalarlo tanto, tan solo tiene que funcionar, en localhost si es más sencillo, mira el ejemplo dentro de context-ejemplos-diseño"
 
@@ -20,7 +20,7 @@
 
 ---
 
-## [~final] Profundización en tecnología
+## [~19:30] Profundización en tecnología
 
 **Prompt:** "podemos profundizar más en la tecnología"
 

@@ -1,0 +1,32 @@
+@startuml abrirConvocatoria-diseño
+title Diagrama de Secuencia - Abrir Convocatoria
+
+actor "Coordinador" as Coordinador
+participant "Navegador\n(Thymeleaf)" as View
+participant "ConvocatoriaController\n(@Controller)" as Controller
+participant "ConvocatoriaService\n(@Service)" as Service
+participant "ConvocatoriaRepository\n(JpaRepository)" as Repo
+database "Base de Datos\n(H2)" as DB
+
+Coordinador -> View: Click en convocatoria
+activate View
+View -> Controller: GET /convocatorias/{id}
+activate Controller
+Controller -> Service: obtenerConvocatoria(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM convocatorias WHERE id = ?
+activate DB
+DB --> Repo: Convocatoria
+deactivate DB
+Repo --> Service: Optional<Convocatoria>
+deactivate Repo
+Service --> Controller: ConvocatoriaDTO
+deactivate Service
+Controller --> View: convocatoria.html + ConvocatoriaDTO
+deactivate Controller
+View --> Coordinador: Muestra detalle de convocatoria
+deactivate View
+
+@enduml
