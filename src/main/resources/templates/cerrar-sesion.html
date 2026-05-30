@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cerrar sesión — FUNIBER GIPF</title>
+</head>
+<body>
+
+<h2>¿Deseas cerrar la sesión?</h2>
+
+<form method="post" th:action="@{/logout}">
+    <button type="submit">Confirmar</button>
+</form>
+
+<a th:href="@{/panel}">Cancelar</a>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${convocatoria.titulo} + ' — FUNIBER GIPF'">Convocatoria</title>
+</head>
+<body>
+
+<h1 th:text="${convocatoria.titulo}"></h1>
+
+<dl>
+    <dt>Área</dt>         <dd th:text="${convocatoria.area}"></dd>
+    <dt>Estado</dt>       <dd th:text="${convocatoria.estado}"></dd>
+    <dt>Fecha inicio</dt> <dd th:text="${convocatoria.fechaInicio}"></dd>
+    <dt>Fecha fin</dt>    <dd th:text="${convocatoria.fechaFin}"></dd>
+    <dt>Descripción</dt>  <dd th:text="${convocatoria.descripcion}"></dd>
+    <dt>Requisitos</dt>   <dd th:text="${convocatoria.requisitos}"></dd>
+    <dt>Criterios</dt>    <dd th:text="${convocatoria.criterios}"></dd>
+    <dt>Dotación</dt>     <dd th:text="${convocatoria.dotacion}"></dd>
+    <dt>Documentación</dt><dd th:text="${convocatoria.documentacion}"></dd>
+    <dt>Contacto</dt>     <dd th:text="${convocatoria.contacto}"></dd>
+</dl>
+
+<a th:href="@{/convocatorias/{id}/importar(id=${convocatoria.id})}">Importar convocatoria</a>
+<a th:href="@{/convocatorias}">Volver a la lista</a>
+
+</body>
+</html>

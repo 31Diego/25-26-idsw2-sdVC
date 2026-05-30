@@ -1,0 +1,53 @@
+@startuml iniciarSesion-diseño
+title Diagrama de Secuencia - Iniciar Sesión
+
+actor "Coordinador" as Coordinador
+participant "Navegador\n(Thymeleaf)" as View
+participant "IniciarSesionController\n(@Controller)" as Controller
+participant "Spring Security\n(SecurityFilterChain)" as Security
+participant "AutenticacionService\n(@Service)" as Service
+participant "UsuarioRepository\n(JpaRepository)" as Repo
+database "Base de Datos\n(H2)" as DB
+
+== Mostrar formulario ==
+
+Coordinador -> View: Navega a /login
+activate View
+View -> Controller: GET /login
+activate Controller
+Controller --> View: login.html
+deactivate Controller
+View --> Coordinador: Muestra formulario de login
+deactivate View
+
+== Autenticación ==
+
+Coordinador -> View: Introduce usuario y contraseña
+activate View
+View -> Security: POST /login (username, password)
+activate Security
+Security -> Service: loadUserByUsername(username)
+activate Service
+Service -> Repo: findByUsername(username)
+activate Repo
+Repo -> DB: SELECT * FROM usuarios WHERE username = ?
+activate DB
+DB --> Repo: Usuario
+deactivate DB
+Repo --> Service: Optional<Usuario>
+deactivate Repo
+Service --> Security: UserDetails
+deactivate Service
+Security -> Security: verificarContraseña(BCrypt)
+
+alt credenciales correctas
+    Security --> View: redirect: GET /panel
+    View --> Coordinador: Panel principal
+else credenciales incorrectas
+    Security --> View: redirect: GET /login?error
+    View --> Coordinador: Formulario con mensaje de error
+end
+deactivate Security
+deactivate View
+
+@enduml

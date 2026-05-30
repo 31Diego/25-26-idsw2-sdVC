@@ -1,0 +1,57 @@
+@startuml editarPerfil-diseño
+title Diagrama de Secuencia - Editar Perfil
+
+actor "Coordinador" as Coordinador
+participant "Navegador\n(Thymeleaf)" as View
+participant "EditarPerfilController\n(@Controller)" as Controller
+participant "PerfilService\n(@Service)" as Service
+participant "InvestigadorRepository\n(JpaRepository)" as Repo
+database "Base de Datos\n(H2)" as DB
+
+== Cargar formulario ==
+
+Coordinador -> View: Click en "Editar perfil"
+activate View
+View -> Controller: GET /perfil/editar
+activate Controller
+Controller -> Service: obtenerPerfil()
+activate Service
+Service -> Repo: findByUsuario(usuarioActual)
+activate Repo
+Repo -> DB: SELECT * FROM investigadores WHERE usuario_id = ?
+activate DB
+DB --> Repo: Investigador
+deactivate DB
+Repo --> Service: Optional<Investigador>
+deactivate Repo
+Service --> Controller: Investigador
+deactivate Service
+Controller --> View: editar-perfil.html + Investigador (pre-rellenado)
+deactivate Controller
+View --> Coordinador: Muestra formulario con datos actuales
+deactivate View
+
+== Guardar cambios ==
+
+Coordinador -> View: Modifica datos y pulsa "Guardar"
+activate View
+View -> Controller: POST /perfil (Investigador modificado)
+activate Controller
+Controller -> Service: guardarPerfil(datos)
+activate Service
+Service -> Repo: save(investigador)
+activate Repo
+Repo -> DB: UPDATE investigadores SET ... WHERE id = ?
+activate DB
+DB --> Repo: Investigador actualizado
+deactivate DB
+Repo --> Service: Investigador
+deactivate Repo
+Service --> Controller: Investigador
+deactivate Service
+Controller --> View: redirect: GET /perfil
+deactivate Controller
+View --> Coordinador: Muestra perfil actualizado
+deactivate View
+
+@enduml

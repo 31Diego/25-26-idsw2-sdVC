@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Convocatorias — FUNIBER GIPF</title>
+</head>
+<body>
+
+<h1>Convocatorias</h1>
+
+<form method="get" th:action="@{/convocatorias}">
+    <input type="text" name="texto" th:value="${texto}" placeholder="Buscar por título..."/>
+    <input type="text" name="area" th:value="${area}" placeholder="Área"/>
+    <input type="text" name="estado" th:value="${estado}" placeholder="Estado"/>
+    <button type="submit">Filtrar</button>
+    <a th:href="@{/convocatorias}">Limpiar filtros</a>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Área</th>
+            <th>Estado</th>
+            <th>Fecha fin</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="c : ${convocatorias}">
+            <td th:text="${c.titulo}"></td>
+            <td th:text="${c.area}"></td>
+            <td th:text="${c.estado}"></td>
+            <td th:text="${c.fechaFin}"></td>
+            <td><a th:href="@{/convocatorias/{id}(id=${c.id})}">Ver detalle</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(convocatorias)}">
+            <td colspan="5">No hay convocatorias disponibles.</td>
+        </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/panel}">Volver al panel principal</a>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+@startuml editarCargaTrabajo-diseño
+title Diagrama de Secuencia - Editar Carga de Trabajo
+
+actor "Coordinador" as Coordinador
+participant "Navegador\n(Thymeleaf)" as View
+participant "EditarCargaTrabajoController\n(@Controller)" as Controller
+participant "CargaTrabajoService\n(@Service)" as Service
+participant "InvestigadorRepository\n(JpaRepository)" as Repo
+database "Base de Datos\n(H2)" as DB
+
+== Cargar formulario ==
+
+Coordinador -> View: Click en "Editar" de un investigador
+activate View
+View -> Controller: GET /carga-trabajo/{id}/editar
+activate Controller
+Controller -> Service: obtenerCargaTrabajo(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM investigadores WHERE id = ?
+activate DB
+DB --> Repo: Investigador
+deactivate DB
+Repo --> Service: Optional<Investigador>
+deactivate Repo
+Service --> Controller: Investigador
+deactivate Service
+Controller --> View: editar-carga-trabajo.html + Investigador
+deactivate Controller
+View --> Coordinador: Muestra formulario pre-rellenado
+deactivate View
+
+== Guardar cambios ==
+
+Coordinador -> View: Modifica disponibilidad/carga y pulsa "Guardar"
+activate View
+View -> Controller: POST /carga-trabajo/{id} (datos)
+activate Controller
+Controller -> Service: guardarCargaTrabajo(id, datos)
+activate Service
+Service -> Repo: save(investigador)
+activate Repo
+Repo -> DB: UPDATE investigadores SET disponibilidad=?, carga_trabajo=?\nWHERE id=?
+activate DB
+DB --> Repo: Investigador actualizado
+deactivate DB
+Repo --> Service: Investigador
+deactivate Repo
+Service --> Controller: Investigador
+deactivate Service
+Controller --> View: redirect: GET /carga-trabajo
+deactivate Controller
+View --> Coordinador: Lista de carga de trabajo actualizada
+deactivate View
+
+@enduml

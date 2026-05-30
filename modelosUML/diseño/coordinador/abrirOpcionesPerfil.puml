@@ -1,0 +1,32 @@
+@startuml abrirOpcionesPerfil-diseño
+title Diagrama de Secuencia - Abrir Opciones Perfil
+
+actor "Coordinador" as Coordinador
+participant "Navegador\n(Thymeleaf)" as View
+participant "OpcionesPerfilController\n(@Controller)" as Controller
+participant "PerfilService\n(@Service)" as Service
+participant "InvestigadorRepository\n(JpaRepository)" as Repo
+database "Base de Datos\n(H2)" as DB
+
+Coordinador -> View: Click en "Mi perfil"
+activate View
+View -> Controller: GET /perfil
+activate Controller
+Controller -> Service: obtenerPerfil()
+activate Service
+Service -> Repo: findByUsuario(usuarioActual)
+activate Repo
+Repo -> DB: SELECT * FROM investigadores WHERE usuario_id = ?
+activate DB
+DB --> Repo: Investigador
+deactivate DB
+Repo --> Service: Optional<Investigador>
+deactivate Repo
+Service --> Controller: Investigador
+deactivate Service
+Controller --> View: opciones-perfil.html + Investigador
+deactivate Controller
+View --> Coordinador: Muestra datos del perfil
+deactivate View
+
+@enduml

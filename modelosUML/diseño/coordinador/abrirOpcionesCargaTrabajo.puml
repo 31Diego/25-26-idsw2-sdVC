@@ -1,0 +1,57 @@
+@startuml abrirOpcionesCargaTrabajo-diseño
+title Diagrama de Secuencia - Abrir Opciones Carga de Trabajo
+
+actor "Coordinador" as Coordinador
+participant "Navegador\n(Thymeleaf)" as View
+participant "CargaTrabajoController\n(@Controller)" as Controller
+participant "CargaTrabajoService\n(@Service)" as Service
+participant "InvestigadorRepository\n(JpaRepository)" as Repo
+database "Base de Datos\n(H2)" as DB
+
+== Carga inicial ==
+
+Coordinador -> View: Navega a carga de trabajo
+activate View
+View -> Controller: GET /carga-trabajo
+activate Controller
+Controller -> Service: obtenerResumenCargaTrabajo()
+activate Service
+Service -> Repo: findAll()
+activate Repo
+Repo -> DB: SELECT * FROM investigadores
+activate DB
+DB --> Repo: List<Investigador>
+deactivate DB
+Repo --> Service: List<Investigador>
+deactivate Repo
+Service --> Controller: List<Investigador>
+deactivate Service
+Controller --> View: carga-trabajo.html + List<Investigador>
+deactivate Controller
+View --> Coordinador: Muestra lista con disponibilidad y carga
+deactivate View
+
+== Filtrado ==
+
+Coordinador -> View: Introduce criterio de búsqueda
+activate View
+View -> Controller: GET /carga-trabajo?criterio=
+activate Controller
+Controller -> Service: filtrarCargaTrabajo(criterio)
+activate Service
+Service -> Repo: buscarPorCriterio(criterio)
+activate Repo
+Repo -> DB: SELECT * FROM investigadores\nWHERE nombre LIKE ? OR disponibilidad = ?
+activate DB
+DB --> Repo: List<Investigador>
+deactivate DB
+Repo --> Service: List<Investigador>
+deactivate Repo
+Service --> Controller: List<Investigador>
+deactivate Service
+Controller --> View: carga-trabajo.html + List<Investigador>
+deactivate Controller
+View --> Coordinador: Muestra lista filtrada
+deactivate View
+
+@enduml
