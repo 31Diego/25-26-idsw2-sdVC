@@ -5,8 +5,8 @@
 - **Proyecto**: FUNIBER GIPF - Plataforma Interna de Investigación
 - **Fase**: Análisis
 - **Disciplina**: Análisis y Diseño
-- **Versión**: 1.0
-- **Fecha**: 2026-05-23
+- **Versión**: 1.1
+- **Fecha**: 2026-05-31
 - **Autor**: Diego Martínez
 
 ## propósito
@@ -25,56 +25,39 @@ Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón 
 
 ## clases de análisis identificadas
 
-### clases de vista (boundary)
-
-#### CerrarSesionView
-**Estereotipo**: Vista (Boundary)  
-**Responsabilidades**:
-- Mostrar confirmación de cierre de sesión al Coordinador
-- Invocar la confirmación de cierre en el controlador
-- Redirigir a la pantalla de sesión cerrada o cancelar el cierre
-
-**Colaboraciones**:
-- **Entrada**: Recibe `cerrarSesion()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Control**: Se comunica con `SesionController`
-- **Salida**: Navega a `:SESION_CERRADA` o vuelve a `:PANEL_PRINCIPAL_ABIERTO`
-
 ### clases de control
 
 #### SesionController
 **Estereotipo**: Control  
 **Responsabilidades**:
 - Coordinar el proceso de cierre de sesión
-- Confirmar la intención del Coordinador antes de proceder
-- Invalidar la sesión activa
+- Invalidar la sesión activa del Coordinador
+- Redirigir al estado de sesión cerrada
 
 **Colaboraciones**:
-- **Vista**: Responde a solicitudes de `CerrarSesionView`
+- **Entrada**: Recibe `cerrarSesion()` desde `:PANEL_PRINCIPAL_ABIERTO`
+- **Salida**: Navega a `:SESION_CERRADA`
 
 ## flujo de colaboración
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `CerrarSesionView.cerrarSesion()`
-2. **Confirmación**: `CerrarSesionView` → `SesionController.confirmarCierre()` : `boolean`
-3. **Cierre**: `CerrarSesionView` → `:SESION_CERRADA.sesionCerrada()`
-4. **Cancelación**: `CerrarSesionView` → `:PANEL_PRINCIPAL_ABIERTO.cierreCancelado()`
+1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `SesionController.cerrarSesion()`
+2. **Cierre**: `SesionController` invalida la sesión activa
+3. **Redirección**: `SesionController` → `:SESION_CERRADA.sesionCerrada()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Solicitar confirmación de cierre|`CerrarSesionView`|Muestra diálogo de confirmación|
-|Procesar cierre de sesión|`SesionController`|`confirmarCierre()`|
-|Redirigir al estado cerrado|`CerrarSesionView`|→ `:SESION_CERRADA`|
-|Cancelar cierre|`CerrarSesionView`|→ `:PANEL_PRINCIPAL_ABIERTO`|
+|Cerrar la sesión activa|`SesionController`|`cerrarSesion()`|
+|Redirigir al estado cerrado|`SesionController`|→ `:SESION_CERRADA`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del diálogo e interacción con el Coordinador
-- **Control**: Solo coordinación del proceso de cierre de sesión
+- **Control**: Coordina el cierre de sesión sin necesidad de vista propia — la acción se dispara directamente desde el panel principal
 
 ### agnóstico tecnológicamente
 
@@ -90,7 +73,7 @@ Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón 
 ## patrones aplicados
 
 ### mvc pattern
-Separación clara entre presentación (`CerrarSesionView`) y lógica de aplicación (`SesionController`). No se requiere entidad ya que no se accede a datos persistentes.
+Solo interviene la clase de control `SesionController`. No se requiere vista propia (acción directa desde el panel) ni entidad (no se accede a datos persistentes).
 
 ## referencias
 

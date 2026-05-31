@@ -6,8 +6,8 @@ rectangle #CDEBA5 ":SESION_CERRADA" as SesionCerrada
 package iniciarSesion as "iniciarSesion()" {
     rectangle #629EF9 IniciarSesionView
     rectangle #b5bd68 AutenticacionController
-    rectangle #F2AC4E UsuarioRepository
-    rectangle #F2AC4E Usuario
+    rectangle #F2AC4E InvestigadorRepository
+    rectangle #F2AC4E Investigador
 }
 
 rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
@@ -16,9 +16,9 @@ SesionCerrada -r-> IniciarSesionView: iniciarSesion()
 
 IniciarSesionView -d-> AutenticacionController: autenticar(usuario, contrasena) : boolean
 
-AutenticacionController --> UsuarioRepository: buscarPorCredenciales(usuario, contrasena) : Usuario
+AutenticacionController --> InvestigadorRepository: buscarPorCredenciales(usuario, contrasena) : Investigador
 
-UsuarioRepository -- Usuario
+InvestigadorRepository -- Investigador
 
 IniciarSesionView ..> PanelPrincipal: sesionIniciada()
 IniciarSesionView ..> IniciarSesionView: credencialesIncorrectas()

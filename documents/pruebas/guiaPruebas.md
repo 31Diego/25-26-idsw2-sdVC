@@ -20,7 +20,7 @@ Antes de probar cualquier caso de uso:
 | # | Acción | Resultado esperado |
 |-|-|-|
 | 1 | Navegar a `http://localhost:8080/convocatorias` sin sesión | Redirige a `/login` |
-| 2 | Introducir `admin` / `1234` y pulsar Entrar | Redirige a `/panel` (404 hasta implementarlo) |
+| 2 | Introducir `admin` / `1234` y pulsar Entrar | Redirige a `/panel` |
 | 3 | Introducir usuario incorrecto | Vuelve a `/login` con mensaje de error |
 | 4 | Introducir contraseña incorrecta | Vuelve a `/login` con mensaje de error |
 | 5 | Dejar usuario vacío | Vuelve a `/login` con mensaje de error |
@@ -30,14 +30,7 @@ Antes de probar cualquier caso de uso:
 
 ### abrirConvocatorias
 
-Preparación — insertar datos en H2 console:
-```sql
-INSERT INTO convocatorias (titulo, area, estado, fecha_inicio, fecha_fin, descripcion)
-VALUES ('Horizonte Europa 2026', 'Ciencias', 'Abierta', '2026-01-01', '2026-12-31', 'Financiación europea.');
-
-INSERT INTO convocatorias (titulo, area, estado, fecha_inicio, fecha_fin, descripcion)
-VALUES ('Convocatoria Salud', 'Salud', 'Cerrada', '2025-01-01', '2025-06-30', 'Investigación sanitaria.');
-```
+Preparación — el DataLoader carga 5 convocatorias automáticamente al arrancar.
 
 | # | Acción | Resultado esperado |
 |-|-|-|
@@ -82,7 +75,7 @@ Preparación — necesita datos del paso anterior.
 |-|-|-|
 | 1 | Iniciar sesión con `admin` / `1234` | Redirige a `/panel` con el menú de navegación |
 | 2 | Navegar directamente a `/panel` con sesión activa | Muestra el panel |
-| 3 | Verificar que aparecen todos los enlaces (Proyectos, Convocatorias, etc.) | Todos visibles |
+| 3 | Verificar que aparecen los enlaces (Proyectos, Investigadores, Convocatorias, Recompensas, Publicaciones) | Todos visibles |
 | 4 | Verificar que aparece el enlace "Cerrar sesión" | Visible y lleva a `/cerrar-sesion` |
 | 5 | Click en "Convocatorias" | Navega a `/convocatorias` |
 
