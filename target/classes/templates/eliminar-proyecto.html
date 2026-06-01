@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Eliminar proyecto</title>
+</head>
+<body>
+
+<h1>Eliminar proyecto</h1>
+
+<p>¿Está seguro de que desea eliminar el siguiente proyecto?</p>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Título</th>
+        <td th:text="${proyecto.titulo}"></td>
+    </tr>
+    <tr>
+        <th>Estado</th>
+        <td th:text="${proyecto.estado}"></td>
+    </tr>
+    <tr>
+        <th>Fecha inicio</th>
+        <td th:text="${proyecto.fechaInicio}"></td>
+    </tr>
+    <tr>
+        <th>Fecha fin</th>
+        <td th:text="${proyecto.fechaFin}"></td>
+    </tr>
+</table>
+
+<br>
+
+<form th:action="@{/proyectos/{id}/eliminar(id=${proyecto.id})}" method="post">
+    <button type="submit">Confirmar eliminación</button>
+</form>
+
+<a th:href="@{/proyectos/{id}(id=${proyecto.id})}">Cancelar</a>
+
+</body>
+</html>

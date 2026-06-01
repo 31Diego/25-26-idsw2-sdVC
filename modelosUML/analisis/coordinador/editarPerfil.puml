@@ -20,6 +20,8 @@ PerfilController --> InvestigadorRepository: obtenerPorId(id) : Investigador
 
 InvestigadorRepository -- Investigador
 
+EditarPerfilView --> PerfilController: modificarCampos(datos) : void
+
 EditarPerfilView --> PerfilController: guardarPerfil(datos) : Investigador
 
 PerfilController --> InvestigadorRepository: actualizar(investigador) : Investigador

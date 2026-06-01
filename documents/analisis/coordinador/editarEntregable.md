@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `editarEntregable()` mediante el patr
 
 <div align=center>
 
-|![Análisis: editarEntregable()](/images/analisis/editarEntregable-analisis.svg)|
+|![Análisis: editarEntregable()](../../../images/analisis/editarEntregable-analisis.svg)|
 |-|
-|Código fuente: [editarEntregable.puml](editarEntregable.puml)|
+|Código fuente: [editarEntregable.puml](../../../modelosUML/analisis/coordinador/editarEntregable.puml)|
 
 </div>
 

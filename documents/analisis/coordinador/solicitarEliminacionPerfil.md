@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `solicitarEliminacionPerfil()` median
 
 <div align=center>
 
-|![Análisis: solicitarEliminacionPerfil()](/images/analisis/solicitarEliminacionPerfil-analisis.svg)|
+|![Análisis: solicitarEliminacionPerfil()](../../../images/analisis/solicitarEliminacionPerfil-analisis.svg)|
 |-|
-|Código fuente: [solicitarEliminacionPerfil.puml](solicitarEliminacionPerfil.puml)|
+|Código fuente: [solicitarEliminacionPerfil.puml](../../../modelosUML/analisis/coordinador/solicitarEliminacionPerfil.puml)|
 
 </div>
 

@@ -21,6 +21,8 @@ CargaTrabajoController --> InvestigadorRepository: obtenerPorId(id) : Investigad
 
 InvestigadorRepository -- Investigador
 
+EditarCargaTrabajoView --> CargaTrabajoController: modificarCampos(datos) : void
+
 EditarCargaTrabajoView --> CargaTrabajoController: guardarCargaTrabajo(datos) : Investigador
 
 CargaTrabajoController --> InvestigadorRepository: actualizar(investigador) : Investigador

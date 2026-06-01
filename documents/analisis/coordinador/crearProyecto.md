@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `crearProyecto()` mediante el patrón
 
 <div align=center>
 
-|![Análisis: crearProyecto()](/images/analisis/crearProyecto-analisis.svg)|
+|![Análisis: crearProyecto()](../../../images/analisis/crearProyecto-analisis.svg)|
 |-|
-|Código fuente: [crearProyecto.puml](crearProyecto.puml)|
+|Código fuente: [crearProyecto.puml](../../../modelosUML/analisis/coordinador/crearProyecto.puml)|
 
 </div>
 

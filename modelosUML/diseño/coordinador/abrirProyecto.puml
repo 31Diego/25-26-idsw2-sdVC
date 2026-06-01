@@ -1,0 +1,28 @@
+@startuml abrirProyecto-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "ProyectoController\n@Controller\nGET /proyectos/{id}" as Ctrl
+participant "ProyectoService\n@Service" as Service
+participant "ProyectoRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Ctrl : GET /proyectos/{id}
+activate Ctrl
+
+Ctrl -> Service : obtenerProyecto(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM proyectos WHERE id = ?
+DB --> Repo : Proyecto
+deactivate Repo
+Repo --> Service : Optional<Proyecto>
+deactivate Service
+Service --> Ctrl : Proyecto
+
+Ctrl -> Ctrl : model.addAttribute("proyecto", proyecto)
+Ctrl --> Coord : 200 OK · proyecto.html
+deactivate Ctrl
+
+@enduml

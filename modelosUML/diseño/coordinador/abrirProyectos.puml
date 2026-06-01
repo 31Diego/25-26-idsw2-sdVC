@@ -1,0 +1,41 @@
+@startuml abrirProyectos-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "ProyectosController\n@Controller\nGET /proyectos" as Ctrl
+participant "ProyectosService\n@Service" as Service
+participant "ProyectoRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Ctrl : GET /proyectos
+activate Ctrl
+
+alt sin filtro
+    Ctrl -> Service : obtenerProyectos()
+    activate Service
+    Service -> Repo : findAll()
+    activate Repo
+    Repo -> DB : SELECT * FROM proyectos
+    DB --> Repo : List<Proyecto>
+    deactivate Repo
+    Repo --> Service : List<Proyecto>
+    deactivate Service
+    Service --> Ctrl : List<Proyecto>
+else con filtro (?criterio=...)
+    Ctrl -> Service : filtrarProyectos(criterio)
+    activate Service
+    Service -> Repo : buscarPorCriterio(criterio)
+    activate Repo
+    Repo -> DB : SELECT ... WHERE titulo LIKE %criterio%
+    DB --> Repo : List<Proyecto>
+    deactivate Repo
+    Repo --> Service : List<Proyecto>
+    deactivate Service
+    Service --> Ctrl : List<Proyecto>
+end
+
+Ctrl -> Ctrl : model.addAttribute("proyectos", lista)
+Ctrl --> Coord : 200 OK · proyectos.html
+deactivate Ctrl
+
+@enduml

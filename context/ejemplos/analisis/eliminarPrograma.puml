@@ -1,0 +1,30 @@
+@startuml eliminarPrograma-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":Programas Abierto" as ProgramasAbierto
+rectangle #CDEBA5 ":Programa Abierto" as ProgramaAbierto
+rectangle #CDEBA5 ":Collaboration AbrirProgramas" as AbrirProgramas
+
+package eliminarPrograma as "eliminarPrograma()" {
+    rectangle #629EF9 EliminarProgramaView
+    rectangle #b5bd68 ProgramaController
+    rectangle #F2AC4E ProgramaRepository
+    rectangle #F2AC4E Programa
+}
+
+ProgramasAbierto --> EliminarProgramaView: eliminarPrograma(programaId)
+ProgramaAbierto --> EliminarProgramaView: eliminarPrograma(programaId)
+
+EliminarProgramaView -d-> ProgramaController: cargarProgramaParaEliminacion(programaId) : Programa
+
+ProgramaController --> ProgramaRepository: obtenerPorId(programaId) : Programa
+
+ProgramaRepository -- Programa
+
+EliminarProgramaView --> ProgramaController: eliminarPrograma(programaId) : void
+
+ProgramaController --> ProgramaRepository: eliminar(programaId) : void
+
+EliminarProgramaView ..> AbrirProgramas: <<include>> abrirProgramas()
+
+@enduml

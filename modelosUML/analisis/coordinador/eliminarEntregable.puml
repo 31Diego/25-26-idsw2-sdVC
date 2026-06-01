@@ -14,11 +14,15 @@ rectangle #CDEBA5 ":ENTREGABLES_ABIERTOS" as EntregablesSalida
 
 EntregableAbierto -r-> EliminarEntregableView: eliminarEntregable()
 
-EliminarEntregableView -d-> EntregableController: eliminarEntregable(id) : void
+EliminarEntregableView -d-> EntregableController: cargarEntregableParaEliminacion(id) : Entregable
 
-EntregableController --> EntregableRepository: eliminarPorId(id) : void
+EntregableController --> EntregableRepository: obtenerPorId(id) : Entregable
 
 EntregableRepository -- Entregable
+
+EliminarEntregableView --> EntregableController: eliminarEntregable(id) : void
+
+EntregableController --> EntregableRepository: eliminarPorId(id) : void
 
 EliminarEntregableView ..> EntregablesSalida: abrirEntregables()
 

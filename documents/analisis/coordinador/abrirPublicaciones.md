@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `abrirPublicaciones()` mediante el pa
 
 <div align=center>
 
-|![Análisis: abrirPublicaciones()](/images/analisis/abrirPublicaciones-analisis.svg)|
+|![Análisis: abrirPublicaciones()](../../../images/analisis/abrirPublicaciones-analisis.svg)|
 |-|
-|Código fuente: [abrirPublicaciones.puml](abrirPublicaciones.puml)|
+|Código fuente: [abrirPublicaciones.puml](../../../modelosUML/analisis/coordinador/abrirPublicaciones.puml)|
 
 </div>
 

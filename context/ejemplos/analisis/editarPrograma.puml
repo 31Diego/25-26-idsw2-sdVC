@@ -1,0 +1,33 @@
+@startuml editarPrograma-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":Programas Abierto" as ProgramasAbierto
+rectangle #CDEBA5 ":Collaboration CrearPrograma" as CrearPrograma
+rectangle #CDEBA5 ":Programas Abierto" as ProgramasAbiertoSalida
+
+package editarPrograma as "editarPrograma()" {
+    rectangle #629EF9 EditarProgramaView
+    rectangle #b5bd68 ProgramaController
+    rectangle #F2AC4E ProgramaRepository
+    rectangle #F2AC4E Programa
+}
+
+
+ProgramasAbierto --> EditarProgramaView: editarPrograma(programaId)
+CrearPrograma --> EditarProgramaView: editarPrograma(programaNuevo)
+
+EditarProgramaView -d-> ProgramaController: cargarPrograma(programaId) : Programa
+
+ProgramaController --> ProgramaRepository: obtenerPorId(programaId) : Programa
+
+ProgramaRepository -- Programa
+
+EditarProgramaView --> ProgramaController: modificarCampos(programa) : void
+
+EditarProgramaView --> ProgramaController: guardarPrograma(programa) : void
+
+ProgramaController --> ProgramaRepository: actualizar(programa) : void
+
+EditarProgramaView ..> ProgramasAbiertoSalida: abrirProgramas()
+
+@enduml

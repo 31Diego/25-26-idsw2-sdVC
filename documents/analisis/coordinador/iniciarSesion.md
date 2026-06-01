@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón
 
 <div align=center>
 
-|![Análisis: iniciarSesion()](/images/analisis/iniciarSesion-analisis.svg)|
+|![Análisis: iniciarSesion()](../../../images/analisis/iniciarSesion-analisis.svg)|
 |-|
-|Código fuente: [iniciarSesion.puml](iniciarSesion.puml)|
+|Código fuente: [iniciarSesion.puml](../../../modelosUML/analisis/coordinador/iniciarSesion.puml)|
 
 </div>
 

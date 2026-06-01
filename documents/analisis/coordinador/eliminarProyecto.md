@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `eliminarProyecto()` mediante el patr
 
 <div align=center>
 
-|![Análisis: eliminarProyecto()](/images/analisis/eliminarProyecto-analisis.svg)|
+|![Análisis: eliminarProyecto()](../../../images/analisis/eliminarProyecto-analisis.svg)|
 |-|
-|Código fuente: [eliminarProyecto.puml](eliminarProyecto.puml)|
+|Código fuente: [eliminarProyecto.puml](../../../modelosUML/analisis/coordinador/eliminarProyecto.puml)|
 
 </div>
 

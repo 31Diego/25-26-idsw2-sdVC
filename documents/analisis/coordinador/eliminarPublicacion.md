@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `eliminarPublicacion()` mediante el p
 
 <div align=center>
 
-|![Análisis: eliminarPublicacion()](/images/analisis/eliminarPublicacion-analisis.svg)|
+|![Análisis: eliminarPublicacion()](../../../images/analisis/eliminarPublicacion-analisis.svg)|
 |-|
-|Código fuente: [eliminarPublicacion.puml](eliminarPublicacion.puml)|
+|Código fuente: [eliminarPublicacion.puml](../../../modelosUML/analisis/coordinador/eliminarPublicacion.puml)|
 
 </div>
 

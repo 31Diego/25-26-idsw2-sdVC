@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Proyecto</title>
+</head>
+<body>
+
+<h1 th:text="${proyecto.titulo}">Título del proyecto</h1>
+
+<p><strong>Estado:</strong> <span th:text="${proyecto.estado}"></span></p>
+<p><strong>Fecha inicio:</strong> <span th:text="${proyecto.fechaInicio}"></span></p>
+<p><strong>Fecha fin:</strong> <span th:text="${proyecto.fechaFin}"></span></p>
+
+<h3>Descripción</h3>
+<p th:text="${proyecto.descripcion}"></p>
+
+<h3>Objetivos</h3>
+<p th:text="${proyecto.objetivos}"></p>
+
+<th:block th:if="${proyecto.documentacion != null and !proyecto.documentacion.isBlank()}">
+    <p><strong>Documentación:</strong> <span th:text="${proyecto.documentacion}"></span></p>
+</th:block>
+
+<br>
+<a th:href="@{/proyectos/{id}/editar(id=${proyecto.id})}">Editar</a> |
+<a th:href="@{/proyectos/{id}/eliminar(id=${proyecto.id})}">Eliminar</a> |
+<a th:href="@{/proyectos/{id}/entregables(id=${proyecto.id})}">Entregables</a> |
+<a th:href="@{/proyectos/{id}/investigadores(id=${proyecto.id})}">Investigadores</a> |
+<a th:href="@{/proyectos/{id}/investigadores/agregar(id=${proyecto.id})}">Agregar investigador</a>
+<br><br>
+<a th:href="@{/proyectos}">Volver a proyectos</a>
+
+</body>
+</html>

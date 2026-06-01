@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `abrirOpcionesPerfilInvestigador(inve
 
 <div align=center>
 
-|![Análisis: abrirOpcionesPerfilInvestigador()](/images/analisis/abrirOpcionesPerfilInvestigador-analisis.svg)|
+|![Análisis: abrirOpcionesPerfilInvestigador()](../../../images/analisis/abrirOpcionesPerfilInvestigador-analisis.svg)|
 |-|
-|Código fuente: [abrirOpcionesPerfilInvestigador.puml](abrirOpcionesPerfilInvestigador.puml)|
+|Código fuente: [abrirOpcionesPerfilInvestigador.puml](../../../modelosUML/analisis/coordinador/abrirOpcionesPerfilInvestigador.puml)|
 
 </div>
 

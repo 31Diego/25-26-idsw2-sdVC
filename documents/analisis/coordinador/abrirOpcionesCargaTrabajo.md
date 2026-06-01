@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `abrirOpcionesCargaTrabajo()` mediant
 
 <div align=center>
 
-|![Análisis: abrirOpcionesCargaTrabajo()](/images/analisis/abrirOpcionesCargaTrabajo-analisis.svg)|
+|![Análisis: abrirOpcionesCargaTrabajo()](../../../images/analisis/abrirOpcionesCargaTrabajo-analisis.svg)|
 |-|
-|Código fuente: [abrirOpcionesCargaTrabajo.puml](abrirOpcionesCargaTrabajo.puml)|
+|Código fuente: [abrirOpcionesCargaTrabajo.puml](../../../modelosUML/analisis/coordinador/abrirOpcionesCargaTrabajo.puml)|
 
 </div>
 

@@ -20,6 +20,8 @@ ProyectoController --> ProyectoRepository: obtenerPorId(id) : Proyecto
 
 ProyectoRepository -- Proyecto
 
+EditarProyectoView --> ProyectoController: modificarCampos(datos) : void
+
 EditarProyectoView --> ProyectoController: guardarProyecto(datos) : Proyecto
 
 ProyectoController --> ProyectoRepository: actualizar(proyecto) : Proyecto

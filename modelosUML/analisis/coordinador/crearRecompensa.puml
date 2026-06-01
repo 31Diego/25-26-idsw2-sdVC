@@ -14,7 +14,9 @@ rectangle #CDEBA5 ":RECOMPENSAS_ABIERTAS" as RecompensasSalida
 
 RecompensasAbiertas -r-> CrearRecompensaView: crearRecompensa()
 
-CrearRecompensaView -d-> RecompensaController: guardarRecompensa(datos) : Recompensa
+CrearRecompensaView -d-> RecompensaController: validarDatos(datos) : boolean
+
+CrearRecompensaView --> RecompensaController: guardarRecompensa(datos) : Recompensa
 
 RecompensaController --> RecompensaRepository: crear(recompensa) : Recompensa
 

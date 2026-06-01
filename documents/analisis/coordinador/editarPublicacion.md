@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `editarPublicacion()` mediante el pat
 
 <div align=center>
 
-|![Análisis: editarPublicacion()](/images/analisis/editarPublicacion-analisis.svg)|
+|![Análisis: editarPublicacion()](../../../images/analisis/editarPublicacion-analisis.svg)|
 |-|
-|Código fuente: [editarPublicacion.puml](editarPublicacion.puml)|
+|Código fuente: [editarPublicacion.puml](../../../modelosUML/analisis/coordinador/editarPublicacion.puml)|
 
 </div>
 

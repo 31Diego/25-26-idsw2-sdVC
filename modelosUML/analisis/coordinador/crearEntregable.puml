@@ -14,7 +14,9 @@ rectangle #CDEBA5 ":ENTREGABLES_ABIERTOS" as EntregablesSalida
 
 EntregablesAbiertos -r-> CrearEntregableView: crearEntregable()
 
-CrearEntregableView -d-> EntregableController: guardarEntregable(datos) : Entregable
+CrearEntregableView -d-> EntregableController: validarDatos(datos) : boolean
+
+CrearEntregableView --> EntregableController: guardarEntregable(datos) : Entregable
 
 EntregableController --> EntregableRepository: crear(entregable) : Entregable
 

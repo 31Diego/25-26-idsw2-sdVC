@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón 
 
 <div align=center>
 
-|![Análisis: cerrarSesion()](/images/analisis/cerrarSesion-analisis.svg)|
+|![Análisis: cerrarSesion()](../../../images/analisis/cerrarSesion-analisis.svg)|
 |-|
-|Código fuente: [cerrarSesion.puml](cerrarSesion.puml)|
+|Código fuente: [cerrarSesion.puml](../../../modelosUML/analisis/coordinador/cerrarSesion.puml)|
 
 </div>
 

@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `eliminarInvestigador()` mediante el 
 
 <div align=center>
 
-|![Análisis: eliminarInvestigador()](/images/analisis/eliminarInvestigador-analisis.svg)|
+|![Análisis: eliminarInvestigador()](../../../images/analisis/eliminarInvestigador-analisis.svg)|
 |-|
-|Código fuente: [eliminarInvestigador.puml](eliminarInvestigador.puml)|
+|Código fuente: [eliminarInvestigador.puml](../../../modelosUML/analisis/coordinador/eliminarInvestigador.puml)|
 
 </div>
 

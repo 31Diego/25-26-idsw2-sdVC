@@ -20,6 +20,8 @@ PublicacionController --> PublicacionRepository: obtenerPorId(id) : Publicacion
 
 PublicacionRepository -- Publicacion
 
+EditarMiPublicacionView --> PublicacionController: modificarCampos(datos) : void
+
 EditarMiPublicacionView --> PublicacionController: guardarPublicacion(datos) : Publicacion
 
 PublicacionController --> PublicacionRepository: actualizar(publicacion) : Publicacion

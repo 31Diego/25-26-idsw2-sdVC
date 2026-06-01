@@ -14,11 +14,15 @@ rectangle #CDEBA5 ":RECOMPENSAS_ABIERTAS" as RecompensasSalida
 
 RecompensaAbierta -r-> EliminarRecompensaView: eliminarRecompensa()
 
-EliminarRecompensaView -d-> RecompensaController: eliminarRecompensa(id) : void
+EliminarRecompensaView -d-> RecompensaController: cargarRecompensaParaEliminacion(id) : Recompensa
 
-RecompensaController --> RecompensaRepository: eliminarPorId(id) : void
+RecompensaController --> RecompensaRepository: obtenerPorId(id) : Recompensa
 
 RecompensaRepository -- Recompensa
+
+EliminarRecompensaView --> RecompensaController: eliminarRecompensa(id) : void
+
+RecompensaController --> RecompensaRepository: eliminarPorId(id) : void
 
 EliminarRecompensaView ..> RecompensasSalida: abrirRecompensas()
 

@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `abrirConvocatoria()` mediante el pat
 
 <div align=center>
 
-|![Análisis: abrirConvocatoria()](/images/analisis/abrirConvocatoria-analisis.svg)|
+|![Análisis: abrirConvocatoria()](../../../images/analisis/abrirConvocatoria-analisis.svg)|
 |-|
-|Código fuente: [abrirConvocatoria.puml](abrirConvocatoria.puml)|
+|Código fuente: [abrirConvocatoria.puml](../../../modelosUML/analisis/coordinador/abrirConvocatoria.puml)|
 
 </div>
 

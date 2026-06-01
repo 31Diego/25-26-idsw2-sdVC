@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `crearRecompensa()` mediante el patr�
 
 <div align=center>
 
-|![Análisis: crearRecompensa()](/images/analisis/crearRecompensa-analisis.svg)|
+|![Análisis: crearRecompensa()](../../../images/analisis/crearRecompensa-analisis.svg)|
 |-|
-|Código fuente: [crearRecompensa.puml](crearRecompensa.puml)|
+|Código fuente: [crearRecompensa.puml](../../../modelosUML/analisis/coordinador/crearRecompensa.puml)|
 
 </div>
 

@@ -20,6 +20,8 @@ EntregableController --> EntregableRepository: obtenerPorId(id) : Entregable
 
 EntregableRepository -- Entregable
 
+EditarEntregableView --> EntregableController: modificarCampos(datos) : void
+
 EditarEntregableView --> EntregableController: guardarEntregable(datos) : Entregable
 
 EntregableController --> EntregableRepository: actualizar(entregable) : Entregable

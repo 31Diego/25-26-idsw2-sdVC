@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `crearInvestigador()` mediante el pat
 
 <div align=center>
 
-|![Análisis: crearInvestigador()](/images/analisis/crearInvestigador-analisis.svg)|
+|![Análisis: crearInvestigador()](../../../images/analisis/crearInvestigador-analisis.svg)|
 |-|
-|Código fuente: [crearInvestigador.puml](crearInvestigador.puml)|
+|Código fuente: [crearInvestigador.puml](../../../modelosUML/analisis/coordinador/crearInvestigador.puml)|
 
 </div>
 

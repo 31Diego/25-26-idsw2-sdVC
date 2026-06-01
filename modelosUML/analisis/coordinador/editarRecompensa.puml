@@ -20,6 +20,8 @@ RecompensaController --> RecompensaRepository: obtenerPorId(id) : Recompensa
 
 RecompensaRepository -- Recompensa
 
+EditarRecompensaView --> RecompensaController: modificarCampos(datos) : void
+
 EditarRecompensaView --> RecompensaController: guardarRecompensa(datos) : Recompensa
 
 RecompensaController --> RecompensaRepository: actualizar(recompensa) : Recompensa

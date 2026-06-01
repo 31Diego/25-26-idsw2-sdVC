@@ -14,11 +14,15 @@ rectangle #CDEBA5 ":PROYECTOS_ABIERTOS" as ProyectosSalida
 
 ProyectoAbierto -r-> EliminarProyectoView: eliminarProyecto()
 
-EliminarProyectoView -d-> ProyectoController: eliminarProyecto(id) : void
+EliminarProyectoView -d-> ProyectoController: cargarProyectoParaEliminacion(id) : Proyecto
 
-ProyectoController --> ProyectoRepository: eliminarPorId(id) : void
+ProyectoController --> ProyectoRepository: obtenerPorId(id) : Proyecto
 
 ProyectoRepository -- Proyecto
+
+EliminarProyectoView --> ProyectoController: eliminarProyecto(id) : void
+
+ProyectoController --> ProyectoRepository: eliminarPorId(id) : void
 
 EliminarProyectoView ..> ProyectosSalida: abrirProyectos()
 

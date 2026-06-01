@@ -15,7 +15,9 @@ rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
 
 ProyectosAbiertos -r-> CrearProyectoView: crearProyecto()
 
-CrearProyectoView -d-> ProyectoController: guardarProyecto(datos) : Proyecto
+CrearProyectoView -d-> ProyectoController: validarDatos(datos) : boolean
+
+CrearProyectoView --> ProyectoController: guardarProyecto(datos) : Proyecto
 
 ProyectoController --> ProyectoRepository: crear(proyecto) : Proyecto
 

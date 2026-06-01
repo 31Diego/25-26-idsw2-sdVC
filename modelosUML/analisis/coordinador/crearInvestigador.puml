@@ -15,7 +15,11 @@ rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
 
 InvestigadoresAbiertos -r-> CrearInvestigadorView: crearInvestigador()
 
-CrearInvestigadorView -d-> InvestigadorController: guardarInvestigador(datos) : Investigador
+CrearInvestigadorView -d-> InvestigadorController: validarDatos(datos) : boolean
+
+InvestigadorController --> InvestigadorRepository: verificarUnicidad(username) : boolean
+
+CrearInvestigadorView --> InvestigadorController: guardarInvestigador(datos) : Investigador
 
 InvestigadorController --> InvestigadorRepository: crear(investigador) : Investigador
 

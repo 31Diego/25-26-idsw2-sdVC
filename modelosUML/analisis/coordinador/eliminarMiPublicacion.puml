@@ -14,11 +14,15 @@ rectangle #CDEBA5 ":MIS_PUBLICACIONES_ABIERTAS" as MisPublicacionesSalida
 
 MiPublicacionAbierta -r-> EliminarMiPublicacionView: eliminarMiPublicacion()
 
-EliminarMiPublicacionView -d-> PublicacionController: eliminarPublicacion(id) : void
+EliminarMiPublicacionView -d-> PublicacionController: cargarPublicacionParaEliminacion(id) : Publicacion
 
-PublicacionController --> PublicacionRepository: eliminarPorId(id) : void
+PublicacionController --> PublicacionRepository: obtenerPorId(id) : Publicacion
 
 PublicacionRepository -- Publicacion
+
+EliminarMiPublicacionView --> PublicacionController: eliminarPublicacion(id) : void
+
+PublicacionController --> PublicacionRepository: eliminarPorId(id) : void
 
 EliminarMiPublicacionView ..> MisPublicacionesSalida: abrirMisPublicaciones()
 

@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el pa
 
 <div align=center>
 
-|![Análisis: eliminarEntregable()](/images/analisis/eliminarEntregable-analisis.svg)|
+|![Análisis: eliminarEntregable()](../../../images/analisis/eliminarEntregable-analisis.svg)|
 |-|
-|Código fuente: [eliminarEntregable.puml](eliminarEntregable.puml)|
+|Código fuente: [eliminarEntregable.puml](../../../modelosUML/analisis/coordinador/eliminarEntregable.puml)|
 
 </div>
 

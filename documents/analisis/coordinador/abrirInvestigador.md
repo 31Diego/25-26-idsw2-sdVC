@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el pat
 
 <div align=center>
 
-|![Análisis: abrirInvestigador()](/images/analisis/abrirInvestigador-analisis.svg)|
+|![Análisis: abrirInvestigador()](../../../images/analisis/abrirInvestigador-analisis.svg)|
 |-|
-|Código fuente: [abrirInvestigador.puml](abrirInvestigador.puml)|
+|Código fuente: [abrirInvestigador.puml](../../../modelosUML/analisis/coordinador/abrirInvestigador.puml)|
 
 </div>
 

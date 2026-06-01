@@ -8,17 +8,25 @@ package eliminarInvestigador as "eliminarInvestigador()" {
     rectangle #b5bd68 ProyectoController
     rectangle #F2AC4E InvestigadorRepository
     rectangle #F2AC4E Investigador
+    rectangle #F2AC4E ProyectoRepository
+    rectangle #F2AC4E Proyecto
 }
 
 rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoSalida
 
 ProyectoAbierto -r-> EliminarInvestigadorView: eliminarInvestigador()
 
-EliminarInvestigadorView -d-> ProyectoController: eliminarInvestigador(idProyecto, idInvestigador) : void
+EliminarInvestigadorView -d-> ProyectoController: cargarInvestigadorParaEliminacion(idInvestigador) : Investigador
 
-ProyectoController --> InvestigadorRepository: obtenerPorId(id) : Investigador
+ProyectoController --> InvestigadorRepository: obtenerPorId(idInvestigador) : Investigador
 
 InvestigadorRepository -- Investigador
+
+EliminarInvestigadorView --> ProyectoController: eliminarInvestigador(idProyecto, idInvestigador) : void
+
+ProyectoController --> ProyectoRepository: eliminarInvestigador(idProyecto, idInvestigador) : void
+
+ProyectoRepository -- Proyecto
 
 EliminarInvestigadorView ..> ProyectoSalida: investigadorEliminado()
 

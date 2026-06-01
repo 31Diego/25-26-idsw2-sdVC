@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `editarProyecto()` mediante el patró
 
 <div align=center>
 
-|![Análisis: editarProyecto()](/images/analisis/editarProyecto-analisis.svg)|
+|![Análisis: editarProyecto()](../../../images/analisis/editarProyecto-analisis.svg)|
 |-|
-|Código fuente: [editarProyecto.puml](editarProyecto.puml)|
+|Código fuente: [editarProyecto.puml](../../../modelosUML/analisis/coordinador/editarProyecto.puml)|
 
 </div>
 

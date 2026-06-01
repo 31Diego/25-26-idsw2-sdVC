@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `crearEntregable()` mediante el patr�
 
 <div align=center>
 
-|![Análisis: crearEntregable()](/images/analisis/crearEntregable-analisis.svg)|
+|![Análisis: crearEntregable()](../../../images/analisis/crearEntregable-analisis.svg)|
 |-|
-|Código fuente: [crearEntregable.puml](crearEntregable.puml)|
+|Código fuente: [crearEntregable.puml](../../../modelosUML/analisis/coordinador/crearEntregable.puml)|
 
 </div>
 

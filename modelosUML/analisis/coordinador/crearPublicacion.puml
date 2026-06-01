@@ -15,7 +15,9 @@ rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
 
 MisPublicacionesAbiertas -r-> CrearPublicacionView: crearPublicacion()
 
-CrearPublicacionView -d-> PublicacionController: guardarPublicacion(datos) : Publicacion
+CrearPublicacionView -d-> PublicacionController: validarDatos(datos) : boolean
+
+CrearPublicacionView --> PublicacionController: guardarPublicacion(datos) : Publicacion
 
 PublicacionController --> PublicacionRepository: crear(publicacion) : Publicacion
 

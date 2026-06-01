@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `crearPublicacion()` mediante el patr
 
 <div align=center>
 
-|![Análisis: crearPublicacion()](/images/analisis/crearPublicacion-analisis.svg)|
+|![Análisis: crearPublicacion()](../../../images/analisis/crearPublicacion-analisis.svg)|
 |-|
-|Código fuente: [crearPublicacion.puml](crearPublicacion.puml)|
+|Código fuente: [crearPublicacion.puml](../../../modelosUML/analisis/coordinador/crearPublicacion.puml)|
 
 </div>
 

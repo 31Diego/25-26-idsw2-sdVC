@@ -17,9 +17,9 @@ Análisis de colaboración del caso de uso `abrirRecompensa()` mediante el patr�
 
 <div align=center>
 
-|![Análisis: abrirRecompensa()](/images/analisis/abrirRecompensa-analisis.svg)|
+|![Análisis: abrirRecompensa()](../../../images/analisis/abrirRecompensa-analisis.svg)|
 |-|
-|Código fuente: [abrirRecompensa.puml](abrirRecompensa.puml)|
+|Código fuente: [abrirRecompensa.puml](../../../modelosUML/analisis/coordinador/abrirRecompensa.puml)|
 
 </div>
 
