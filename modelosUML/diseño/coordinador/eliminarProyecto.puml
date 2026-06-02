@@ -2,12 +2,15 @@
 skinparam linetype ortho
 
 actor "Coordinador" as Coord
+participant "Navegador" as Nav
 participant "EliminarProyectoController\n@Controller\nGET|POST /proyectos/{id}/eliminar" as Ctrl
 participant "ProyectoService\n@Service" as Service
 participant "ProyectoRepository\nJpaRepository" as Repo
 database "H2" as DB
 
-Coord -> Ctrl : GET /proyectos/{id}/eliminar
+Coord -> Nav : clic en "Eliminar"
+activate Nav
+Nav -> Ctrl : GET /proyectos/{id}/eliminar
 activate Ctrl
 Ctrl -> Service : obtenerProyecto(id)
 activate Service
@@ -20,10 +23,14 @@ Repo --> Service : Proyecto
 deactivate Service
 Service --> Ctrl : Proyecto
 Ctrl -> Ctrl : model.addAttribute("proyecto", proyecto)
-Ctrl --> Coord : 200 OK · eliminar-proyecto.html [confirmación]
+Ctrl --> Nav : 200 OK · eliminar-proyecto.html [confirmación]
 deactivate Ctrl
+Nav --> Coord : muestra página de confirmación
+deactivate Nav
 
-Coord -> Ctrl : POST /proyectos/{id}/eliminar
+Coord -> Nav : confirma eliminación
+activate Nav
+Nav -> Ctrl : POST /proyectos/{id}/eliminar
 activate Ctrl
 
 Ctrl -> Service : eliminarProyecto(id)
@@ -34,7 +41,9 @@ Repo -> DB : DELETE FROM proyectos WHERE id = ?
 deactivate Repo
 deactivate Service
 
-Ctrl --> Coord : 302 redirect → /proyectos
+Ctrl --> Nav : 302 redirect → /proyectos
 deactivate Ctrl
+Nav --> Coord : navega a /proyectos
+deactivate Nav
 
 @enduml

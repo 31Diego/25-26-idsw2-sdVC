@@ -2,12 +2,15 @@
 skinparam linetype ortho
 
 actor "Coordinador" as Coord
+participant "Navegador" as Nav
 participant "ProyectosController\n@Controller\nGET /proyectos" as Ctrl
 participant "ProyectosService\n@Service" as Service
 participant "ProyectoRepository\nJpaRepository" as Repo
 database "H2" as DB
 
-Coord -> Ctrl : GET /proyectos
+Coord -> Nav : clic en "Proyectos"
+activate Nav
+Nav -> Ctrl : GET /proyectos
 activate Ctrl
 
 alt sin filtro
@@ -35,7 +38,9 @@ else con filtro (?criterio=...)
 end
 
 Ctrl -> Ctrl : model.addAttribute("proyectos", lista)
-Ctrl --> Coord : 200 OK · proyectos.html
+Ctrl --> Nav : 200 OK · proyectos.html
 deactivate Ctrl
+Nav --> Coord : muestra proyectos.html
+deactivate Nav
 
 @enduml

@@ -2,18 +2,25 @@
 skinparam linetype ortho
 
 actor "Coordinador" as Coord
+participant "Navegador" as Nav
 participant "CrearProyectoController\n@Controller\nGET|POST /proyectos/nuevo" as Ctrl
 participant "ProyectoService\n@Service" as Service
 participant "ProyectoRepository\nJpaRepository" as Repo
 database "H2" as DB
 
-Coord -> Ctrl : GET /proyectos/nuevo
+Coord -> Nav : clic en "Nuevo proyecto"
+activate Nav
+Nav -> Ctrl : GET /proyectos/nuevo
 activate Ctrl
 Ctrl -> Ctrl : model.addAttribute("proyecto", new Proyecto())
-Ctrl --> Coord : 200 OK · crear-proyecto.html
+Ctrl --> Nav : 200 OK · crear-proyecto.html
 deactivate Ctrl
+Nav --> Coord : muestra formulario vacío
+deactivate Nav
 
-Coord -> Ctrl : POST /proyectos/nuevo\n[titulo, descripcion, objetivos, estado, fechaInicio, fechaFin]
+Coord -> Nav : envía formulario
+activate Nav
+Nav -> Ctrl : POST /proyectos/nuevo\n[titulo, descripcion, objetivos, estado, fechaInicio, fechaFin]
 activate Ctrl
 
 note over Ctrl : @Valid / validarDatos — \ncampos requeridos en el binding
@@ -29,7 +36,9 @@ Repo --> Service : Proyecto
 deactivate Service
 Service --> Ctrl : Proyecto
 
-Ctrl --> Coord : 302 redirect → /proyectos
+Ctrl --> Nav : 302 redirect → /proyectos
 deactivate Ctrl
+Nav --> Coord : navega a /proyectos
+deactivate Nav
 
 @enduml

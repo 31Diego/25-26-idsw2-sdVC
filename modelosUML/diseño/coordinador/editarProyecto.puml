@@ -2,12 +2,15 @@
 skinparam linetype ortho
 
 actor "Coordinador" as Coord
+participant "Navegador" as Nav
 participant "EditarProyectoController\n@Controller\nGET|POST /proyectos/{id}/editar" as Ctrl
 participant "ProyectoService\n@Service" as Service
 participant "ProyectoRepository\nJpaRepository" as Repo
 database "H2" as DB
 
-Coord -> Ctrl : GET /proyectos/{id}/editar
+Coord -> Nav : clic en "Editar"
+activate Nav
+Nav -> Ctrl : GET /proyectos/{id}/editar
 activate Ctrl
 Ctrl -> Service : obtenerProyecto(id)
 activate Service
@@ -20,10 +23,14 @@ Repo --> Service : Proyecto
 deactivate Service
 Service --> Ctrl : Proyecto
 Ctrl -> Ctrl : model.addAttribute("proyecto", proyecto)
-Ctrl --> Coord : 200 OK · editar-proyecto.html [formulario pre-relleno]
+Ctrl --> Nav : 200 OK · editar-proyecto.html [formulario pre-relleno]
 deactivate Ctrl
+Nav --> Coord : muestra formulario pre-relleno
+deactivate Nav
 
-Coord -> Ctrl : POST /proyectos/{id}/editar\n[campos modificados]
+Coord -> Nav : envía formulario modificado
+activate Nav
+Nav -> Ctrl : POST /proyectos/{id}/editar\n[campos modificados]
 activate Ctrl
 
 Ctrl -> Service : actualizarProyecto(id, datos)
@@ -43,7 +50,9 @@ Repo --> Service : Proyecto
 deactivate Service
 Service --> Ctrl : Proyecto
 
-Ctrl --> Coord : 302 redirect → /proyectos/{id}
+Ctrl --> Nav : 302 redirect → /proyectos/{id}
 deactivate Ctrl
+Nav --> Coord : navega a /proyectos/{id}
+deactivate Nav
 
 @enduml
