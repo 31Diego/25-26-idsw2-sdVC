@@ -1,0 +1,66 @@
+@startuml editarEntregable-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "EditarEntregableController\n@Controller\nGET|POST /proyectos/{proyectoId}/entregables/{id}/editar" as Ctrl
+participant "EntregableService\n@Service" as Service
+participant "EntregableRepository\nJpaRepository" as Repo
+database "H2" as DB
+participant "Sistema de ficheros\n./archivos/" as FS
+
+Coord -> Nav : clic en "Editar"
+activate Nav
+Nav -> Ctrl : GET /proyectos/{proyectoId}/entregables/{id}/editar
+activate Ctrl
+Ctrl -> Service : obtenerEntregable(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM entregables WHERE id = ?
+DB --> Repo : Optional<Entregable>
+deactivate Repo
+Repo --> Service : Entregable
+deactivate Service
+Service --> Ctrl : Entregable
+Ctrl -> Ctrl : model.addAttribute("entregable", ...)\nmodel.addAttribute("proyectoId", ...)
+Ctrl --> Nav : 200 OK · editar-entregable.html
+deactivate Ctrl
+Nav --> Coord : muestra formulario pre-relleno
+deactivate Nav
+
+Coord -> Nav : modifica datos y opcionalmente adjunta archivo nuevo
+activate Nav
+Nav -> Ctrl : POST /proyectos/{proyectoId}/entregables/{id}/editar\n[titulo, tipo, fechaLimite, estado, descripcion, archivo]
+activate Ctrl
+
+Ctrl -> Service : actualizarEntregable(id, datos, archivo)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM entregables WHERE id = ?
+DB --> Repo : Optional<Entregable>
+deactivate Repo
+Repo --> Service : Entregable
+Service -> Service : actualizar campos
+
+alt archivo nuevo adjunto
+    Service -> FS : Files.copy(archivo, ./archivos/{nombre},\nREPLACE_EXISTING)
+    Service -> Service : entregable.setRutaArchivo(nombre)
+end
+
+Service -> Repo : save(entregable)
+activate Repo
+Repo -> DB : UPDATE entregables SET ... WHERE id = ?
+DB --> Repo : Entregable
+deactivate Repo
+Repo --> Service : Entregable
+deactivate Service
+Service --> Ctrl : Entregable
+
+Ctrl --> Nav : 302 redirect → /proyectos/{proyectoId}/entregables/{id}
+deactivate Ctrl
+Nav --> Coord : navega al detalle del entregable
+deactivate Nav
+
+@enduml

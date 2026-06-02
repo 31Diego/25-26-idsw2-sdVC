@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Editar entregable</title>
+</head>
+<body>
+
+<h1>Editar entregable</h1>
+
+<form th:action="@{/proyectos/{pid}/entregables/{id}/editar(pid=${proyectoId},id=${entregable.id})}"
+      th:object="${entregable}"
+      method="post"
+      enctype="multipart/form-data">
+
+    <label>Título *</label><br>
+    <input type="text" th:field="*{titulo}" required><br><br>
+
+    <label>Tipo *</label><br>
+    <select th:field="*{tipo}" required>
+        <option value="INFORME">Informe</option>
+        <option value="DATASET">Dataset</option>
+        <option value="PRESENTACION">Presentación</option>
+        <option value="OTRO">Otro</option>
+    </select><br><br>
+
+    <label>Fecha límite</label><br>
+    <input type="date" th:field="*{fechaLimite}"><br><br>
+
+    <label>Estado *</label><br>
+    <select th:field="*{estado}" required>
+        <option value="PENDIENTE">Pendiente</option>
+        <option value="EN_CURSO">En curso</option>
+        <option value="ENTREGADO">Entregado</option>
+    </select><br><br>
+
+    <label>Descripción</label><br>
+    <textarea th:field="*{descripcion}" rows="4" cols="50"></textarea><br><br>
+
+    <label>Archivo adjunto (dejar vacío para mantener el actual)</label><br>
+    <th:block th:if="${entregable.rutaArchivo != null}">
+        <p>Actual: <span th:text="${entregable.rutaArchivo}"></span></p>
+    </th:block>
+    <input type="file" name="archivo"><br><br>
+
+    <button type="submit">Guardar cambios</button>
+    <a th:href="@{/proyectos/{pid}/entregables/{id}(pid=${proyectoId},id=${entregable.id})}">Cancelar</a>
+</form>
+
+</body>
+</html>

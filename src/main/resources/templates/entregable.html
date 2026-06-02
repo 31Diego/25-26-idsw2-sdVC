@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Entregable</title>
+</head>
+<body>
+
+<h1 th:text="${entregable.titulo}">Título del entregable</h1>
+
+<p><strong>Tipo:</strong> <span th:text="${entregable.tipo}"></span></p>
+<p><strong>Fecha límite:</strong> <span th:text="${entregable.fechaLimite}"></span></p>
+<p><strong>Estado:</strong> <span th:text="${entregable.estado}"></span></p>
+
+<th:block th:if="${entregable.descripcion != null and !entregable.descripcion.isBlank()}">
+    <h3>Descripción</h3>
+    <p th:text="${entregable.descripcion}"></p>
+</th:block>
+
+<th:block th:if="${entregable.rutaArchivo != null}">
+    <p><strong>Archivo adjunto:</strong>
+        <a th:href="@{/archivos/{nombre}(nombre=${entregable.rutaArchivo})}"
+           th:text="${entregable.rutaArchivo}">descargar</a>
+    </p>
+</th:block>
+
+<br>
+<a th:href="@{/proyectos/{pid}/entregables/{id}/editar(pid=${proyectoId},id=${entregable.id})}">Editar</a> |
+<a th:href="@{/proyectos/{pid}/entregables/{id}/eliminar(pid=${proyectoId},id=${entregable.id})}">Eliminar</a>
+<br><br>
+<a th:href="@{/proyectos/{id}/entregables(id=${proyectoId})}">Volver a entregables</a>
+
+</body>
+</html>

@@ -10,7 +10,7 @@ Cuando el usuario escriba **"buenas"** (solo, sin argumentos), activar el protoc
 
 ### Qué leer (solo lo indispensable)
 
-1. `conversation-log.md` — Para saber dónde se quedó el proyecto
+1. El archivo más reciente de `conversations/` (ordenar por nombre, tomar el último) — Para saber dónde se quedó el proyecto. Si con uno no es suficiente para orientarse, leer el anterior también, pero no más de los necesarios.
 2. `context/casosDeUso/priorizacionCasosDeUso.md` — Para saber qué casos de uso hay y en qué orden
 
 Con eso es suficiente para orientarse. No leer más hasta que el usuario indique qué se va a hacer.
@@ -65,7 +65,7 @@ Cuando el usuario escriba **"terminamos"**, guardar el progreso de la sesión:
 
 ### Qué guardar
 
-Crear un archivo en la carpeta `conversations/` con el registro de la sesión, siguiendo el mismo formato que `conversation-log.md`.
+Crear un archivo en la carpeta `conversations/` con el registro de la sesión.
 
 ### Nombre del archivo
 
@@ -79,8 +79,6 @@ Ejemplos:
 - `conversations/2026-05-22_sesionGeneral.md` (si no se trabajó un caso concreto)
 
 ### Contenido del archivo
-
-Seguir exactamente el modelo de `conversation-log.md`:
 
 ```markdown
 # Sesión — {fecha} · {casodeuso} · {fase}

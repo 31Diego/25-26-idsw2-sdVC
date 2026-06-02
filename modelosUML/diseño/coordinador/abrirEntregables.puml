@@ -1,0 +1,38 @@
+@startuml abrirEntregables-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "EntregablesController\n@Controller\nGET /proyectos/{proyectoId}/entregables" as Ctrl
+participant "EntregableService\n@Service" as Service
+participant "EntregableRepository\nJpaRepository" as Repo
+participant "ProyectoRepository\nJpaRepository" as ProyectoRepo
+database "H2" as DB
+
+Coord -> Nav : clic en "Entregables"
+activate Nav
+Nav -> Ctrl : GET /proyectos/{proyectoId}/entregables
+activate Ctrl
+Ctrl -> Service : obtenerEntregablesDeProyecto(proyectoId)
+activate Service
+Service -> Repo : findByProyectoId(proyectoId)
+activate Repo
+Repo -> DB : SELECT * FROM entregables WHERE proyecto_id = ?
+DB --> Repo : List<Entregable>
+deactivate Repo
+Repo --> Service : List<Entregable>
+deactivate Service
+Service --> Ctrl : List<Entregable>
+Ctrl -> ProyectoRepo : findById(proyectoId)
+activate ProyectoRepo
+ProyectoRepo -> DB : SELECT * FROM proyectos WHERE id = ?
+DB --> ProyectoRepo : Proyecto
+deactivate ProyectoRepo
+ProyectoRepo --> Ctrl : Proyecto
+Ctrl -> Ctrl : model.addAttribute("entregables", ...)\nmodel.addAttribute("proyecto", ...)
+Ctrl --> Nav : 200 OK · entregables.html
+deactivate Ctrl
+Nav --> Coord : muestra listado de entregables
+deactivate Nav
+
+@enduml

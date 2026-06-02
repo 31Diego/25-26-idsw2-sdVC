@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Nuevo entregable</title>
+</head>
+<body>
+
+<h1>Nuevo entregable</h1>
+
+<form th:action="@{/proyectos/{id}/entregables/nuevo(id=${proyectoId})}"
+      th:object="${entregable}"
+      method="post"
+      enctype="multipart/form-data">
+
+    <label>Título *</label><br>
+    <input type="text" th:field="*{titulo}" required><br><br>
+
+    <label>Tipo *</label><br>
+    <select th:field="*{tipo}" required>
+        <option value="">-- Seleccionar --</option>
+        <option value="INFORME">Informe</option>
+        <option value="DATASET">Dataset</option>
+        <option value="PRESENTACION">Presentación</option>
+        <option value="OTRO">Otro</option>
+    </select><br><br>
+
+    <label>Fecha límite</label><br>
+    <input type="date" th:field="*{fechaLimite}"><br><br>
+
+    <label>Estado *</label><br>
+    <select th:field="*{estado}" required>
+        <option value="">-- Seleccionar --</option>
+        <option value="PENDIENTE">Pendiente</option>
+        <option value="EN_CURSO">En curso</option>
+        <option value="ENTREGADO">Entregado</option>
+    </select><br><br>
+
+    <label>Descripción</label><br>
+    <textarea th:field="*{descripcion}" rows="4" cols="50"></textarea><br><br>
+
+    <label>Archivo adjunto</label><br>
+    <input type="file" name="archivo"><br><br>
+
+    <button type="submit">Crear entregable</button>
+    <a th:href="@{/proyectos/{id}/entregables(id=${proyectoId})}">Cancelar</a>
+</form>
+
+</body>
+</html>

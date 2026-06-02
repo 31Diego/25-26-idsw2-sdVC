@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Eliminar entregable</title>
+</head>
+<body>
+
+<h1>Eliminar entregable</h1>
+
+<p>¿Seguro que deseas eliminar el siguiente entregable?</p>
+
+<p><strong>Título:</strong> <span th:text="${entregable.titulo}"></span></p>
+<p><strong>Tipo:</strong> <span th:text="${entregable.tipo}"></span></p>
+<p><strong>Estado:</strong> <span th:text="${entregable.estado}"></span></p>
+
+<th:block th:if="${entregable.rutaArchivo != null}">
+    <p><strong>Archivo adjunto:</strong> <span th:text="${entregable.rutaArchivo}"></span> (también se eliminará)</p>
+</th:block>
+
+<form th:action="@{/proyectos/{pid}/entregables/{id}/eliminar(pid=${proyectoId},id=${entregable.id})}"
+      method="post">
+    <button type="submit">Confirmar eliminación</button>
+    <a th:href="@{/proyectos/{pid}/entregables/{id}(pid=${proyectoId},id=${entregable.id})}">Cancelar</a>
+</form>
+
+</body>
+</html>

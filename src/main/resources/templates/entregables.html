@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Entregables</title>
+</head>
+<body>
+
+<h1>Entregables de: <span th:text="${proyecto.titulo}"></span></h1>
+
+<a th:href="@{/proyectos/{id}/entregables/nuevo(id=${proyecto.id})}">Nuevo entregable</a>
+<br><br>
+
+<table border="1" th:if="${not #lists.isEmpty(entregables)}">
+    <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Tipo</th>
+        <th>Fecha límite</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+    </tr>
+    <tr th:each="e : ${entregables}">
+        <td th:text="${e.id}"></td>
+        <td th:text="${e.titulo}"></td>
+        <td th:text="${e.tipo}"></td>
+        <td th:text="${e.fechaLimite}"></td>
+        <td th:text="${e.estado}"></td>
+        <td>
+            <a th:href="@{/proyectos/{pid}/entregables/{id}(pid=${proyecto.id},id=${e.id})}">Ver</a>
+        </td>
+    </tr>
+</table>
+
+<p th:if="${#lists.isEmpty(entregables)}">No hay entregables registrados.</p>
+
+<br>
+<a th:href="@{/proyectos/{id}(id=${proyecto.id})}">Volver al proyecto</a>
+
+</body>
+</html>
