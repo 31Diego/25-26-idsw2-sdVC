@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `agregarInvestigador()` mediante el p
 
 <div align=center>
 
-|![Análisis: agregarInvestigador()](../../../images/analisis/agregarInvestigador-analisis.svg)|
+|![Análisis: agregarInvestigador()](../../../images/analisis/coordinador/agregarInvestigador-analisis.svg)|
 |-|
 |Código fuente: [agregarInvestigador.puml](../../../modelosUML/analisis/coordinador/agregarInvestigador.puml)|
 

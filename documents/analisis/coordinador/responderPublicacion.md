@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `responderPublicacion()` mediante el 
 
 <div align=center>
 
-|![Análisis: responderPublicacion()](../../../images/analisis/responderPublicacion-analisis.svg)|
+|![Análisis: responderPublicacion()](../../../images/analisis/coordinador/responderPublicacion-analisis.svg)|
 |-|
 |Código fuente: [responderPublicacion.puml](../../../modelosUML/analisis/coordinador/responderPublicacion.puml)|
 

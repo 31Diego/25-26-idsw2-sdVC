@@ -14,7 +14,7 @@ Recuperar y mostrar la lista de proyectos del sistema. Soporta búsqueda por cri
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/abrirProyectos-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/abrirProyectos-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/abrirProyectos.puml)
 

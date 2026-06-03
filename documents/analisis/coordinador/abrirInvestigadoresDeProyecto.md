@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirInvestigadoresDeProyecto(proyec
 
 <div align=center>
 
-|![Análisis: abrirInvestigadoresDeProyecto()](../../../images/analisis/abrirInvestigadoresDeProyecto-analisis.svg)|
+|![Análisis: abrirInvestigadoresDeProyecto()](../../../images/analisis/coordinador/abrirInvestigadoresDeProyecto-analisis.svg)|
 |-|
 |Código fuente: [abrirInvestigadoresDeProyecto.puml](../../../modelosUML/analisis/coordinador/abrirInvestigadoresDeProyecto.puml)|
 

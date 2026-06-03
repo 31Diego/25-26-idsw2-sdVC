@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el p
 
 <div align=center>
 
-|![Análisis: abrirPanelPrincipal()](../../../images/analisis/abrirPanelPrincipal-analisis.svg)|
+|![Análisis: abrirPanelPrincipal()](../../../images/analisis/coordinador/abrirPanelPrincipal-analisis.svg)|
 |-|
 |Código fuente: [abrirPanelPrincipal.puml](../../../modelosUML/analisis/coordinador/abrirPanelPrincipal.puml)|
 

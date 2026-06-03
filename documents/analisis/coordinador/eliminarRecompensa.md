@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `eliminarRecompensa()` mediante el pa
 
 <div align=center>
 
-|![Análisis: eliminarRecompensa()](../../../images/analisis/eliminarRecompensa-analisis.svg)|
+|![Análisis: eliminarRecompensa()](../../../images/analisis/coordinador/eliminarRecompensa-analisis.svg)|
 |-|
 |Código fuente: [eliminarRecompensa.puml](../../../modelosUML/analisis/coordinador/eliminarRecompensa.puml)|
 

@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirPublicacion()` mediante el patr
 
 <div align=center>
 
-|![Análisis: abrirPublicacion()](../../../images/analisis/abrirPublicacion-analisis.svg)|
+|![Análisis: abrirPublicacion()](../../../images/analisis/coordinador/abrirPublicacion-analisis.svg)|
 |-|
 |Código fuente: [abrirPublicacion.puml](../../../modelosUML/analisis/coordinador/abrirPublicacion.puml)|
 

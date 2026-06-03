@@ -1,0 +1,46 @@
+@startuml abrirInvestigadores-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "InvestigadoresController\n@Controller\nGET /investigadores" as Ctrl
+participant "InvestigadoresService\n@Service" as Service
+participant "InvestigadorRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : clic en "Investigadores"
+activate Nav
+Nav -> Ctrl : GET /investigadores
+activate Ctrl
+
+alt sin filtro
+    Ctrl -> Service : obtenerInvestigadores()
+    activate Service
+    Service -> Repo : findAll()
+    activate Repo
+    Repo -> DB : SELECT * FROM investigadores
+    DB --> Repo : List<Investigador>
+    deactivate Repo
+    Repo --> Service : List<Investigador>
+    deactivate Service
+    Service --> Ctrl : List<Investigador>
+else con filtro (?criterio=...)
+    Ctrl -> Service : filtrarInvestigadores(criterio)
+    activate Service
+    Service -> Repo : buscarPorCriterio(criterio)
+    activate Repo
+    Repo -> DB : SELECT ... WHERE nombre LIKE %criterio%\n OR apellidos LIKE %criterio%\n OR campo LIKE %criterio%
+    DB --> Repo : List<Investigador>
+    deactivate Repo
+    Repo --> Service : List<Investigador>
+    deactivate Service
+    Service --> Ctrl : List<Investigador>
+end
+
+Ctrl -> Ctrl : model.addAttribute("investigadores", lista)
+Ctrl --> Nav : 200 OK · investigadores.html
+deactivate Ctrl
+Nav --> Coord : muestra investigadores.html
+deactivate Nav
+
+@enduml

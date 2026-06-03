@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Investigadores</title>
+</head>
+<body>
+
+<h1>Investigadores</h1>
+
+<a th:href="@{/panel}">Panel principal</a> |
+<a th:href="@{/investigadores/nuevo}">Nuevo investigador</a>
+
+<br><br>
+
+<form th:action="@{/investigadores}" method="get">
+    <input type="text" name="criterio" th:value="${criterio}" placeholder="Buscar...">
+    <button type="submit">Buscar</button>
+    <a th:href="@{/investigadores}">Limpiar</a>
+</form>
+
+<br>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellidos</th>
+            <th>Campo</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="inv : ${investigadores}">
+            <td th:text="${inv.id}"></td>
+            <td th:text="${inv.nombre}"></td>
+            <td th:text="${inv.apellidos}"></td>
+            <td th:text="${inv.campo}"></td>
+            <td th:text="${inv.rol}"></td>
+            <td>
+                <a th:href="@{/investigadores/{id}(id=${inv.id})}">Ver</a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(investigadores)}">
+            <td colspan="6">No hay investigadores.</td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

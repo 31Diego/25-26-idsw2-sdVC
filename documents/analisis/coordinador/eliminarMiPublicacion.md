@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `eliminarMiPublicacion()` mediante el
 
 <div align=center>
 
-|![Análisis: eliminarMiPublicacion()](../../../images/analisis/eliminarMiPublicacion-analisis.svg)|
+|![Análisis: eliminarMiPublicacion()](../../../images/analisis/coordinador/eliminarMiPublicacion-analisis.svg)|
 |-|
 |Código fuente: [eliminarMiPublicacion.puml](../../../modelosUML/analisis/coordinador/eliminarMiPublicacion.puml)|
 

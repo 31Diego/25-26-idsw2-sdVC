@@ -28,6 +28,10 @@ public class Investigador implements UserDetails {
     private String username;
     private String password;
 
+    private String campo;
+    private String carrera;
+    private String master;
+
     private String rol; // COORDINADOR | INVESTIGADOR
 
     @Override

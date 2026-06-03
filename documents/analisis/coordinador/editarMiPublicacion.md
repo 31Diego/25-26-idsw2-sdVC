@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `editarMiPublicacion()` mediante el p
 
 <div align=center>
 
-|![Análisis: editarMiPublicacion()](../../../images/analisis/editarMiPublicacion-analisis.svg)|
+|![Análisis: editarMiPublicacion()](../../../images/analisis/coordinador/editarMiPublicacion-analisis.svg)|
 |-|
 |Código fuente: [editarMiPublicacion.puml](../../../modelosUML/analisis/coordinador/editarMiPublicacion.puml)|
 

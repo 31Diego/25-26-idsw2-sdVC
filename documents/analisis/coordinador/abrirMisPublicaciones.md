@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el
 
 <div align=center>
 
-|![Análisis: abrirMisPublicaciones()](../../../images/analisis/abrirMisPublicaciones-analisis.svg)|
+|![Análisis: abrirMisPublicaciones()](../../../images/analisis/coordinador/abrirMisPublicaciones-analisis.svg)|
 |-|
 |Código fuente: [abrirMisPublicaciones.puml](../../../modelosUML/analisis/coordinador/abrirMisPublicaciones.puml)|
 

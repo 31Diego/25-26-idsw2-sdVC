@@ -1,0 +1,41 @@
+@startuml abrirProyectos-investigador-analisis
+skinparam linetype polyline
+skinparam padding 12
+skinparam rectangle {
+    Padding 12
+}
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+rectangle #CDEBA5 ":PROYECTO_ABIERTO" as ProyectoAbiertoEntrada
+
+package abrirProyectos as "abrirProyectos() — Investigador" {
+    rectangle #629EF9 "ProyectosView" as ProyectosView
+    rectangle #b5bd68 "ProyectosController" as ProyectosController
+    rectangle #F2AC4E "ProyectoRepository" as ProyectoRepository
+    rectangle #F2AC4E "Proyecto" as Proyecto
+    rectangle #F2AC4E "Investigador" as Investigador
+}
+
+rectangle #CDEBA5 ":PROYECTOS_ABIERTOS" as ProyectosAbiertos
+rectangle #CDEBA5 ":Collaboration AbrirProyecto" as ColProyecto
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+PanelPrincipal -r-> ProyectosView: abrirProyectos()
+ProyectoAbiertoEntrada -r-> ProyectosView: abrirProyectos()
+
+ProyectosView -d-> ProyectosController: obtenerProyectosDeInvestigador(investigadorId) : List<Proyecto>
+
+ProyectosController --> ProyectoRepository: findByInvestigadorId(investigadorId) : List<Proyecto>
+
+ProyectoRepository -- Proyecto
+Proyecto -- Investigador
+
+ProyectosView --> ProyectosController: filtrarProyectosDeInvestigador(investigadorId, criterio) : List<Proyecto>
+
+ProyectosController --> ProyectoRepository: buscarPorCriterioEInvestigador(investigadorId, criterio) : List<Proyecto>
+
+ProyectosView ..> ProyectosAbiertos: proyectosCargados()
+ProyectosView ..> ColProyecto: abrirProyecto(id)
+ProyectosView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirInvestigadores()` mediante el p
 
 <div align=center>
 
-|![Análisis: abrirInvestigadores()](../../../images/analisis/abrirInvestigadores-analisis.svg)|
+|![Análisis: abrirInvestigadores()](../../../images/analisis/coordinador/abrirInvestigadores-analisis.svg)|
 |-|
 |Código fuente: [abrirInvestigadores.puml](../../../modelosUML/analisis/coordinador/abrirInvestigadores.puml)|
 

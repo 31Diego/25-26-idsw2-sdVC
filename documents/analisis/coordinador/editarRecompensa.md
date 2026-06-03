@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `editarRecompensa()` mediante el patr
 
 <div align=center>
 
-|![Análisis: editarRecompensa()](../../../images/analisis/editarRecompensa-analisis.svg)|
+|![Análisis: editarRecompensa()](../../../images/analisis/coordinador/editarRecompensa-analisis.svg)|
 |-|
 |Código fuente: [editarRecompensa.puml](../../../modelosUML/analisis/coordinador/editarRecompensa.puml)|
 

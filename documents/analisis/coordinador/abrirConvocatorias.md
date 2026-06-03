@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirConvocatorias()` mediante el pa
 
 <div align=center>
 
-|![Análisis: abrirConvocatorias()](../../../images/analisis/abrirConvocatorias-analisis.svg)|
+|![Análisis: abrirConvocatorias()](../../../images/analisis/coordinador/abrirConvocatorias-analisis.svg)|
 |-|
 |Código fuente: [abrirConvocatorias.puml](../../../modelosUML/analisis/coordinador/abrirConvocatorias.puml)|
 

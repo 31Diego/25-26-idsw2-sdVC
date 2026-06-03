@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `importarConvocatoria()` mediante el 
 
 <div align=center>
 
-|![Análisis: importarConvocatoria()](../../../images/analisis/importarConvocatoria-analisis.svg)|
+|![Análisis: importarConvocatoria()](../../../images/analisis/coordinador/importarConvocatoria-analisis.svg)|
 |-|
 |Código fuente: [importarConvocatoria.puml](../../../modelosUML/analisis/coordinador/importarConvocatoria.puml)|
 

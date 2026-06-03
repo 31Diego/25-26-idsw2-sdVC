@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `editarCargaTrabajo()` mediante el pa
 
 <div align=center>
 
-|![Análisis: editarCargaTrabajo()](../../../images/analisis/editarCargaTrabajo-analisis.svg)|
+|![Análisis: editarCargaTrabajo()](../../../images/analisis/coordinador/editarCargaTrabajo-analisis.svg)|
 |-|
 |Código fuente: [editarCargaTrabajo.puml](../../../modelosUML/analisis/coordinador/editarCargaTrabajo.puml)|
 

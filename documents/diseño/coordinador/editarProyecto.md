@@ -14,7 +14,7 @@ Cargar un proyecto existente en un formulario pre-rellenado, aplicar las modific
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/editarProyecto-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/editarProyecto-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/editarProyecto.puml)
 

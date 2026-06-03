@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Investigador</title>
+</head>
+<body>
+
+<h1 th:text="${investigador.nombre + ' ' + (investigador.apellidos != null ? investigador.apellidos : '')}">Nombre del investigador</h1>
+
+<p><strong>ID:</strong> <span th:text="${investigador.id}"></span></p>
+<p><strong>Nombre:</strong> <span th:text="${investigador.nombre}"></span></p>
+<p><strong>Apellidos:</strong> <span th:text="${investigador.apellidos}"></span></p>
+<p><strong>Campo:</strong> <span th:text="${investigador.campo}"></span></p>
+<p><strong>Carrera:</strong> <span th:text="${investigador.carrera}"></span></p>
+<p><strong>Máster:</strong> <span th:text="${investigador.master}"></span></p>
+<p><strong>Email:</strong> <span th:text="${investigador.email}"></span></p>
+<p><strong>Institución:</strong> <span th:text="${investigador.institucion}"></span></p>
+<p><strong>Rol:</strong> <span th:text="${investigador.rol}"></span></p>
+
+<br>
+
+<div sec:authorize="hasRole('COORDINADOR')">
+    <form th:action="@{/investigadores/{id}/cambiar-rol(id=${investigador.id})}" method="post">
+        <button type="submit"
+                th:text="${investigador.rol == 'COORDINADOR'} ? 'Cambiar a investigador' : 'Cambiar a coordinador'">
+            Cambiar rol
+        </button>
+    </form>
+</div>
+
+<br>
+<a th:href="@{/investigadores}">Volver a investigadores</a>
+
+</body>
+</html>

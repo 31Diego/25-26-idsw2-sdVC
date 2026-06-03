@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirEntregables()` mediante el patr
 
 <div align=center>
 
-|![Análisis: abrirEntregables()](../../../images/analisis/abrirEntregables-analisis.svg)|
+|![Análisis: abrirEntregables()](../../../images/analisis/coordinador/abrirEntregables-analisis.svg)|
 |-|
 |Código fuente: [abrirEntregables.puml](../../../modelosUML/analisis/coordinador/abrirEntregables.puml)|
 

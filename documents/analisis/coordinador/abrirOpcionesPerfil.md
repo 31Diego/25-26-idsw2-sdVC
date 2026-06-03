@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirOpcionesPerfil()` mediante el p
 
 <div align=center>
 
-|![Análisis: abrirOpcionesPerfil()](../../../images/analisis/abrirOpcionesPerfil-analisis.svg)|
+|![Análisis: abrirOpcionesPerfil()](../../../images/analisis/coordinador/abrirOpcionesPerfil-analisis.svg)|
 |-|
 |Código fuente: [abrirOpcionesPerfil.puml](../../../modelosUML/analisis/coordinador/abrirOpcionesPerfil.puml)|
 

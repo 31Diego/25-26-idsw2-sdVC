@@ -14,7 +14,7 @@ Recuperar y mostrar los datos de un proyecto concreto identificado por su id.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/abrirProyecto-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/abrirProyecto-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/abrirProyecto.puml)
 

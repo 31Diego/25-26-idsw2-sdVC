@@ -14,7 +14,7 @@ Recuperar y mostrar el detalle completo de un entregable concreto.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/abrirEntregable-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/abrirEntregable-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/abrirEntregable.puml)
 

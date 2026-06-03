@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirProyectos()` mediante el patró
 
 <div align=center>
 
-|![Análisis: abrirProyectos()](../../../images/analisis/abrirProyectos-analisis.svg)|
+|![Análisis: abrirProyectos()](../../../images/analisis/coordinador/abrirProyectos-analisis.svg)|
 |-|
 |Código fuente: [abrirProyectos.puml](../../../modelosUML/analisis/coordinador/abrirProyectos.puml)|
 

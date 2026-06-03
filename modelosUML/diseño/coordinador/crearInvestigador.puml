@@ -1,0 +1,44 @@
+@startuml crearInvestigador-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "CrearInvestigadorController\n@Controller\nGET|POST /investigadores/nuevo" as Ctrl
+participant "InvestigadorService\n@Service" as Service
+participant "InvestigadorRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : clic en "Nuevo investigador"
+activate Nav
+Nav -> Ctrl : GET /investigadores/nuevo
+activate Ctrl
+Ctrl -> Ctrl : model.addAttribute("investigador", new Investigador())
+Ctrl --> Nav : 200 OK · crear-investigador.html
+deactivate Ctrl
+Nav --> Coord : muestra formulario vacío
+deactivate Nav
+
+Coord -> Nav : envía formulario
+activate Nav
+Nav -> Ctrl : POST /investigadores/nuevo\n[nombre, username, password, campo, ...]
+activate Ctrl
+
+note over Ctrl : rol = "INVESTIGADOR"\npassword = encode(password_del_formulario)
+
+Ctrl -> Service : guardarInvestigador(investigador)
+activate Service
+Service -> Repo : save(investigador)
+activate Repo
+Repo -> DB : INSERT INTO investigadores (...)
+DB --> Repo : Investigador (con id)
+deactivate Repo
+Repo --> Service : Investigador
+deactivate Service
+Service --> Ctrl : Investigador
+
+Ctrl --> Nav : 302 redirect → /investigadores/{id}
+deactivate Ctrl
+Nav --> Coord : navega a perfil del nuevo investigador
+deactivate Nav
+
+@enduml

@@ -14,7 +14,7 @@ Mostrar el formulario pre-relleno con los datos del entregable y persistir los c
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/editarEntregable-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/editarEntregable-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/editarEntregable.puml)
 

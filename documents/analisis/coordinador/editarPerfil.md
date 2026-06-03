@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `editarPerfil()` mediante el patrón 
 
 <div align=center>
 
-|![Análisis: editarPerfil()](../../../images/analisis/editarPerfil-analisis.svg)|
+|![Análisis: editarPerfil()](../../../images/analisis/coordinador/editarPerfil-analisis.svg)|
 |-|
 |Código fuente: [editarPerfil.puml](../../../modelosUML/analisis/coordinador/editarPerfil.puml)|
 

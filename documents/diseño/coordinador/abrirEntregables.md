@@ -14,7 +14,7 @@ Recuperar y mostrar el listado de entregables asociados a un proyecto concreto.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/abrirEntregables-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/abrirEntregables-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/abrirEntregables.puml)
 

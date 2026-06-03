@@ -17,7 +17,7 @@ Análisis de colaboración del caso de uso `abrirSolicitudesEliminacionPerfil()`
 
 <div align=center>
 
-|![Análisis: abrirSolicitudesEliminacionPerfil()](../../../images/analisis/abrirSolicitudesEliminacionPerfil-analisis.svg)|
+|![Análisis: abrirSolicitudesEliminacionPerfil()](../../../images/analisis/coordinador/abrirSolicitudesEliminacionPerfil-analisis.svg)|
 |-|
 |Código fuente: [abrirSolicitudesEliminacionPerfil.puml](../../../modelosUML/analisis/coordinador/abrirSolicitudesEliminacionPerfil.puml)|
 

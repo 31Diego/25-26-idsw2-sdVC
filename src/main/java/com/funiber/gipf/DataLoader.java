@@ -39,6 +39,26 @@ public class DataLoader implements CommandLineRunner {
             investigadorRepository.save(admin);
         }
 
+        boolean hayInvestigador = investigadorRepository.findAll().stream()
+                .anyMatch(i -> "INVESTIGADOR".equals(i.getRol()));
+        if (!hayInvestigador) {
+            Investigador maria = new Investigador();
+            maria.setNombre("María");
+            maria.setApellidos("García López");
+            maria.setEmail("maria@funiber.org");
+            maria.setInstitucion("FUNIBER");
+            maria.setUsername("maria");
+            maria.setPassword(passwordEncoder.encode("maria"));
+            maria.setRol("INVESTIGADOR");
+            maria.setCampo("Energías Renovables");
+            investigadorRepository.save(maria);
+
+            proyectoRepository.findAll().stream().limit(2).forEach(p -> {
+                p.getInvestigadores().add(maria);
+                proyectoRepository.save(p);
+            });
+        }
+
         if (proyectoRepository.count() == 0) {
             Proyecto p1 = new Proyecto();
             p1.setTitulo("Horizonte Europa 2025");

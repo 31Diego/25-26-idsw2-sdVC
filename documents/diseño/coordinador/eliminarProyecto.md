@@ -14,7 +14,7 @@ Mostrar la ficha del proyecto a eliminar como confirmación, y borrarlo definiti
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/eliminarProyecto-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/eliminarProyecto-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/eliminarProyecto.puml)
 

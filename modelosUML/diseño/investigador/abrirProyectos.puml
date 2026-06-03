@@ -1,0 +1,48 @@
+@startuml abrirProyectos-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "ProyectosController\n@Controller\nGET /proyectos" as Ctrl
+participant "ProyectosService\n@Service" as Service
+participant "ProyectoRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Inv -> Nav : clic en "Proyectos"
+activate Nav
+Nav -> Ctrl : GET /proyectos\n[@AuthenticationPrincipal investigador]
+activate Ctrl
+
+note over Ctrl : rol == INVESTIGADOR
+
+alt sin filtro
+    Ctrl -> Service : obtenerProyectosDeInvestigador(investigador)
+    activate Service
+    Service -> Repo : findByInvestigadoresContaining(investigador)
+    activate Repo
+    Repo -> DB : SELECT p FROM proyectos p\nJOIN proyecto_investigador pi\nWHERE pi.investigador_id = ?
+    DB --> Repo : List<Proyecto>
+    deactivate Repo
+    Repo --> Service : List<Proyecto>
+    deactivate Service
+    Service --> Ctrl : List<Proyecto>
+else con filtro (?criterio=...)
+    Ctrl -> Service : filtrarProyectosDeInvestigador(investigador, criterio)
+    activate Service
+    Service -> Repo : buscarPorCriterioEInvestigador(investigador, criterio)
+    activate Repo
+    Repo -> DB : SELECT p ... JOIN ... WHERE investigador_id = ?\nAND titulo LIKE %criterio%
+    DB --> Repo : List<Proyecto>
+    deactivate Repo
+    Repo --> Service : List<Proyecto>
+    deactivate Service
+    Service --> Ctrl : List<Proyecto>
+end
+
+Ctrl -> Ctrl : model.addAttribute("proyectos", lista)
+Ctrl --> Nav : 200 OK · proyectos.html\n(sin botón "Nuevo proyecto")
+deactivate Ctrl
+Nav --> Inv : muestra proyectos propios
+deactivate Nav
+
+@enduml

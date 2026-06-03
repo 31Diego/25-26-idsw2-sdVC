@@ -14,7 +14,7 @@ Mostrar la confirmación de eliminación y borrar el entregable (y su archivo ad
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/eliminarEntregable-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/eliminarEntregable-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/eliminarEntregable.puml)
 

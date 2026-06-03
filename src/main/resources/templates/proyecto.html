@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
 <head>
     <meta charset="UTF-8">
     <title>GIPF — Proyecto</title>
@@ -22,12 +23,19 @@
     <p><strong>Documentación:</strong> <span th:text="${proyecto.documentacion}"></span></p>
 </th:block>
 
+<h3>Equipo</h3>
+<ul>
+    <li th:each="inv : ${proyecto.investigadores}" th:text="${inv.nombre + ' ' + (inv.apellidos != null ? inv.apellidos : '')}"></li>
+    <li th:if="${#lists.isEmpty(proyecto.investigadores)}">Sin investigadores asignados.</li>
+</ul>
+
 <br>
-<a th:href="@{/proyectos/{id}/editar(id=${proyecto.id})}">Editar</a> |
-<a th:href="@{/proyectos/{id}/eliminar(id=${proyecto.id})}">Eliminar</a> |
-<a th:href="@{/proyectos/{id}/entregables(id=${proyecto.id})}">Entregables</a> |
-<a th:href="@{/proyectos/{id}/investigadores(id=${proyecto.id})}">Investigadores</a> |
-<a th:href="@{/proyectos/{id}/investigadores/agregar(id=${proyecto.id})}">Agregar investigador</a>
+<div sec:authorize="hasRole('COORDINADOR')">
+    <a th:href="@{/proyectos/{id}/editar(id=${proyecto.id})}">Editar</a> |
+    <a th:href="@{/proyectos/{id}/eliminar(id=${proyecto.id})}">Eliminar</a> |
+    <a th:href="@{/proyectos/{id}/investigadores/agregar(id=${proyecto.id})}">Agregar investigador</a> |
+</div>
+<a th:href="@{/proyectos/{id}/entregables(id=${proyecto.id})}">Entregables</a>
 <br><br>
 <a th:href="@{/proyectos}">Volver a proyectos</a>
 
