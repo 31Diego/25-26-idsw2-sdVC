@@ -21,6 +21,6 @@ public class CambiarRolController {
     @PreAuthorize("hasRole('COORDINADOR')")
     public String cambiarRol(@PathVariable Long id) {
         investigadorService.cambiarRol(id);
-        return "redirect:/investigadores/" + id;
+        return "redirect:/investigadores/" + id + "/opciones";
     }
 }

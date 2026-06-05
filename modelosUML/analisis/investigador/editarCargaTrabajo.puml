@@ -1,0 +1,33 @@
+@startuml editarCargaTrabajo-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":OPCIONES_CARGA_TRABAJO_ABIERTAS" as CargaTrabajoAbierta
+
+package editarCargaTrabajo as "editarCargaTrabajo() — Investigador" {
+    rectangle #629EF9 EditarCargaTrabajoView
+    rectangle #b5bd68 CargaTrabajoController
+    rectangle #F2AC4E InvestigadorRepository
+    rectangle #F2AC4E Investigador
+}
+
+rectangle #CDEBA5 ":OPCIONES_CARGA_TRABAJO_ABIERTAS" as CargaTrabajoSalida
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+CargaTrabajoAbierta -r-> EditarCargaTrabajoView: editarCargaTrabajo()
+
+EditarCargaTrabajoView -d-> CargaTrabajoController: obtenerCargaTrabajo(id) : Investigador
+
+CargaTrabajoController --> InvestigadorRepository: obtenerPorId(id) : Investigador
+
+InvestigadorRepository -- Investigador
+
+EditarCargaTrabajoView --> CargaTrabajoController: modificarCampos(datos) : void
+
+EditarCargaTrabajoView --> CargaTrabajoController: guardarCargaTrabajo(datos) : Investigador
+
+CargaTrabajoController --> InvestigadorRepository: actualizar(investigador) : Investigador
+
+EditarCargaTrabajoView ..> CargaTrabajoSalida: edicionFinalizada()
+EditarCargaTrabajoView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

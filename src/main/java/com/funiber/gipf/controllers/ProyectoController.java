@@ -25,7 +25,7 @@ public class ProyectoController {
                                  @AuthenticationPrincipal Investigador investigador,
                                  Model model) {
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
-        if ("INVESTIGADOR".equals(investigador.getRol()) && !proyecto.getInvestigadores().contains(investigador)) {
+        if ("INVESTIGADOR".equals(investigador.getRol()) && proyecto.getInvestigadores().stream().noneMatch(inv -> inv.getId().equals(investigador.getId()))) {
             return "redirect:/proyectos";
         }
         model.addAttribute("proyecto", proyecto);

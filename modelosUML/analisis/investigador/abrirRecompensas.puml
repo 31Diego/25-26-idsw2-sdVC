@@ -1,0 +1,35 @@
+@startuml abrirRecompensas-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+rectangle #CDEBA5 ":RECOMPENSA_ABIERTA" as RecompensaAbiertoEntrada
+
+package abrirRecompensas as "abrirRecompensas() — Investigador" {
+    rectangle #629EF9 RecompensasView
+    rectangle #b5bd68 RecompensaController
+    rectangle #F2AC4E RecompensaRepository
+    rectangle #F2AC4E Recompensa
+}
+
+rectangle #CDEBA5 ":RECOMPENSAS_ABIERTAS" as RecompensasAbiertas
+rectangle #CDEBA5 ":Collaboration AbrirRecompensa" as ColRecompensa
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+PanelPrincipal -r-> RecompensasView: abrirRecompensas()
+RecompensaAbiertoEntrada -r-> RecompensasView: abrirRecompensas()
+
+RecompensasView -d-> RecompensaController: obtenerRecompensas() : List<Recompensa>
+
+RecompensaController --> RecompensaRepository: obtenerTodos() : List<Recompensa>
+
+RecompensaRepository -- Recompensa
+
+RecompensasView --> RecompensaController: filtrarRecompensas(criterio) : List<Recompensa>
+
+RecompensaController --> RecompensaRepository: buscarPorCriterio(criterio) : List<Recompensa>
+
+RecompensasView ..> RecompensasAbiertas: recompensasCargadas()
+RecompensasView ..> ColRecompensa: abrirRecompensa(id)
+RecompensasView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

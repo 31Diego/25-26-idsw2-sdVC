@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Opciones de perfil</title>
+</head>
+<body>
+
+<h1 th:text="${investigador.nombre + ' ' + (investigador.apellidos != null ? investigador.apellidos : '')}">Nombre del investigador</h1>
+
+<p><strong>ID:</strong> <span th:text="${investigador.id}"></span></p>
+<p><strong>Campo:</strong> <span th:text="${investigador.campo}"></span></p>
+<p><strong>Rol:</strong> <span th:text="${investigador.rol}"></span></p>
+
+<br>
+
+<ul>
+    <li>
+        <a th:href="${esPropioPeril} ? @{/perfil/editar} : @{/investigadores/{id}/editar(id=${investigador.id})}">Editar perfil</a>
+    </li>
+
+    <li>
+        <a th:href="@{/investigadores/{id}/solicitar-eliminacion(id=${investigador.id})}">Solicitar eliminación de perfil</a>
+    </li>
+
+    <li sec:authorize="hasRole('COORDINADOR')" th:if="${!esPropioPeril}">
+        <a th:href="@{/investigadores/{id}/eliminar-perfil(id=${investigador.id})}">Eliminar perfil</a>
+    </li>
+
+    <li sec:authorize="hasRole('COORDINADOR')">
+        <a th:href="@{/solicitudes-eliminacion}">Ver solicitudes de eliminación</a>
+    </li>
+</ul>
+
+<br>
+
+<a th:if="${!esPropioPeril}" th:href="@{/investigadores/{id}(id=${investigador.id})}">Volver al investigador</a>
+<br>
+<a th:href="@{/panel}">Volver al panel</a>
+
+</body>
+</html>

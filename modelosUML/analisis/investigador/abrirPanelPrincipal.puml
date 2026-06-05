@@ -1,0 +1,47 @@
+@startuml abrirPanelPrincipal-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PROYECTOS_ABIERTOS" as ProyectosAbiertos
+rectangle #CDEBA5 ":PUBLICACIONES_ABIERTAS" as PublicacionesAbiertas
+rectangle #CDEBA5 ":MIS_PUBLICACIONES_ABIERTAS" as MisPublicacionesAbiertas
+rectangle #CDEBA5 ":RECOMPENSAS_ABIERTAS" as RecompensasAbiertas
+rectangle #CDEBA5 ":INVESTIGADORES_ABIERTOS" as InvestigadoresAbiertos
+rectangle #CDEBA5 ":OPCIONES_CARGA_TRABAJO_ABIERTAS" as CargaTrabajoAbierta
+rectangle #CDEBA5 ":OPCIONES_PERFIL_ABIERTO" as OpcionesPerfilAbierto
+
+package abrirPanelPrincipal as "abrirPanelPrincipal() — Investigador" {
+    rectangle #629EF9 PanelPrincipalView
+    rectangle #b5bd68 PanelController
+}
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelAbierto
+rectangle #CDEBA5 ":Collaboration AbrirProyectos" as ColProyectos
+rectangle #CDEBA5 ":Collaboration AbrirPublicaciones" as ColPublicaciones
+rectangle #CDEBA5 ":Collaboration AbrirMisPublicaciones" as ColMisPublicaciones
+rectangle #CDEBA5 ":Collaboration AbrirRecompensas" as ColRecompensas
+rectangle #CDEBA5 ":Collaboration AbrirInvestigadores" as ColInvestigadores
+rectangle #CDEBA5 ":Collaboration AbrirOpcionesPerfil" as ColPerfil
+rectangle #CDEBA5 ":Collaboration AbrirOpcionesCargaTrabajo" as ColCargaTrabajo
+rectangle #CDEBA5 ":Collaboration CerrarSesion" as ColCerrarSesion
+
+ProyectosAbiertos -r-> PanelPrincipalView: abrirPanelPrincipal()
+PublicacionesAbiertas -r-> PanelPrincipalView: abrirPanelPrincipal()
+MisPublicacionesAbiertas -r-> PanelPrincipalView: abrirPanelPrincipal()
+RecompensasAbiertas -r-> PanelPrincipalView: abrirPanelPrincipal()
+InvestigadoresAbiertos -r-> PanelPrincipalView: abrirPanelPrincipal()
+CargaTrabajoAbierta -r-> PanelPrincipalView: abrirPanelPrincipal()
+OpcionesPerfilAbierto -r-> PanelPrincipalView: abrirPanelPrincipal()
+
+PanelPrincipalView -d-> PanelController: cargarPanel() : void
+
+PanelPrincipalView ..> PanelAbierto: panelMostrado()
+PanelPrincipalView ..> ColProyectos: abrirProyectos()
+PanelPrincipalView ..> ColPublicaciones: abrirPublicaciones()
+PanelPrincipalView ..> ColMisPublicaciones: abrirMisPublicaciones()
+PanelPrincipalView ..> ColRecompensas: abrirRecompensas()
+PanelPrincipalView ..> ColInvestigadores: abrirInvestigadores()
+PanelPrincipalView ..> ColPerfil: abrirOpcionesPerfil()
+PanelPrincipalView ..> ColCargaTrabajo: abrirOpcionesCargaTrabajo()
+PanelPrincipalView ..> ColCerrarSesion: cerrarSesion()
+
+@enduml

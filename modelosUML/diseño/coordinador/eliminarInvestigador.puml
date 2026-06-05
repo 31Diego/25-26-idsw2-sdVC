@@ -1,0 +1,76 @@
+@startuml eliminarInvestigador-coordinador-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "EliminarInvestigadorController\n@Controller\nGET|POST /proyectos/{pId}/investigadores/{iId}/eliminar" as Ctrl
+participant "ProyectoService\n@Service" as PService
+participant "InvestigadorService\n@Service" as IService
+participant "ProyectoRepository\nJpaRepository" as PRepo
+participant "InvestigadorRepository\nJpaRepository" as IRepo
+database "H2" as DB
+
+Coord -> Nav : clic en "Eliminar" junto al investigador en la vista del proyecto
+activate Nav
+Nav -> Ctrl : GET /proyectos/{pId}/investigadores/{iId}/eliminar
+activate Ctrl
+Ctrl -> PService : obtenerProyecto(pId)
+activate PService
+PService -> PRepo : findById(pId)
+activate PRepo
+PRepo -> DB : SELECT * FROM proyectos WHERE id = ?
+DB --> PRepo : Proyecto
+deactivate PRepo
+PRepo --> PService : Proyecto
+deactivate PService
+PService --> Ctrl : Proyecto
+Ctrl -> IService : obtenerInvestigador(iId)
+activate IService
+IService -> IRepo : findById(iId)
+activate IRepo
+IRepo -> DB : SELECT * FROM investigadores WHERE id = ?
+DB --> IRepo : Investigador
+deactivate IRepo
+IRepo --> IService : Investigador
+deactivate IService
+IService --> Ctrl : Investigador
+Ctrl -> Ctrl : model.addAttribute("proyecto", proyecto)
+Ctrl -> Ctrl : model.addAttribute("investigador", investigador)
+Ctrl --> Nav : 200 OK · eliminar-investigador.html [confirmación]
+deactivate Ctrl
+Nav --> Coord : muestra página de confirmación
+deactivate Nav
+
+Coord -> Nav : confirma eliminación
+activate Nav
+Nav -> Ctrl : POST /proyectos/{pId}/investigadores/{iId}/eliminar
+activate Ctrl
+Ctrl -> PService : obtenerProyecto(pId)
+activate PService
+PService -> PRepo : findById(pId)
+PRepo -> DB : SELECT * FROM proyectos WHERE id = ?
+DB --> PRepo : Proyecto
+PRepo --> PService : Proyecto
+deactivate PService
+PService --> Ctrl : Proyecto
+Ctrl -> IService : obtenerInvestigador(iId)
+activate IService
+IService -> IRepo : findById(iId)
+IRepo -> DB : SELECT * FROM investigadores WHERE id = ?
+DB --> IRepo : Investigador
+IRepo --> IService : Investigador
+deactivate IService
+IService --> Ctrl : Investigador
+Ctrl -> PService : eliminarInvestigador(proyecto, investigador)
+activate PService
+PService -> PRepo : save(proyecto)
+PRepo -> DB : DELETE FROM proyecto_investigador WHERE proyecto_id=? AND investigador_id=?
+PRepo --> PService : Proyecto
+deactivate PService
+PService --> Ctrl : void
+Ctrl --> Nav : 302 redirect → /proyectos/{pId}
+deactivate Ctrl
+Nav --> Coord : navega al proyecto actualizado
+deactivate Nav
+
+@enduml

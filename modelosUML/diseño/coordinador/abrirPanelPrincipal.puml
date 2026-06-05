@@ -1,0 +1,17 @@
+@startuml abrirPanelPrincipal-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "PanelPrincipalController\n@Controller\nGET /panel" as Ctrl
+
+Coord -> Nav : navega a /panel
+activate Nav
+Nav -> Ctrl : GET /panel
+activate Ctrl
+Ctrl --> Nav : 200 OK · panel.html
+deactivate Ctrl
+Nav --> Coord : muestra panel.html
+deactivate Nav
+
+@enduml

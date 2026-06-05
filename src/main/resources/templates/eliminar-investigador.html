@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Eliminar investigador del proyecto</title>
+</head>
+<body>
+
+<h1>Eliminar investigador del proyecto</h1>
+
+<p>¿Está seguro de que desea retirar al siguiente investigador del proyecto?</p>
+
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Proyecto</th>
+        <td th:text="${proyecto.titulo}"></td>
+    </tr>
+    <tr>
+        <th>Investigador</th>
+        <td th:text="${investigador.nombre + ' ' + (investigador.apellidos != null ? investigador.apellidos : '')}"></td>
+    </tr>
+    <tr>
+        <th>Campo</th>
+        <td th:text="${investigador.campo}"></td>
+    </tr>
+</table>
+
+<br>
+
+<form th:action="@{/proyectos/{pId}/investigadores/{iId}/eliminar(pId=${proyecto.id}, iId=${investigador.id})}" method="post">
+    <button type="submit">Confirmar eliminación</button>
+</form>
+
+<br>
+<a th:href="@{/proyectos/{id}(id=${proyecto.id})}">Cancelar</a>
+
+</body>
+</html>

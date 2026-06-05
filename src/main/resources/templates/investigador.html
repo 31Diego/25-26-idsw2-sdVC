@@ -22,12 +22,7 @@
 <br>
 
 <div sec:authorize="hasRole('COORDINADOR')">
-    <form th:action="@{/investigadores/{id}/cambiar-rol(id=${investigador.id})}" method="post">
-        <button type="submit"
-                th:text="${investigador.rol == 'COORDINADOR'} ? 'Cambiar a investigador' : 'Cambiar a coordinador'">
-            Cambiar rol
-        </button>
-    </form>
+    <a th:href="@{/investigadores/{id}/opciones(id=${investigador.id})}">Opciones de perfil</a>
 </div>
 
 <br>

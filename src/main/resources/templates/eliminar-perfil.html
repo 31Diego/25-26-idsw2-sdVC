@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Eliminar perfil</title>
+</head>
+<body>
+
+<h1>Eliminar perfil</h1>
+
+<p>¿Estás seguro de que quieres eliminar el perfil de
+    <strong th:text="${investigador.nombre + ' ' + (investigador.apellidos != null ? investigador.apellidos : '')}"></strong>?
+</p>
+<p>Esta acción no se puede deshacer. El investigador será eliminado de todos los proyectos en los que participe.</p>
+
+<form th:action="@{/investigadores/{id}/eliminar-perfil(id=${investigador.id})}" method="post">
+    <button type="submit">Confirmar eliminación</button>
+</form>
+
+<br>
+<a th:href="@{/investigadores/{id}/opciones(id=${investigador.id})}">Cancelar</a>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+@startuml agregarInvestigador-coordinador-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "AgregarInvestigadorController\n@Controller\nGET /proyectos/{id}/investigadores/agregar" as CtrlGet
+participant "AgregarInvestigadorController\n@Controller\nPOST /proyectos/{id}/investigadores/agregar" as CtrlPost
+participant "ProyectoService\n@Service" as PService
+participant "InvestigadorService\n@Service" as IService
+participant "ProyectoRepository\nJpaRepository" as PRepo
+participant "InvestigadorRepository\nJpaRepository" as IRepo
+database "H2" as DB
+
+Coord -> Nav : clic en "Agregar investigador" en la vista del proyecto
+activate Nav
+Nav -> CtrlGet : GET /proyectos/{id}/investigadores/agregar
+activate CtrlGet
+CtrlGet -> PService : obtenerProyecto(id)
+activate PService
+PService -> PRepo : findById(id)
+activate PRepo
+PRepo -> DB : SELECT * FROM proyectos WHERE id = ?
+DB --> PRepo : Proyecto
+deactivate PRepo
+PRepo --> PService : Proyecto
+deactivate PService
+PService --> CtrlGet : Proyecto
+CtrlGet -> IService : obtenerTodosLosInvestigadores()
+activate IService
+IService -> IRepo : findAll()
+activate IRepo
+IRepo -> DB : SELECT * FROM investigadores
+DB --> IRepo : List<Investigador>
+deactivate IRepo
+IRepo --> IService : List<Investigador>
+deactivate IService
+IService --> CtrlGet : List<Investigador>
+CtrlGet -> CtrlGet : filtra investigadores ya en el proyecto
+CtrlGet -> CtrlGet : model.addAttribute("proyecto", proyecto)
+CtrlGet -> CtrlGet : model.addAttribute("disponibles", disponibles)
+CtrlGet --> Nav : 200 OK · agregar-investigador.html
+deactivate CtrlGet
+Nav --> Coord : muestra lista de investigadores disponibles
+deactivate Nav
+
+Coord -> Nav : selecciona investigador y pulsa "Agregar"
+activate Nav
+Nav -> CtrlPost : POST /proyectos/{id}/investigadores/agregar (investigadorId)
+activate CtrlPost
+CtrlPost -> PService : obtenerProyecto(id)
+activate PService
+PService -> PRepo : findById(id)
+PRepo -> DB : SELECT * FROM proyectos WHERE id = ?
+DB --> PRepo : Proyecto
+PRepo --> PService : Proyecto
+deactivate PService
+PService --> CtrlPost : Proyecto
+CtrlPost -> IService : obtenerInvestigador(investigadorId)
+activate IService
+IService -> IRepo : findById(investigadorId)
+IRepo -> DB : SELECT * FROM investigadores WHERE id = ?
+DB --> IRepo : Investigador
+IRepo --> IService : Investigador
+deactivate IService
+IService --> CtrlPost : Investigador
+CtrlPost -> PService : agregarInvestigador(proyecto, investigador)
+activate PService
+PService -> PRepo : save(proyecto)
+PRepo -> DB : INSERT INTO proyecto_investigador ...
+PRepo --> PService : Proyecto
+deactivate PService
+PService --> CtrlPost : void
+CtrlPost --> Nav : redirect /proyectos/{id}
+deactivate CtrlPost
+Nav --> Coord : muestra proyecto con el investigador agregado
+deactivate Nav
+
+@enduml

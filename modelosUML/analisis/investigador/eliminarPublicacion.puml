@@ -1,0 +1,29 @@
+@startuml eliminarPublicacion-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":MI_PUBLICACION_ABIERTA" as MiPublicacionAbierta
+
+package eliminarPublicacion as "eliminarPublicacion() — Investigador" {
+    rectangle #629EF9 EliminarPublicacionView
+    rectangle #b5bd68 PublicacionController
+    rectangle #F2AC4E PublicacionRepository
+    rectangle #F2AC4E Publicacion
+}
+
+rectangle #CDEBA5 ":MIS_PUBLICACIONES_ABIERTAS" as MisPublicacionesSalida
+
+MiPublicacionAbierta -r-> EliminarPublicacionView: eliminarPublicacion()
+
+EliminarPublicacionView -d-> PublicacionController: cargarPublicacionParaEliminacion(id) : Publicacion
+
+PublicacionController --> PublicacionRepository: obtenerPorId(id) : Publicacion
+
+PublicacionRepository -- Publicacion
+
+EliminarPublicacionView --> PublicacionController: eliminarPublicacion(id) : void
+
+PublicacionController --> PublicacionRepository: eliminarPorId(id) : void
+
+EliminarPublicacionView ..> MisPublicacionesSalida: abrirMisPublicaciones()
+
+@enduml

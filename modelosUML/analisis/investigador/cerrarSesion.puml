@@ -1,0 +1,16 @@
+@startuml cerrarSesion-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+
+package cerrarSesion as "cerrarSesion() — Investigador" {
+    rectangle #b5bd68 SesionController
+}
+
+rectangle #CDEBA5 ":SESION_CERRADA" as SesionCerrada
+
+PanelPrincipal -r-> SesionController: cerrarSesion()
+
+SesionController ..> SesionCerrada: sesionCerrada()
+
+@enduml

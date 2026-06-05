@@ -1,0 +1,31 @@
+@startuml editarPerfil-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":OPCIONES_PERFIL_ABIERTO" as OpcionesPerfilAbierto
+
+package editarPerfil as "editarPerfil() — Investigador" {
+    rectangle #629EF9 EditarPerfilView
+    rectangle #b5bd68 PerfilController
+    rectangle #F2AC4E InvestigadorRepository
+    rectangle #F2AC4E Investigador
+}
+
+rectangle #CDEBA5 ":OPCIONES_PERFIL_ABIERTO" as OpcionesPerfilSalida
+
+OpcionesPerfilAbierto -r-> EditarPerfilView: editarPerfil()
+
+EditarPerfilView -d-> PerfilController: obtenerPerfil() : Investigador
+
+PerfilController --> InvestigadorRepository: obtenerPorId(id) : Investigador
+
+InvestigadorRepository -- Investigador
+
+EditarPerfilView --> PerfilController: modificarCampos(datos) : void
+
+EditarPerfilView --> PerfilController: guardarPerfil(datos) : Investigador
+
+PerfilController --> InvestigadorRepository: actualizar(investigador) : Investigador
+
+EditarPerfilView ..> OpcionesPerfilSalida: abrirOpcionesPerfil()
+
+@enduml

@@ -1,24 +1,23 @@
-# FUNIBER GIPF > abrirProyecto > Análisis (Investigador)
+# FUNIBER GIPF > abrirProyecto > Análisis
 
 ## información del artefacto
 
 - **Proyecto**: FUNIBER GIPF - Plataforma Interna de Investigación
 - **Fase**: Análisis
 - **Disciplina**: Análisis y Diseño
-- **Actor**: Investigador
 - **Versión**: 1.0
-- **Fecha**: 2026-06-03
+- **Fecha**: 2026-06-05
 - **Autor**: Diego Martínez
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirProyecto()` del Investigador mediante el patrón MVC. El Investigador puede ver el detalle de un proyecto en el que participa, así como acceder a sus entregables y a la lista de investigadores. No dispone de acciones de gestión sobre el proyecto (editar, eliminar, agregar/eliminar miembros).
+Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el detalle de un proyecto al Investigador en modo consulta.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirProyecto() — Investigador](../../../images/analisis/investigador/abrirProyecto-investigador-analisis.svg)|
+|![Análisis: abrirProyecto()](../../../images/analisis/investigador/abrirProyecto-analisis.svg)|
 |-|
 |Código fuente: [abrirProyecto.puml](../../../modelosUML/analisis/investigador/abrirProyecto.puml)|
 
@@ -31,22 +30,22 @@ Análisis de colaboración del caso de uso `abrirProyecto()` del Investigador me
 #### ProyectoView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el detalle del proyecto al Investigador
-- Mostrar información del proyecto: título, descripción, estado, fechas, equipo
+- Presentar el detalle completo del proyecto al Investigador
+- Mostrar información del proyecto: título, descripción, estado, fechas, investigadores, entregables
 - Ofrecer acceso a los entregables del proyecto y a la lista de investigadores
-- Navegar de vuelta a la lista de proyectos propios
+- Navegar de vuelta a la lista de proyectos
 
 **Colaboraciones**:
 - **Entrada**: Recibe `abrirProyecto(id)` desde `:PROYECTOS_ABIERTOS` o `:ENTREGABLES_ABIERTOS`
 - **Control**: Se comunica con `ProyectoController`
-- **Salida**: Navega a `:PROYECTO_ABIERTO` y a colaboraciones `AbrirEntregables` y `AbrirInvestigadores`
+- **Salida**: Navega a `:PROYECTO_ABIERTO` y a colaboraciones de consulta
 
 ### clases de control
 
 #### ProyectoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle del proyecto solicitado
+- Coordinar la obtención del detalle completo del proyecto
 - Servir como intermediario entre la vista y el repositorio
 
 **Colaboraciones**:
@@ -68,8 +67,8 @@ Análisis de colaboración del caso de uso `abrirProyecto()` del Investigador me
 #### Proyecto
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa del proyecto
-- Encapsular atributos: título, descripción, estado, fechas de inicio y fin, equipo de investigadores
+- Representar la información completa de un proyecto de investigación
+- Encapsular atributos: título, descripción, estado, fechas de inicio y fin, investigadores, entregables
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ProyectoRepository`
@@ -82,28 +81,17 @@ Análisis de colaboración del caso de uso `abrirProyecto()` del Investigador me
 2. **Obtención de datos**: `ProyectoView` → `ProyectoController.obtenerProyecto(id)` : `Proyecto`
 3. **Acceso a datos**: `ProyectoController` → `ProyectoRepository.obtenerPorId(id)` : `Proyecto`
 4. **Presentación**: `ProyectoView` → `:PROYECTO_ABIERTO.proyectoMostrado()`
-5. **Navegación**: El Investigador puede acceder a los entregables o a la lista de investigadores del proyecto
+5. **Navegación**: El Investigador puede acceder a entregables o a la lista de investigadores del proyecto
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
 |Mostrar detalle del proyecto|`ProyectoView`|Coordina con `ProyectoController.obtenerProyecto(id)`|
-|Datos del proyecto|`Proyecto`|Encapsula todos los atributos|
+|Datos completos del proyecto|`Proyecto`|Encapsula todos los atributos|
 |Acceso a datos|`ProyectoRepository`|`obtenerPorId(id)`|
-|Acceder a entregables|`ProyectoView`|→ Colaboración `AbrirEntregables`|
+|Ver entregables|`ProyectoView`|→ Colaboración `AbrirEntregables`|
 |Ver investigadores del proyecto|`ProyectoView`|→ Colaboración `AbrirInvestigadores`|
-|Volver a la lista|`ProyectoView`|→ `:PROYECTOS_ABIERTOS`|
-
-## diferencias respecto al análisis del Coordinador
-
-| Aspecto | Coordinador | Investigador |
-|---|---|---|
-| Editar proyecto | Sí → `EditarProyecto` | No |
-| Eliminar proyecto | Sí → `EliminarProyecto` | No |
-| Agregar/eliminar investigador | Sí → `AgregarInvestigador` | No |
-| Acceder a entregables | Sí | Sí |
-| Ver investigadores | Sí | Sí |
 
 ## características del análisis
 
@@ -119,8 +107,21 @@ Análisis de colaboración del caso de uso `abrirProyecto()` del Investigador me
 - No asume implementación específica de base de datos
 - Mantiene independencia de frameworks
 
+### trazabilidad completa
+
+- **Origen**: Caso de uso detallado `abrirProyecto()`
+- **Destino**: Base para diseño arquitectónico
+- **Conexión**: Diagrama de estados → Análisis de colaboración
+
+## patrones aplicados
+
+### repository pattern
+`ProyectoRepository` abstrae el acceso a datos, permitiendo diferentes implementaciones sin afectar al controlador.
+
+### mvc pattern
+Separación clara entre presentación (`ProyectoView`), lógica de aplicación (`ProyectoController`) y datos (`Proyecto`, `ProyectoRepository`).
+
 ## referencias
 
-- [Especificación detallada: abrirProyecto() — Investigador](../../../context/casosDeUso/detalle/investigador/abrirProyecto/abrirProyecto.puml)
-- [Diferencias entre actores](../../diferenciasActores.md)
-- [Análisis abrirProyecto — Coordinador](../coordinador/abrirProyecto.md)
+- [Especificación detallada: abrirProyecto()](../../../context/casosDeUso/detalle/investigador/abrirProyecto/abrirProyecto.md)
+- [Modelo del dominio](../../../context/modeloDelDominio/modeloDominio.md)

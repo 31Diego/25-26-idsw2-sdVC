@@ -1,0 +1,45 @@
+@startuml iniciarSesion-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "LoginController\n@Controller\nGET /login" as Ctrl
+participant "Spring Security\nPOST /login" as SS
+participant "AutenticacionService\n@Service" as AuthSvc
+participant "InvestigadorRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : navega a /login
+activate Nav
+Nav -> Ctrl : GET /login
+activate Ctrl
+Ctrl --> Nav : 200 OK · login.html
+deactivate Ctrl
+Nav --> Coord : muestra formulario
+
+Coord -> Nav : introduce credenciales y envía
+Nav -> SS : POST /login (username, password)
+activate SS
+SS -> AuthSvc : loadUserByUsername(username)
+activate AuthSvc
+AuthSvc -> Repo : findByUsername(username)
+activate Repo
+Repo -> DB : SELECT * FROM investigadores WHERE username = ?
+DB --> Repo : Investigador
+deactivate Repo
+Repo --> AuthSvc : Investigador
+deactivate AuthSvc
+AuthSvc --> SS : UserDetails
+SS -> SS : BCrypt.matches(password, hash)
+
+alt credenciales correctas
+    SS --> Nav : redirect /panel
+    Nav --> Coord : abre panel principal
+else credenciales incorrectas
+    SS --> Nav : redirect /login?error
+    Nav --> Coord : muestra error en formulario
+end
+deactivate SS
+deactivate Nav
+
+@enduml

@@ -1,0 +1,54 @@
+@startuml editarPerfil-coordinador-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "EditarPerfilController\n@Controller\nGET /investigadores/{id}/editar" as CtrlGet
+participant "EditarPerfilController\n@Controller\nPOST /investigadores/{id}/editar" as CtrlPost
+participant "InvestigadorService\n@Service" as Service
+participant "InvestigadorRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : clic en "Editar perfil" en opciones de perfil
+activate Nav
+Nav -> CtrlGet : GET /investigadores/{id}/editar
+activate CtrlGet
+CtrlGet -> Service : obtenerInvestigador(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM investigadores WHERE id = ?
+DB --> Repo : Investigador
+deactivate Repo
+Repo --> Service : Investigador
+deactivate Service
+Service --> CtrlGet : Investigador
+CtrlGet -> CtrlGet : model.addAttribute("investigador", investigador)
+CtrlGet -> CtrlGet : model.addAttribute("esPropioPeril", false)
+CtrlGet --> Nav : 200 OK · editar-perfil.html
+deactivate CtrlGet
+Nav --> Coord : muestra formulario con todos los campos (incluido rol)
+deactivate Nav
+
+Coord -> Nav : rellena campos y pulsa "Guardar"
+activate Nav
+Nav -> CtrlPost : POST /investigadores/{id}/editar (nombre, apellidos, campo, carrera, master, rol)
+activate CtrlPost
+CtrlPost -> Service : actualizarPerfilConRol(id, nombre, apellidos, campo, carrera, master, rol)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM investigadores WHERE id = ?
+DB --> Repo : Investigador
+deactivate Repo
+Service -> Repo : save(investigador)
+Repo -> DB : UPDATE investigadores SET ... WHERE id = ?
+Repo --> Service : Investigador
+deactivate Service
+Service --> CtrlPost : void
+CtrlPost --> Nav : redirect /investigadores/{id}/opciones
+deactivate CtrlPost
+Nav --> Coord : muestra opciones de perfil actualizadas
+deactivate Nav
+
+@enduml

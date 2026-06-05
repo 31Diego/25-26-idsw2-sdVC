@@ -25,7 +25,12 @@
 
 <h3>Equipo</h3>
 <ul>
-    <li th:each="inv : ${proyecto.investigadores}" th:text="${inv.nombre + ' ' + (inv.apellidos != null ? inv.apellidos : '')}"></li>
+    <li th:each="inv : ${proyecto.investigadores}">
+        <span th:text="${inv.nombre + ' ' + (inv.apellidos != null ? inv.apellidos : '')}"></span>
+        <span sec:authorize="hasRole('COORDINADOR')">
+            — <a th:href="@{/proyectos/{pId}/investigadores/{iId}/eliminar(pId=${proyecto.id}, iId=${inv.id})}">Eliminar</a>
+        </span>
+    </li>
     <li th:if="${#lists.isEmpty(proyecto.investigadores)}">Sin investigadores asignados.</li>
 </ul>
 
@@ -35,6 +40,7 @@
     <a th:href="@{/proyectos/{id}/eliminar(id=${proyecto.id})}">Eliminar</a> |
     <a th:href="@{/proyectos/{id}/investigadores/agregar(id=${proyecto.id})}">Agregar investigador</a> |
 </div>
+<a th:href="@{/proyectos/{id}/investigadores(id=${proyecto.id})}">Ver investigadores</a> |
 <a th:href="@{/proyectos/{id}/entregables(id=${proyecto.id})}">Entregables</a>
 <br><br>
 <a th:href="@{/proyectos}">Volver a proyectos</a>

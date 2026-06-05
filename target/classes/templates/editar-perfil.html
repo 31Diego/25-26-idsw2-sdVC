@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Editar perfil</title>
+</head>
+<body>
+
+<h1>Editar perfil</h1>
+
+<form th:action="${esPropioPeril} ? @{/perfil/editar} : @{/investigadores/{id}/editar(id=${investigador.id})}"
+      method="post">
+
+    <p>
+        <label>Nombre</label><br>
+        <input type="text" name="nombre" th:value="${investigador.nombre}" required>
+    </p>
+    <p>
+        <label>Apellidos</label><br>
+        <input type="text" name="apellidos" th:value="${investigador.apellidos}">
+    </p>
+    <p>
+        <label>Campo</label><br>
+        <input type="text" name="campo" th:value="${investigador.campo}">
+    </p>
+    <p>
+        <label>Carrera</label><br>
+        <input type="text" name="carrera" th:value="${investigador.carrera}">
+    </p>
+    <p>
+        <label>Máster</label><br>
+        <input type="text" name="master" th:value="${investigador.master}">
+    </p>
+    <p>
+        <label>Usuario</label><br>
+        <input type="text" name="username" th:value="${investigador.username}" required>
+    </p>
+    <p>
+        <label>Contraseña <small>(dejar vacío para no cambiar)</small></label><br>
+        <input type="password" name="password">
+    </p>
+
+    <div sec:authorize="hasRole('COORDINADOR')">
+        <p>
+            <label>Rol</label><br>
+            <select name="rol">
+                <option value="INVESTIGADOR" th:selected="${investigador.rol == 'INVESTIGADOR'}">Investigador</option>
+                <option value="COORDINADOR" th:selected="${investigador.rol == 'COORDINADOR'}">Coordinador</option>
+            </select>
+        </p>
+    </div>
+
+    <button type="submit">Guardar</button>
+</form>
+
+<br>
+<a th:href="${esPropioPeril} ? @{/perfil/opciones} : @{/investigadores/{id}/opciones(id=${investigador.id})}">Cancelar</a>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Investigadores del proyecto</title>
+</head>
+<body>
+
+<h1>Investigadores de <span th:text="${proyecto.titulo}"></span></h1>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellidos</th>
+            <th>Campo</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="inv : ${investigadores}">
+            <td th:text="${inv.id}"></td>
+            <td th:text="${inv.nombre}"></td>
+            <td th:text="${inv.apellidos}"></td>
+            <td th:text="${inv.campo}"></td>
+            <td th:text="${inv.rol}"></td>
+            <td>
+                <a th:href="@{/investigadores/{iId}(iId=${inv.id})}">Ver</a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(investigadores)}">
+            <td colspan="6">Sin investigadores asignados.</td>
+        </tr>
+    </tbody>
+</table>
+
+<br>
+<a th:href="@{/proyectos/{id}(id=${proyecto.id})}">Volver al proyecto</a>
+
+</body>
+</html>

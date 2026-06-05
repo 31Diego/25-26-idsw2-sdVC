@@ -1,0 +1,29 @@
+@startuml crearPublicacion-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":MIS_PUBLICACIONES_ABIERTAS" as MisPublicacionesAbiertas
+
+package crearPublicacion as "crearPublicacion() — Investigador" {
+    rectangle #629EF9 CrearPublicacionView
+    rectangle #b5bd68 PublicacionController
+    rectangle #F2AC4E PublicacionRepository
+    rectangle #F2AC4E Publicacion
+}
+
+rectangle #CDEBA5 ":MIS_PUBLICACIONES_ABIERTAS" as MisPublicacionesSalida
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+MisPublicacionesAbiertas -r-> CrearPublicacionView: crearPublicacion()
+
+CrearPublicacionView -d-> PublicacionController: validarDatos(datos) : boolean
+
+CrearPublicacionView --> PublicacionController: guardarPublicacion(datos) : Publicacion
+
+PublicacionController --> PublicacionRepository: crear(publicacion) : Publicacion
+
+PublicacionRepository -- Publicacion
+
+CrearPublicacionView ..> MisPublicacionesSalida: abrirMisPublicaciones()
+CrearPublicacionView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

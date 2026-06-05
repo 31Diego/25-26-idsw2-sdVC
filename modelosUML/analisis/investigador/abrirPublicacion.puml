@@ -1,0 +1,29 @@
+@startuml abrirPublicacion-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PUBLICACIONES_ABIERTAS" as PublicacionesAbiertas
+
+package abrirPublicacion as "abrirPublicacion() — Investigador" {
+    rectangle #629EF9 PublicacionView
+    rectangle #b5bd68 PublicacionController
+    rectangle #F2AC4E PublicacionRepository
+    rectangle #F2AC4E Publicacion
+}
+
+rectangle #CDEBA5 ":PUBLICACION_ABIERTA" as PublicacionAbierta
+rectangle #CDEBA5 ":Collaboration ResponderPublicacion" as ColResponder
+rectangle #CDEBA5 ":PUBLICACIONES_ABIERTAS" as PublicacionesSalida
+
+PublicacionesAbiertas -r-> PublicacionView: abrirPublicacion(id)
+
+PublicacionView -d-> PublicacionController: obtenerPublicacion(id) : Publicacion
+
+PublicacionController --> PublicacionRepository: obtenerPorId(id) : Publicacion
+
+PublicacionRepository -- Publicacion
+
+PublicacionView ..> PublicacionAbierta: publicacionMostrada()
+PublicacionView ..> ColResponder: responderPublicacion()
+PublicacionView ..> PublicacionesSalida: abrirPublicaciones()
+
+@enduml

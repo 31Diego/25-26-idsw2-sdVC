@@ -33,17 +33,9 @@ Recuperar y mostrar el perfil completo de un investigador dado su identificador.
 |---|---|---|
 | GET | /investigadores/{id} | Muestra el perfil del investigador |
 
-## Rutas adicionales — cambio de rol
-
-| Método | URL | Acción | Restricción |
-|---|---|---|---|
-| POST | /investigadores/{id}/cambiar-rol | Alterna el rol entre COORDINADOR e INVESTIGADOR | Solo COORDINADOR |
-
-El endpoint lo gestiona `CambiarRolController`, protegido con `@PreAuthorize("hasRole('COORDINADOR')")`. El botón solo se muestra en la vista con `sec:authorize="hasRole('COORDINADOR')"`.
-
 ## Decisiones de diseño
 
 - Si el id no existe, `orElseThrow()` lanza excepción y Spring devuelve 404.
-- El perfil muestra: id, nombre, apellidos, campo, carrera, master y rol.
+- El perfil muestra: id, nombre, apellidos, campo, carrera, master, email, institución y rol.
 - La vista ofrece enlace de vuelta a la lista `/investigadores`.
-- El cambio de rol es un POST que alterna el valor: COORDINADOR → INVESTIGADOR y viceversa. La restricción se aplica en dos capas: UI (`sec:authorize`) y backend (`@PreAuthorize`), habilitado con `@EnableMethodSecurity` en `SecurityConfig`.
+- El cambio de rol se gestiona desde `abrirOpcionesPerfil` (`GET /investigadores/{id}/opciones`), no desde esta vista.

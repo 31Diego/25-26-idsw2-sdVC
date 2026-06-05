@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Agregar investigador</title>
+</head>
+<body>
+
+<h1>Agregar investigador a <span th:text="${proyecto.titulo}"></span></h1>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Campo</th>
+            <th>Rol</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="inv : ${disponibles}">
+            <td th:text="${inv.id}"></td>
+            <td th:text="${inv.nombre + ' ' + (inv.apellidos != null ? inv.apellidos : '')}"></td>
+            <td th:text="${inv.campo}"></td>
+            <td th:text="${inv.rol}"></td>
+            <td>
+                <form th:action="@{/proyectos/{id}/investigadores/agregar(id=${proyecto.id})}" method="post">
+                    <input type="hidden" name="investigadorId" th:value="${inv.id}">
+                    <button type="submit">Agregar</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(disponibles)}">
+            <td colspan="5">Todos los investigadores ya pertenecen al proyecto.</td>
+        </tr>
+    </tbody>
+</table>
+
+<br>
+<a th:href="@{/proyectos/{id}(id=${proyecto.id})}">Volver al proyecto</a>
+
+</body>
+</html>

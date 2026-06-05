@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Solicitudes de eliminación</title>
+</head>
+<body>
+
+<h1>Solicitudes de eliminación de perfil</h1>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Investigador</th>
+            <th>Motivo</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="s : ${solicitudes}">
+            <td th:text="${s.id}"></td>
+            <td th:text="${s.investigador.nombre + ' ' + (s.investigador.apellidos != null ? s.investigador.apellidos : '')}"></td>
+            <td th:text="${s.motivo}"></td>
+            <td th:text="${s.fecha}"></td>
+            <td th:text="${s.estado}"></td>
+            <td>
+                <a th:href="@{/solicitudes-eliminacion/{id}(id=${s.id})}">Ver</a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(solicitudes)}">
+            <td colspan="6">No hay solicitudes pendientes.</td>
+        </tr>
+    </tbody>
+</table>
+
+<br>
+<a th:href="@{/panel}">Volver al panel</a>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+@startuml abrirOpcionesPerfil-coordinador-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "OpcionesPerfilController\n@Controller\nGET /investigadores/{id}/opciones" as Ctrl
+participant "InvestigadorService\n@Service" as Service
+participant "InvestigadorRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : clic en "Opciones de perfil" en la vista del investigador
+activate Nav
+Nav -> Ctrl : GET /investigadores/{id}/opciones
+activate Ctrl
+Ctrl -> Service : obtenerInvestigador(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM investigadores WHERE id = ?
+DB --> Repo : Investigador
+deactivate Repo
+Repo --> Service : Investigador
+deactivate Service
+Service --> Ctrl : Investigador
+Ctrl -> Ctrl : model.addAttribute("investigador", investigador)
+Ctrl -> Ctrl : model.addAttribute("esPropioPeril", false)
+Ctrl --> Nav : 200 OK · opciones-perfil.html
+deactivate Ctrl
+Nav --> Coord : muestra opciones del perfil del investigador
+deactivate Nav
+
+@enduml

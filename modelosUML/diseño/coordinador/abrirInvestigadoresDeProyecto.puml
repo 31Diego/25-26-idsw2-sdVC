@@ -1,0 +1,31 @@
+@startuml abrirInvestigadoresDeProyecto-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "InvestigadoresProyectoController\n@Controller\nGET /proyectos/{id}/investigadores" as Ctrl
+participant "ProyectoService\n@Service" as Service
+participant "ProyectoRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : clic en "Ver investigadores"
+activate Nav
+Nav -> Ctrl : GET /proyectos/{id}/investigadores
+activate Ctrl
+Ctrl -> Service : obtenerProyecto(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM proyectos WHERE id = ?
+DB --> Repo : Proyecto (+investigadores)
+deactivate Repo
+Repo --> Service : Proyecto
+deactivate Service
+Service --> Ctrl : Proyecto
+Ctrl -> Ctrl : model.addAttribute("proyecto", proyecto)\nmodel.addAttribute("investigadores", proyecto.getInvestigadores())
+Ctrl --> Nav : 200 OK · investigadores-proyecto.html
+deactivate Ctrl
+Nav --> Coord : muestra investigadores-proyecto.html
+deactivate Nav
+
+@enduml

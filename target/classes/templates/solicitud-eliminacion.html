@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Solicitud de eliminación</title>
+</head>
+<body>
+
+<h1>Solicitud de eliminación de perfil</h1>
+
+<p><strong>Investigador:</strong>
+    <span th:text="${solicitud.investigador.nombre + ' ' + (solicitud.investigador.apellidos != null ? solicitud.investigador.apellidos : '')}"></span>
+</p>
+<p><strong>Motivo:</strong> <span th:text="${solicitud.motivo}"></span></p>
+<p><strong>Fecha:</strong> <span th:text="${solicitud.fecha}"></span></p>
+<p><strong>Estado:</strong> <span th:text="${solicitud.estado}"></span></p>
+
+<br>
+<a th:href="@{/investigadores/{id}/opciones(id=${solicitud.investigador.id})}">Ver perfil del investigador</a>
+<br><br>
+<a th:href="@{/solicitudes-eliminacion}">Volver a la lista</a>
+
+</body>
+</html>

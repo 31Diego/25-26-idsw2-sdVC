@@ -1,0 +1,44 @@
+@startuml solicitarEliminacionPerfil-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "SolicitarEliminacionController\n@Controller\nGET|POST /investigadores/{id}/solicitar-eliminacion" as Ctrl
+participant "SolicitudEliminacionService\n@Service" as Service
+participant "SolicitudEliminacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Inv -> Nav : clic en "Solicitar eliminación de perfil"
+activate Nav
+Nav -> Ctrl : GET /investigadores/{id}/solicitar-eliminacion\n[@AuthenticationPrincipal investigador]
+activate Ctrl
+
+note over Ctrl : rol == INVESTIGADOR\nverifica id == propio
+
+alt id NO es el propio
+    Ctrl --> Nav : 302 redirect → /perfil/opciones
+else id ES el propio
+    Ctrl -> Ctrl : model.addAttribute("investigadorDestino", investigador)
+    Ctrl --> Nav : 200 OK · solicitar-eliminacion.html
+end
+
+deactivate Ctrl
+Nav --> Inv : muestra formulario de solicitud
+Nav -> Ctrl : POST /investigadores/{id}/solicitar-eliminacion\n[motivo]
+activate Ctrl
+Ctrl -> Service : crearSolicitud(investigador, motivo)
+activate Service
+Service -> Repo : save(SolicitudEliminacion)
+activate Repo
+Repo -> DB : INSERT INTO solicitudes_eliminacion
+DB --> Repo : SolicitudEliminacion
+deactivate Repo
+Repo --> Service : SolicitudEliminacion
+deactivate Service
+Service --> Ctrl : SolicitudEliminacion
+Ctrl --> Nav : 302 redirect → /perfil/opciones
+deactivate Ctrl
+Nav --> Inv : vuelve a opciones de perfil
+deactivate Nav
+
+@enduml

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
 <head>
     <meta charset="UTF-8">
     <title>GIPF — Investigadores</title>
@@ -8,8 +9,8 @@
 
 <h1>Investigadores</h1>
 
-<a th:href="@{/panel}">Panel principal</a> |
-<a th:href="@{/investigadores/nuevo}">Nuevo investigador</a>
+<a th:href="@{/panel}">Panel principal</a>
+<span sec:authorize="hasRole('COORDINADOR')"> | <a th:href="@{/investigadores/nuevo}">Nuevo investigador</a></span>
 
 <br><br>
 

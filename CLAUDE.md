@@ -15,6 +15,10 @@ Cuando el usuario escriba **"buenas"** (solo, sin argumentos), activar el protoc
 
 Con eso es suficiente para orientarse. No leer más hasta que el usuario indique qué se va a hacer.
 
+### Regla permanente de seguimiento
+
+Al terminar trabajo sobre cualquier caso de uso (análisis, diseño, código o doc de desarrollo), actualizar la fila correspondiente en `documents/progreso.md` cambiando ⬜ → ✅ o ⬜ → ⚠️ según corresponda. Hacerlo en el momento, no al final de la sesión.
+
 ### Respuesta tras orientarse
 
 Indicar brevemente:

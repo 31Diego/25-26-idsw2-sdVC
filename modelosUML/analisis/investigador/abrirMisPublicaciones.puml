@@ -1,0 +1,33 @@
+@startuml abrirMisPublicaciones-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelPrincipal
+rectangle #CDEBA5 ":MI_PUBLICACION_ABIERTA" as MiPublicacionEntrada
+
+package abrirMisPublicaciones as "abrirMisPublicaciones() — Investigador" {
+    rectangle #629EF9 MisPublicacionesView
+    rectangle #b5bd68 PublicacionController
+    rectangle #F2AC4E PublicacionRepository
+    rectangle #F2AC4E Publicacion
+}
+
+rectangle #CDEBA5 ":MIS_PUBLICACIONES_ABIERTAS" as MisPublicacionesAbiertas
+rectangle #CDEBA5 ":Collaboration AbrirMiPublicacion" as ColPublicacion
+rectangle #CDEBA5 ":Collaboration CrearPublicacion" as ColCrear
+rectangle #CDEBA5 ":PANEL_PRINCIPAL_ABIERTO" as PanelSalida
+
+PanelPrincipal -r-> MisPublicacionesView: abrirMisPublicaciones()
+MiPublicacionEntrada -r-> MisPublicacionesView: abrirMisPublicaciones()
+
+MisPublicacionesView -d-> PublicacionController: obtenerMisPublicaciones() : List<Publicacion>
+
+PublicacionController --> PublicacionRepository: obtenerPorAutor(id) : List<Publicacion>
+
+PublicacionRepository -- Publicacion
+
+MisPublicacionesView ..> MisPublicacionesAbiertas: publicacionesCargadas()
+MisPublicacionesView ..> ColPublicacion: abrirMiPublicacion(id)
+MisPublicacionesView ..> ColCrear: crearPublicacion()
+MisPublicacionesView ..> PanelSalida: abrirPanelPrincipal()
+
+@enduml

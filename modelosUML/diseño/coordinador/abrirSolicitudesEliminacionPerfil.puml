@@ -1,0 +1,31 @@
+@startuml abrirSolicitudesEliminacionPerfil-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "SolicitudesEliminacionController\n@Controller\nGET /solicitudes-eliminacion" as Ctrl
+participant "SolicitudEliminacionService\n@Service" as Service
+participant "SolicitudEliminacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : clic en "Solicitudes de eliminación"
+activate Nav
+Nav -> Ctrl : GET /solicitudes-eliminacion
+activate Ctrl
+Ctrl -> Service : obtenerSolicitudes()
+activate Service
+Service -> Repo : findAll()
+activate Repo
+Repo -> DB : SELECT * FROM solicitudes_eliminacion
+DB --> Repo : List<SolicitudEliminacion>
+deactivate Repo
+Repo --> Service : List<SolicitudEliminacion>
+deactivate Service
+Service --> Ctrl : List<SolicitudEliminacion>
+Ctrl -> Ctrl : model.addAttribute("solicitudes", lista)
+Ctrl --> Nav : 200 OK · solicitudes-eliminacion.html
+deactivate Ctrl
+Nav --> Coord : muestra solicitudes-eliminacion.html
+deactivate Nav
+
+@enduml

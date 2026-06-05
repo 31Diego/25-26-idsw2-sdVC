@@ -31,6 +31,7 @@ public class Proyecto {
     private LocalDate fechaFin;
 
     private String documentacion;
+    
 
     @ManyToMany
     @JoinTable(

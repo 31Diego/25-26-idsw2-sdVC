@@ -1,0 +1,27 @@
+@startuml abrirInvestigador-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":INVESTIGADORES_ABIERTOS" as InvestigadoresAbiertos
+
+package abrirInvestigador as "abrirInvestigador() — Investigador" {
+    rectangle #629EF9 InvestigadorView
+    rectangle #b5bd68 InvestigadorController
+    rectangle #F2AC4E InvestigadorRepository
+    rectangle #F2AC4E Investigador
+}
+
+rectangle #CDEBA5 ":INVESTIGADOR_ABIERTO" as InvestigadorAbierto
+rectangle #CDEBA5 ":INVESTIGADORES_ABIERTOS" as InvestigadoresSalida
+
+InvestigadoresAbiertos -r-> InvestigadorView: abrirInvestigador(id)
+
+InvestigadorView -d-> InvestigadorController: obtenerInvestigador(id) : Investigador
+
+InvestigadorController --> InvestigadorRepository: obtenerPorId(id) : Investigador
+
+InvestigadorRepository -- Investigador
+
+InvestigadorView ..> InvestigadorAbierto: investigadorMostrado()
+InvestigadorView ..> InvestigadoresSalida: abrirInvestigadores()
+
+@enduml

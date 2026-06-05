@@ -1,0 +1,31 @@
+@startuml editarPublicacion-investigador-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":MI_PUBLICACION_ABIERTA" as MiPublicacionAbierta
+
+package editarPublicacion as "editarPublicacion() — Investigador" {
+    rectangle #629EF9 EditarPublicacionView
+    rectangle #b5bd68 PublicacionController
+    rectangle #F2AC4E PublicacionRepository
+    rectangle #F2AC4E Publicacion
+}
+
+rectangle #CDEBA5 ":MI_PUBLICACION_ABIERTA" as MiPublicacionSalida
+
+MiPublicacionAbierta -r-> EditarPublicacionView: editarPublicacion()
+
+EditarPublicacionView -d-> PublicacionController: obtenerPublicacion(id) : Publicacion
+
+PublicacionController --> PublicacionRepository: obtenerPorId(id) : Publicacion
+
+PublicacionRepository -- Publicacion
+
+EditarPublicacionView --> PublicacionController: modificarCampos(datos) : void
+
+EditarPublicacionView --> PublicacionController: guardarPublicacion(datos) : Publicacion
+
+PublicacionController --> PublicacionRepository: actualizar(publicacion) : Publicacion
+
+EditarPublicacionView ..> MiPublicacionSalida: edicionFinalizada()
+
+@enduml
