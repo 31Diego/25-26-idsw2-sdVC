@@ -4,7 +4,6 @@ import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
 import com.funiber.gipf.services.InvestigadorService;
 import com.funiber.gipf.services.ProyectoService;
-import com.funiber.gipf.services.ProyectosService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,31 +16,28 @@ import java.util.List;
 public class ProyectoController {
 
     private final ProyectoService proyectoService;
-    private final ProyectosService proyectosService;
     private final InvestigadorService investigadorService;
 
     public ProyectoController(ProyectoService proyectoService,
-                               ProyectosService proyectosService,
-                               InvestigadorService investigadorService) {
+            InvestigadorService investigadorService) {
         this.proyectoService = proyectoService;
-        this.proyectosService = proyectosService;
         this.investigadorService = investigadorService;
     }
 
     @GetMapping("/proyectos")
     public String abrirProyectos(@RequestParam(required = false) String criterio,
-                                  @AuthenticationPrincipal Investigador investigador,
-                                  Model model) {
+            @AuthenticationPrincipal Investigador investigador,
+            Model model) {
         boolean esCoordinador = "COORDINADOR".equals(investigador.getRol());
         if (criterio != null && !criterio.isBlank()) {
             model.addAttribute("proyectos", esCoordinador
-                    ? proyectosService.filtrarProyectos(criterio)
-                    : proyectosService.filtrarProyectosDeInvestigador(investigador, criterio));
+                    ? proyectoService.filtrarProyectos(criterio)
+                    : proyectoService.filtrarProyectosDeInvestigador(investigador, criterio));
             model.addAttribute("criterio", criterio);
         } else {
             model.addAttribute("proyectos", esCoordinador
-                    ? proyectosService.obtenerProyectos()
-                    : proyectosService.obtenerProyectosDeInvestigador(investigador));
+                    ? proyectoService.obtenerProyectos()
+                    : proyectoService.obtenerProyectosDeInvestigador(investigador));
         }
         return "proyectos";
     }
@@ -60,8 +56,8 @@ public class ProyectoController {
 
     @GetMapping("/proyectos/{id}")
     public String abrirProyecto(@PathVariable Long id,
-                                 @AuthenticationPrincipal Investigador investigador,
-                                 Model model) {
+            @AuthenticationPrincipal Investigador investigador,
+            Model model) {
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
         if ("INVESTIGADOR".equals(investigador.getRol()) &&
                 proyecto.getInvestigadores().stream().noneMatch(inv -> inv.getId().equals(investigador.getId()))) {
@@ -97,8 +93,8 @@ public class ProyectoController {
 
     @GetMapping("/proyectos/{id}/investigadores")
     public String abrirInvestigadoresDeProyecto(@PathVariable Long id,
-                                                 @AuthenticationPrincipal Investigador investigador,
-                                                 Model model) {
+            @AuthenticationPrincipal Investigador investigador,
+            Model model) {
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
         if ("INVESTIGADOR".equals(investigador.getRol()) &&
                 proyecto.getInvestigadores().stream().noneMatch(inv -> inv.getId().equals(investigador.getId()))) {
@@ -133,8 +129,8 @@ public class ProyectoController {
     @GetMapping("/proyectos/{pId}/investigadores/{iId}/eliminar")
     @PreAuthorize("hasRole('COORDINADOR')")
     public String mostrarConfirmacionEliminarInvestigador(@PathVariable Long pId,
-                                                           @PathVariable Long iId,
-                                                           Model model) {
+            @PathVariable Long iId,
+            Model model) {
         model.addAttribute("proyecto", proyectoService.obtenerProyecto(pId));
         model.addAttribute("investigador", investigadorService.obtenerInvestigador(iId));
         return "eliminar-investigador";

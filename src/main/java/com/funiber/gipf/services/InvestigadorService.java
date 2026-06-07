@@ -20,9 +20,9 @@ public class InvestigadorService {
     private final PasswordEncoder passwordEncoder;
 
     public InvestigadorService(InvestigadorRepository investigadorRepository,
-                               ProyectoRepository proyectoRepository,
-                               SolicitudEliminacionRepository solicitudEliminacionRepository,
-                               PasswordEncoder passwordEncoder) {
+            ProyectoRepository proyectoRepository,
+            SolicitudEliminacionRepository solicitudEliminacionRepository,
+            PasswordEncoder passwordEncoder) {
         this.investigadorRepository = investigadorRepository;
         this.proyectoRepository = proyectoRepository;
         this.solicitudEliminacionRepository = solicitudEliminacionRepository;
@@ -39,7 +39,8 @@ public class InvestigadorService {
         return investigadorRepository.save(investigador);
     }
 
-    public void actualizarPerfil(Long id, String nombre, String apellidos, String campo, String carrera, String master, String username, String password) {
+    public void actualizarPerfil(Long id, String nombre, String apellidos, String campo, String carrera, String master,
+            String username, String password) {
         Investigador inv = investigadorRepository.findById(id).orElseThrow();
         inv.setNombre(nombre);
         inv.setApellidos(apellidos);
@@ -53,7 +54,8 @@ public class InvestigadorService {
         investigadorRepository.save(inv);
     }
 
-    public void actualizarPerfilConRol(Long id, String nombre, String apellidos, String campo, String carrera, String master, String rol, String username, String password) {
+    public void actualizarPerfilConRol(Long id, String nombre, String apellidos, String campo, String carrera,
+            String master, String rol, String username, String password) {
         Investigador inv = investigadorRepository.findById(id).orElseThrow();
         inv.setNombre(nombre);
         inv.setApellidos(apellidos);
@@ -70,6 +72,10 @@ public class InvestigadorService {
 
     public List<Investigador> obtenerTodosLosInvestigadores() {
         return investigadorRepository.findAll();
+    }
+
+    public List<Investigador> filtrarInvestigadores(String criterio) {
+        return investigadorRepository.buscarPorCriterio(criterio);
     }
 
     public Investigador obtenerInvestigadorPorUsername(String username) {

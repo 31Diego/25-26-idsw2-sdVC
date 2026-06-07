@@ -15,7 +15,7 @@ public class EntregableController {
     private final ProyectoService proyectoService;
 
     public EntregableController(EntregableService entregableService,
-                                 ProyectoService proyectoService) {
+            ProyectoService proyectoService) {
         this.entregableService = entregableService;
         this.proyectoService = proyectoService;
     }
@@ -36,8 +36,8 @@ public class EntregableController {
 
     @PostMapping("/proyectos/{proyectoId}/entregables/nuevo")
     public String guardarEntregable(@PathVariable Long proyectoId,
-                                    @ModelAttribute Entregable entregable,
-                                    @RequestParam("archivo") MultipartFile archivo) throws Exception {
+            @ModelAttribute Entregable entregable,
+            @RequestParam("archivo") MultipartFile archivo) throws Exception {
         entregableService.guardarEntregable(entregable, archivo, proyectoId);
         return "redirect:/proyectos/" + proyectoId + "/entregables";
     }
@@ -58,9 +58,9 @@ public class EntregableController {
 
     @PostMapping("/proyectos/{proyectoId}/entregables/{id}/editar")
     public String guardarCambios(@PathVariable Long proyectoId,
-                                 @PathVariable Long id,
-                                 @ModelAttribute Entregable datos,
-                                 @RequestParam("archivo") MultipartFile archivo) throws Exception {
+            @PathVariable Long id,
+            @ModelAttribute Entregable datos,
+            @RequestParam("archivo") MultipartFile archivo) throws Exception {
         entregableService.actualizarEntregable(id, datos, archivo);
         return "redirect:/proyectos/" + proyectoId + "/entregables/" + id;
     }

@@ -4,6 +4,8 @@ skinparam linetype ortho
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
 participant "EliminacionController\n@Controller\nGET|POST /investigadores/{id}/solicitar-eliminacion" as Ctrl
+participant "InvestigadorService\n@Service" as IService
+participant "InvestigadorRepository\nJpaRepository" as IRepo
 participant "SolicitudEliminacionService\n@Service" as Service
 participant "SolicitudEliminacionRepository\nJpaRepository" as Repo
 database "H2" as DB
@@ -12,12 +14,30 @@ Coord -> Nav : clic en "Solicitar eliminación de perfil"
 activate Nav
 Nav -> Ctrl : GET /investigadores/{id}/solicitar-eliminacion
 activate Ctrl
+Ctrl -> IService : obtenerInvestigador(id)
+activate IService
+IService -> IRepo : findById(id)
+activate IRepo
+IRepo -> DB : SELECT * FROM investigadores WHERE id = ?
+DB --> IRepo : Investigador
+deactivate IRepo
+IRepo --> IService : Investigador
+deactivate IService
+IService --> Ctrl : Investigador
 Ctrl -> Ctrl : model.addAttribute("investigadorDestino", investigador)
 Ctrl --> Nav : 200 OK · solicitar-eliminacion.html
 deactivate Ctrl
 Nav --> Coord : muestra formulario de solicitud
 Nav -> Ctrl : POST /investigadores/{id}/solicitar-eliminacion\n[motivo]
 activate Ctrl
+Ctrl -> IService : obtenerInvestigador(id)
+activate IService
+IService -> IRepo : findById(id)
+IRepo -> DB : SELECT * FROM investigadores WHERE id = ?
+DB --> IRepo : Investigador
+IRepo --> IService : Investigador
+deactivate IService
+IService --> Ctrl : Investigador
 Ctrl -> Service : crearSolicitud(investigador, motivo)
 activate Service
 Service -> Repo : save(SolicitudEliminacion)

@@ -32,9 +32,9 @@ deactivate Nav
 
 Inv -> Nav : rellena campos y pulsa "Guardar"
 activate Nav
-Nav -> CtrlPost : POST /perfil/editar (nombre, apellidos, campo, carrera, master)
+Nav -> CtrlPost : POST /perfil/editar (nombre, apellidos, campo, carrera, master, username, password)
 activate CtrlPost
-CtrlPost -> Service : actualizarPerfil(id, nombre, apellidos, campo, carrera, master)
+CtrlPost -> Service : actualizarPerfil(id, nombre, apellidos, campo, carrera, master, username, password)
 activate Service
 Service -> Repo : findById(id)
 activate Repo

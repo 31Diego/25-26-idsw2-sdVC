@@ -3,7 +3,7 @@ skinparam linetype ortho
 
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
-participant "CrearEntregableController\n@Controller\nGET|POST /proyectos/{proyectoId}/entregables/nuevo" as Ctrl
+participant "EntregableController\n@Controller\nGET|POST /proyectos/{proyectoId}/entregables/nuevo" as Ctrl
 participant "EntregableService\n@Service" as Service
 participant "ProyectoRepository\nJpaRepository" as ProyectoRepo
 participant "EntregableRepository\nJpaRepository" as Repo

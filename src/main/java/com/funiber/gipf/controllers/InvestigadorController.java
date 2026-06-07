@@ -1,7 +1,6 @@
 package com.funiber.gipf.controllers;
 
 import com.funiber.gipf.models.Investigador;
-import com.funiber.gipf.services.InvestigadoresService;
 import com.funiber.gipf.services.InvestigadorService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -12,21 +11,18 @@ import org.springframework.web.bind.annotation.*;
 public class InvestigadorController {
 
     private final InvestigadorService investigadorService;
-    private final InvestigadoresService investigadoresService;
 
-    public InvestigadorController(InvestigadorService investigadorService,
-                                   InvestigadoresService investigadoresService) {
+    public InvestigadorController(InvestigadorService investigadorService) {
         this.investigadorService = investigadorService;
-        this.investigadoresService = investigadoresService;
     }
 
     @GetMapping("/investigadores")
     public String abrirInvestigadores(@RequestParam(required = false) String criterio, Model model) {
         if (criterio != null && !criterio.isBlank()) {
-            model.addAttribute("investigadores", investigadoresService.filtrarInvestigadores(criterio));
+            model.addAttribute("investigadores", investigadorService.filtrarInvestigadores(criterio));
             model.addAttribute("criterio", criterio);
         } else {
-            model.addAttribute("investigadores", investigadoresService.obtenerInvestigadores());
+            model.addAttribute("investigadores", investigadorService.obtenerTodosLosInvestigadores());
         }
         return "investigadores";
     }

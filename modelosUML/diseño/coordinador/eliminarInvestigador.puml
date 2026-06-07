@@ -3,7 +3,7 @@ skinparam linetype ortho
 
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
-participant "EliminarInvestigadorController\n@Controller\nGET|POST /proyectos/{pId}/investigadores/{iId}/eliminar" as Ctrl
+participant "ProyectoController\n@Controller\nGET|POST /proyectos/{pId}/investigadores/{iId}/eliminar" as Ctrl
 participant "ProyectoService\n@Service" as PService
 participant "InvestigadorService\n@Service" as IService
 participant "ProyectoRepository\nJpaRepository" as PRepo

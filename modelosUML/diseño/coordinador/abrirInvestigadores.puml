@@ -3,8 +3,8 @@ skinparam linetype ortho
 
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
-participant "InvestigadoresController\n@Controller\nGET /investigadores" as Ctrl
-participant "InvestigadoresService\n@Service" as Service
+participant "InvestigadorController\n@Controller\nGET /investigadores" as Ctrl
+participant "InvestigadorService\n@Service" as Service
 participant "InvestigadorRepository\nJpaRepository" as Repo
 database "H2" as DB
 
@@ -14,7 +14,7 @@ Nav -> Ctrl : GET /investigadores
 activate Ctrl
 
 alt sin filtro
-    Ctrl -> Service : obtenerInvestigadores()
+    Ctrl -> Service : obtenerTodosLosInvestigadores()
     activate Service
     Service -> Repo : findAll()
     activate Repo

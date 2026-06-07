@@ -3,8 +3,9 @@ skinparam linetype ortho
 
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
-participant "EntregablesController\n@Controller\nGET /proyectos/{proyectoId}/entregables" as Ctrl
+participant "EntregableController\n@Controller\nGET /proyectos/{proyectoId}/entregables" as Ctrl
 participant "EntregableService\n@Service" as Service
+participant "ProyectoService\n@Service" as PService
 participant "EntregableRepository\nJpaRepository" as Repo
 participant "ProyectoRepository\nJpaRepository" as ProyectoRepo
 database "H2" as DB
@@ -23,12 +24,15 @@ deactivate Repo
 Repo --> Service : List<Entregable>
 deactivate Service
 Service --> Ctrl : List<Entregable>
-Ctrl -> ProyectoRepo : findById(proyectoId)
+Ctrl -> PService : obtenerProyecto(proyectoId)
+activate PService
+PService -> ProyectoRepo : findById(proyectoId)
 activate ProyectoRepo
 ProyectoRepo -> DB : SELECT * FROM proyectos WHERE id = ?
 DB --> ProyectoRepo : Proyecto
 deactivate ProyectoRepo
-ProyectoRepo --> Ctrl : Proyecto
+PService --> Ctrl : Proyecto
+deactivate PService
 Ctrl -> Ctrl : model.addAttribute("entregables", ...)\nmodel.addAttribute("proyecto", ...)
 Ctrl --> Nav : 200 OK · entregables.html
 deactivate Ctrl
