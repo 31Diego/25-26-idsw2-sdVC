@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface EntregableRepository extends JpaRepository<Entregable, Long> {
     List<Entregable> findByProyectoId(Long proyectoId);
+    void deleteByProyectoId(Long proyectoId);
 }

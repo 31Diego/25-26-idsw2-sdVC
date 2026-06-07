@@ -24,10 +24,6 @@
         <a th:href="@{/investigadores/{id}/solicitar-eliminacion(id=${investigador.id})}">Solicitar eliminación de perfil</a>
     </li>
 
-    <li sec:authorize="hasRole('COORDINADOR')" th:if="${!esPropioPeril}">
-        <a th:href="@{/investigadores/{id}/eliminar-perfil(id=${investigador.id})}">Eliminar perfil</a>
-    </li>
-
     <li sec:authorize="hasRole('COORDINADOR')">
         <a th:href="@{/solicitudes-eliminacion}">Ver solicitudes de eliminación</a>
     </li>

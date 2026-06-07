@@ -3,7 +3,7 @@ skinparam linetype ortho
 
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
-participant "SolicitudesEliminacionController\n@Controller\nGET /solicitudes-eliminacion" as Ctrl
+participant "EliminacionController\n@Controller\nGET /solicitudes-eliminacion" as Ctrl
 participant "SolicitudEliminacionService\n@Service" as Service
 participant "SolicitudEliminacionRepository\nJpaRepository" as Repo
 database "H2" as DB

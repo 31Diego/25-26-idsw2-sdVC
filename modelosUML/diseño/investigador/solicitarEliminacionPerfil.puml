@@ -3,7 +3,7 @@ skinparam linetype ortho
 
 actor "Investigador" as Inv
 participant "Navegador" as Nav
-participant "SolicitarEliminacionController\n@Controller\nGET|POST /investigadores/{id}/solicitar-eliminacion" as Ctrl
+participant "EliminacionController\n@Controller\nGET|POST /investigadores/{id}/solicitar-eliminacion" as Ctrl
 participant "SolicitudEliminacionService\n@Service" as Service
 participant "SolicitudEliminacionRepository\nJpaRepository" as Repo
 database "H2" as DB
@@ -36,9 +36,9 @@ deactivate Repo
 Repo --> Service : SolicitudEliminacion
 deactivate Service
 Service --> Ctrl : SolicitudEliminacion
-Ctrl --> Nav : 302 redirect → /perfil/opciones
+Ctrl --> Nav : 302 redirect → /login?logout\n(sesión invalidada)
 deactivate Ctrl
-Nav --> Inv : vuelve a opciones de perfil
+Nav --> Inv : redirige al login
 deactivate Nav
 
 @enduml

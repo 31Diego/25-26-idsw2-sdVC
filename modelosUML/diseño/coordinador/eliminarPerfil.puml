@@ -3,21 +3,13 @@ skinparam linetype ortho
 
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
-participant "EliminarPerfilController\n@Controller\nGET|POST /investigadores/{id}/eliminar-perfil" as Ctrl
+participant "EliminacionController\n@Controller\nPOST /investigadores/{id}/eliminar-perfil" as Ctrl
 participant "InvestigadorService\n@Service" as Service
 participant "ProyectoRepository\nSolicitudEliminacionRepository\nInvestigadorRepository\nJpaRepository" as Repos
 database "H2" as DB
 
-Coord -> Nav : clic en "Eliminar perfil"
+Coord -> Nav : clic en "Aprobar y eliminar perfil"\n(desde solicitud-eliminacion.html)
 activate Nav
-Nav -> Ctrl : GET /investigadores/{id}/eliminar-perfil
-activate Ctrl
-Ctrl -> Ctrl : model.addAttribute("investigador", investigador)
-Ctrl --> Nav : 200 OK · eliminar-perfil.html
-deactivate Ctrl
-Nav --> Coord : muestra página de confirmación
-
-Coord -> Nav : confirma eliminación
 Nav -> Ctrl : POST /investigadores/{id}/eliminar-perfil
 activate Ctrl
 Ctrl -> Service : eliminarPerfil(id)
@@ -30,9 +22,9 @@ Repos -> DB : DELETE / UPDATE proyectos\nDELETE solicitudes\nDELETE investigador
 DB --> Repos : OK
 deactivate Repos
 deactivate Service
-Ctrl --> Nav : 302 redirect → /investigadores
+Ctrl --> Nav : 302 redirect → /solicitudes-eliminacion
 deactivate Ctrl
-Nav --> Coord : vuelve a la lista de investigadores
+Nav --> Coord : vuelve a la lista de solicitudes
 deactivate Nav
 
 @enduml

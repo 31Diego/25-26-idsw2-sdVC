@@ -33,4 +33,8 @@ public class SolicitudEliminacionService {
         s.setEstado("PENDIENTE");
         return solicitudEliminacionRepository.save(s);
     }
+
+    public void denegarSolicitud(Long id) {
+        solicitudEliminacionRepository.deleteById(id);
+    }
 }

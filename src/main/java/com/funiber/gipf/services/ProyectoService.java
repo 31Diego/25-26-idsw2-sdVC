@@ -2,16 +2,21 @@ package com.funiber.gipf.services;
 
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
+import com.funiber.gipf.repositories.EntregableRepository;
 import com.funiber.gipf.repositories.ProyectoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProyectoService {
 
     private final ProyectoRepository proyectoRepository;
+    private final EntregableRepository entregableRepository;
 
-    public ProyectoService(ProyectoRepository proyectoRepository) {
+    public ProyectoService(ProyectoRepository proyectoRepository,
+                           EntregableRepository entregableRepository) {
         this.proyectoRepository = proyectoRepository;
+        this.entregableRepository = entregableRepository;
     }
 
     public Proyecto obtenerProyecto(Long id) {
@@ -34,7 +39,9 @@ public class ProyectoService {
         return proyectoRepository.save(proyecto);
     }
 
+    @Transactional
     public void eliminarProyecto(Long id) {
+        entregableRepository.deleteByProyectoId(id);
         proyectoRepository.deleteById(id);
     }
 

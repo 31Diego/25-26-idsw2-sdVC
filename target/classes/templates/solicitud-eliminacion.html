@@ -16,8 +16,13 @@
 <p><strong>Estado:</strong> <span th:text="${solicitud.estado}"></span></p>
 
 <br>
-<a th:href="@{/investigadores/{id}/opciones(id=${solicitud.investigador.id})}">Ver perfil del investigador</a>
-<br><br>
+<form th:action="@{/investigadores/{id}/eliminar-perfil(id=${solicitud.investigador.id})}" method="post">
+    <button type="submit">Aprobar y eliminar perfil</button>
+</form>
+<form th:action="@{/solicitudes-eliminacion/{id}/denegar(id=${solicitud.id})}" method="post">
+    <button type="submit">Denegar</button>
+</form>
+<br>
 <a th:href="@{/solicitudes-eliminacion}">Volver a la lista</a>
 
 </body>

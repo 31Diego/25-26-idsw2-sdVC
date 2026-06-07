@@ -3,8 +3,8 @@ skinparam linetype ortho
 
 actor "Investigador" as Inv
 participant "Navegador" as Nav
-participant "EditarPerfilController\n@Controller\nGET /perfil/editar" as CtrlGet
-participant "EditarPerfilController\n@Controller\nPOST /perfil/editar" as CtrlPost
+participant "PerfilController\n@Controller\nGET /perfil/editar" as CtrlGet
+participant "PerfilController\n@Controller\nPOST /perfil/editar" as CtrlPost
 participant "InvestigadorService\n@Service" as Service
 participant "InvestigadorRepository\nJpaRepository" as Repo
 database "H2" as DB
