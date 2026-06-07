@@ -2,6 +2,7 @@ package com.funiber.gipf.services;
 
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
+import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.repositories.EntregableRepository;
 import com.funiber.gipf.repositories.ProyectoRepository;
 import org.springframework.stereotype.Service;
@@ -71,5 +72,23 @@ public class ProyectoService {
 
     public List<Proyecto> filtrarProyectosDeInvestigador(Investigador investigador, String criterio) {
         return proyectoRepository.buscarPorCriterioEInvestigador(investigador, criterio);
+    }
+
+    public List<Proyecto> obtenerProyectosParaUsuario(Investigador investigador, String criterio) {
+        boolean esCoordinador = investigador.getRol() == Rol.COORDINADOR;
+        if (criterio != null && !criterio.isBlank()) {
+            return esCoordinador
+                    ? filtrarProyectos(criterio)
+                    : filtrarProyectosDeInvestigador(investigador, criterio);
+        }
+        return esCoordinador
+                ? obtenerProyectos()
+                : obtenerProyectosDeInvestigador(investigador);
+    }
+
+    public boolean tieneAcceso(Proyecto proyecto, Investigador investigador) {
+        if (investigador.getRol() == Rol.COORDINADOR) return true;
+        return proyecto.getInvestigadores().stream()
+                .anyMatch(inv -> inv.getId().equals(investigador.getId()));
     }
 }

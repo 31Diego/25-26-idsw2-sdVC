@@ -5,10 +5,10 @@ actor "Coordinador" as Coord
 participant "Navegador" as Nav
 participant "EntregableController\n@Controller\nGET|POST /proyectos/{proyectoId}/entregables/nuevo" as Ctrl
 participant "EntregableService\n@Service" as Service
+participant "ArchivoService\n@Service" as ArchivoSvc
 participant "ProyectoRepository\nJpaRepository" as ProyectoRepo
 participant "EntregableRepository\nJpaRepository" as Repo
 database "H2" as DB
-participant "Sistema de ficheros\n./archivos/" as FS
 
 Coord -> Nav : clic en "Nuevo entregable"
 activate Nav
@@ -38,7 +38,8 @@ ProyectoRepo --> Service : Proyecto
 Service -> Service : entregable.setProyecto(proyecto)
 
 alt archivo adjunto presente
-    Service -> FS : Files.createDirectories(./archivos/)\nFiles.copy(archivo, ./archivos/{nombre})
+    Service -> ArchivoSvc : guardarArchivo(archivo)
+    ArchivoSvc --> Service : nombre
     Service -> Service : entregable.setRutaArchivo(nombre)
 end
 

@@ -23,11 +23,12 @@ Repo --> Service : Proyecto
 deactivate Service
 Service --> Ctrl : Proyecto
 
-note over Ctrl : rol == INVESTIGADOR\nverifica membresía
+Ctrl -> Service : tieneAcceso(proyecto, investigador)
+Service --> Ctrl : boolean
 
-alt investigador NO es miembro
+alt !tieneAcceso
     Ctrl --> Nav : 302 redirect → /proyectos
-else investigador ES miembro
+else tieneAcceso
     Ctrl -> Ctrl : model.addAttribute("proyecto", proyecto)\nmodel.addAttribute("investigadores", proyecto.getInvestigadores())
     Ctrl --> Nav : 200 OK · investigadores-proyecto.html\n(solo consulta, sin gestión)
 end

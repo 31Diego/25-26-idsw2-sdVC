@@ -2,6 +2,7 @@ package com.funiber.gipf;
 
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
+import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.repositories.InvestigadorRepository;
 import com.funiber.gipf.repositories.ProyectoRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -35,12 +36,12 @@ public class DataLoader implements CommandLineRunner {
             admin.setInstitucion("FUNIBER");
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("admin"));
-            admin.setRol("COORDINADOR");
+            admin.setRol(Rol.COORDINADOR);
             investigadorRepository.save(admin);
         }
 
         boolean hayInvestigador = investigadorRepository.findAll().stream()
-                .anyMatch(i -> "INVESTIGADOR".equals(i.getRol()));
+                .anyMatch(i -> i.getRol() == Rol.INVESTIGADOR);
         if (!hayInvestigador) {
             Investigador maria = new Investigador();
             maria.setNombre("María");
@@ -49,7 +50,7 @@ public class DataLoader implements CommandLineRunner {
             maria.setInstitucion("FUNIBER");
             maria.setUsername("maria");
             maria.setPassword(passwordEncoder.encode("maria"));
-            maria.setRol("INVESTIGADOR");
+            maria.setRol(Rol.INVESTIGADOR);
             maria.setCampo("Energías Renovables");
             investigadorRepository.save(maria);
 

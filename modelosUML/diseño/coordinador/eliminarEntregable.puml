@@ -5,9 +5,9 @@ actor "Coordinador" as Coord
 participant "Navegador" as Nav
 participant "EntregableController\n@Controller\nGET|POST /proyectos/{proyectoId}/entregables/{id}/eliminar" as Ctrl
 participant "EntregableService\n@Service" as Service
+participant "ArchivoService\n@Service" as ArchivoSvc
 participant "EntregableRepository\nJpaRepository" as Repo
 database "H2" as DB
-participant "Sistema de ficheros\n./archivos/" as FS
 
 Coord -> Nav : clic en "Eliminar"
 activate Nav
@@ -44,7 +44,7 @@ deactivate Repo
 Repo --> Service : Entregable
 
 alt tiene archivo adjunto
-    Service -> FS : Files.deleteIfExists(./archivos/{rutaArchivo})
+    Service -> ArchivoSvc : eliminarArchivo(rutaArchivo)
 end
 
 Service -> Repo : deleteById(id)

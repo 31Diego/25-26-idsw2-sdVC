@@ -1,6 +1,7 @@
 package com.funiber.gipf.controllers;
 
 import com.funiber.gipf.models.Investigador;
+import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.services.InvestigadorService;
 import com.funiber.gipf.services.SolicitudEliminacionService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,16 +20,16 @@ public class EliminacionController {
     private final SolicitudEliminacionService solicitudEliminacionService;
 
     public EliminacionController(InvestigadorService investigadorService,
-                                  SolicitudEliminacionService solicitudEliminacionService) {
+            SolicitudEliminacionService solicitudEliminacionService) {
         this.investigadorService = investigadorService;
         this.solicitudEliminacionService = solicitudEliminacionService;
     }
 
     @GetMapping("/investigadores/{id}/solicitar-eliminacion")
     public String mostrarFormularioSolicitud(@PathVariable Long id,
-                                             @AuthenticationPrincipal Investigador investigador,
-                                             Model model) {
-        if ("INVESTIGADOR".equals(investigador.getRol()) && !investigador.getId().equals(id)) {
+            @AuthenticationPrincipal Investigador investigador,
+            Model model) {
+        if (investigador.getRol() == Rol.INVESTIGADOR && !investigador.getId().equals(id)) {
             return "redirect:/perfil/opciones";
         }
         model.addAttribute("investigadorDestino", investigadorService.obtenerInvestigador(id));
@@ -37,18 +38,19 @@ public class EliminacionController {
 
     @PostMapping("/investigadores/{id}/solicitar-eliminacion")
     public String enviarSolicitud(@PathVariable Long id,
-                                   @AuthenticationPrincipal Investigador investigador,
-                                   @RequestParam String motivo,
-                                   HttpServletRequest request) {
-        if ("INVESTIGADOR".equals(investigador.getRol()) && !investigador.getId().equals(id)) {
+            @AuthenticationPrincipal Investigador investigador,
+            @RequestParam String motivo,
+            HttpServletRequest request) {
+        if (investigador.getRol() == Rol.INVESTIGADOR && !investigador.getId().equals(id)) {
             return "redirect:/perfil/opciones";
         }
         Investigador objetivo = investigadorService.obtenerInvestigador(id);
         solicitudEliminacionService.crearSolicitud(objetivo, motivo);
-        if ("INVESTIGADOR".equals(investigador.getRol())) {
+        if (investigador.getRol() == Rol.INVESTIGADOR) {
             SecurityContextHolder.clearContext();
             HttpSession session = request.getSession(false);
-            if (session != null) session.invalidate();
+            if (session != null)
+                session.invalidate();
             return "redirect:/login?logout";
         }
         return "redirect:/investigadores/" + id + "/opciones";
@@ -78,7 +80,7 @@ public class EliminacionController {
     @PostMapping("/investigadores/{id}/eliminar-perfil")
     @PreAuthorize("hasRole('COORDINADOR')")
     public String eliminarPerfil(@PathVariable Long id,
-                                  @AuthenticationPrincipal Investigador coordinador) {
+            @AuthenticationPrincipal Investigador coordinador) {
         if (coordinador.getId().equals(id)) {
             return "redirect:/investigadores/" + id + "/opciones";
         }

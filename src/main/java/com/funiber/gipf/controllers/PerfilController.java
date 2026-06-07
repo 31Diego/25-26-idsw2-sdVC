@@ -1,5 +1,6 @@
 package com.funiber.gipf.controllers;
 
+import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.services.InvestigadorService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,8 @@ public class PerfilController {
 
     @GetMapping("/perfil/opciones")
     public String abrirOpcionesPerfilPropio(Authentication authentication, Model model) {
-        model.addAttribute("investigador", investigadorService.obtenerInvestigadorPorUsername(authentication.getName()));
+        model.addAttribute("investigador",
+                investigadorService.obtenerInvestigadorPorUsername(authentication.getName()));
         model.addAttribute("esPropioPeril", true);
         return "opciones-perfil";
     }
@@ -32,24 +34,26 @@ public class PerfilController {
 
     @GetMapping("/perfil/editar")
     public String mostrarFormularioEditarPropio(Authentication authentication, Model model) {
-        model.addAttribute("investigador", investigadorService.obtenerInvestigadorPorUsername(authentication.getName()));
+        model.addAttribute("investigador",
+                investigadorService.obtenerInvestigadorPorUsername(authentication.getName()));
         model.addAttribute("esPropioPeril", true);
         return "editar-perfil";
     }
 
     @PostMapping("/perfil/editar")
     public String guardarEditarPropio(Authentication authentication,
-                                      @RequestParam String nombre,
-                                      @RequestParam String apellidos,
-                                      @RequestParam String campo,
-                                      @RequestParam String carrera,
-                                      @RequestParam String master,
-                                      @RequestParam String username,
-                                      @RequestParam(required = false) String password,
-                                      @RequestParam(required = false) String rol) {
+            @RequestParam String nombre,
+            @RequestParam String apellidos,
+            @RequestParam String campo,
+            @RequestParam String carrera,
+            @RequestParam String master,
+            @RequestParam String username,
+            @RequestParam(required = false) String password,
+            @RequestParam(required = false) Rol rol) {
         Long id = investigadorService.obtenerInvestigadorPorUsername(authentication.getName()).getId();
-        if (rol != null && !rol.isBlank()) {
-            investigadorService.actualizarPerfilConRol(id, nombre, apellidos, campo, carrera, master, rol, username, password);
+        if (rol != null) {
+            investigadorService.actualizarPerfilConRol(id, nombre, apellidos, campo, carrera, master, rol, username,
+                    password);
         } else {
             investigadorService.actualizarPerfil(id, nombre, apellidos, campo, carrera, master, username, password);
         }
@@ -67,15 +71,16 @@ public class PerfilController {
     @PostMapping("/investigadores/{id}/editar")
     @PreAuthorize("hasRole('COORDINADOR')")
     public String guardarEditarInvestigador(@PathVariable Long id,
-                                            @RequestParam String nombre,
-                                            @RequestParam String apellidos,
-                                            @RequestParam String campo,
-                                            @RequestParam String carrera,
-                                            @RequestParam String master,
-                                            @RequestParam String rol,
-                                            @RequestParam String username,
-                                            @RequestParam(required = false) String password) {
-        investigadorService.actualizarPerfilConRol(id, nombre, apellidos, campo, carrera, master, rol, username, password);
+            @RequestParam String nombre,
+            @RequestParam String apellidos,
+            @RequestParam String campo,
+            @RequestParam String carrera,
+            @RequestParam String master,
+            @RequestParam Rol rol,
+            @RequestParam String username,
+            @RequestParam(required = false) String password) {
+        investigadorService.actualizarPerfilConRol(id, nombre, apellidos, campo, carrera, master, rol, username,
+                password);
         return "redirect:/investigadores/" + id + "/opciones";
     }
 

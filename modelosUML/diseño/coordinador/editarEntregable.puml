@@ -5,9 +5,9 @@ actor "Coordinador" as Coord
 participant "Navegador" as Nav
 participant "EntregableController\n@Controller\nGET|POST /proyectos/{proyectoId}/entregables/{id}/editar" as Ctrl
 participant "EntregableService\n@Service" as Service
+participant "ArchivoService\n@Service" as ArchivoSvc
 participant "EntregableRepository\nJpaRepository" as Repo
 database "H2" as DB
-participant "Sistema de ficheros\n./archivos/" as FS
 
 Coord -> Nav : clic en "Editar"
 activate Nav
@@ -45,7 +45,8 @@ Repo --> Service : Entregable
 Service -> Service : actualizar campos
 
 alt archivo nuevo adjunto
-    Service -> FS : Files.copy(archivo, ./archivos/{nombre},\nREPLACE_EXISTING)
+    Service -> ArchivoSvc : guardarArchivo(archivo)
+    ArchivoSvc --> Service : nombre
     Service -> Service : entregable.setRutaArchivo(nombre)
 end
 

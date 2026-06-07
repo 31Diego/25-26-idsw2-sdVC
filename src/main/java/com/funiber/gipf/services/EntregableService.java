@@ -7,24 +7,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 @Service
 public class EntregableService {
 
-    private static final Path CARPETA_ARCHIVOS = Paths.get("archivos");
-
     private final EntregableRepository entregableRepository;
     private final ProyectoRepository proyectoRepository;
+    private final ArchivoService archivoService;
 
     public EntregableService(EntregableRepository entregableRepository,
-                             ProyectoRepository proyectoRepository) {
+                             ProyectoRepository proyectoRepository,
+                             ArchivoService archivoService) {
         this.entregableRepository = entregableRepository;
         this.proyectoRepository = proyectoRepository;
+        this.archivoService = archivoService;
     }
 
     public List<Entregable> obtenerEntregablesDeProyecto(Long proyectoId) {
@@ -38,10 +35,7 @@ public class EntregableService {
     public Entregable guardarEntregable(Entregable entregable, MultipartFile archivo, Long proyectoId) throws IOException {
         entregable.setProyecto(proyectoRepository.findById(proyectoId).orElseThrow());
         if (archivo != null && !archivo.isEmpty()) {
-            Files.createDirectories(CARPETA_ARCHIVOS);
-            String nombre = archivo.getOriginalFilename();
-            Files.copy(archivo.getInputStream(), CARPETA_ARCHIVOS.resolve(nombre), StandardCopyOption.REPLACE_EXISTING);
-            entregable.setRutaArchivo(nombre);
+            entregable.setRutaArchivo(archivoService.guardarArchivo(archivo));
         }
         return entregableRepository.save(entregable);
     }
@@ -54,10 +48,7 @@ public class EntregableService {
         entregable.setEstado(datos.getEstado());
         entregable.setDescripcion(datos.getDescripcion());
         if (archivo != null && !archivo.isEmpty()) {
-            Files.createDirectories(CARPETA_ARCHIVOS);
-            String nombre = archivo.getOriginalFilename();
-            Files.copy(archivo.getInputStream(), CARPETA_ARCHIVOS.resolve(nombre), StandardCopyOption.REPLACE_EXISTING);
-            entregable.setRutaArchivo(nombre);
+            entregable.setRutaArchivo(archivoService.guardarArchivo(archivo));
         }
         return entregableRepository.save(entregable);
     }
@@ -65,7 +56,7 @@ public class EntregableService {
     public void eliminarEntregable(Long id) throws IOException {
         Entregable entregable = entregableRepository.findById(id).orElseThrow();
         if (entregable.getRutaArchivo() != null) {
-            Files.deleteIfExists(CARPETA_ARCHIVOS.resolve(entregable.getRutaArchivo()));
+            archivoService.eliminarArchivo(entregable.getRutaArchivo());
         }
         entregableRepository.deleteById(id);
     }

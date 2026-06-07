@@ -28,16 +28,9 @@ public class ProyectoController {
     public String abrirProyectos(@RequestParam(required = false) String criterio,
             @AuthenticationPrincipal Investigador investigador,
             Model model) {
-        boolean esCoordinador = "COORDINADOR".equals(investigador.getRol());
+        model.addAttribute("proyectos", proyectoService.obtenerProyectosParaUsuario(investigador, criterio));
         if (criterio != null && !criterio.isBlank()) {
-            model.addAttribute("proyectos", esCoordinador
-                    ? proyectoService.filtrarProyectos(criterio)
-                    : proyectoService.filtrarProyectosDeInvestigador(investigador, criterio));
             model.addAttribute("criterio", criterio);
-        } else {
-            model.addAttribute("proyectos", esCoordinador
-                    ? proyectoService.obtenerProyectos()
-                    : proyectoService.obtenerProyectosDeInvestigador(investigador));
         }
         return "proyectos";
     }
@@ -59,8 +52,7 @@ public class ProyectoController {
             @AuthenticationPrincipal Investigador investigador,
             Model model) {
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
-        if ("INVESTIGADOR".equals(investigador.getRol()) &&
-                proyecto.getInvestigadores().stream().noneMatch(inv -> inv.getId().equals(investigador.getId()))) {
+        if (!proyectoService.tieneAcceso(proyecto, investigador)) {
             return "redirect:/proyectos";
         }
         model.addAttribute("proyecto", proyecto);
@@ -96,8 +88,7 @@ public class ProyectoController {
             @AuthenticationPrincipal Investigador investigador,
             Model model) {
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
-        if ("INVESTIGADOR".equals(investigador.getRol()) &&
-                proyecto.getInvestigadores().stream().noneMatch(inv -> inv.getId().equals(investigador.getId()))) {
+        if (!proyectoService.tieneAcceso(proyecto, investigador)) {
             return "redirect:/proyectos";
         }
         model.addAttribute("proyecto", proyecto);

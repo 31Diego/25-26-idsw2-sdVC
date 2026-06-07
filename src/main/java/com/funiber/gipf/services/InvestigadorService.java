@@ -2,6 +2,7 @@ package com.funiber.gipf.services;
 
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
+import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.repositories.InvestigadorRepository;
 import com.funiber.gipf.repositories.ProyectoRepository;
 import com.funiber.gipf.repositories.SolicitudEliminacionRepository;
@@ -35,7 +36,7 @@ public class InvestigadorService {
 
     public Investigador guardarInvestigador(Investigador investigador) {
         investigador.setPassword(passwordEncoder.encode(investigador.getPassword()));
-        investigador.setRol("INVESTIGADOR");
+        investigador.setRol(Rol.INVESTIGADOR);
         return investigadorRepository.save(investigador);
     }
 
@@ -55,7 +56,7 @@ public class InvestigadorService {
     }
 
     public void actualizarPerfilConRol(Long id, String nombre, String apellidos, String campo, String carrera,
-            String master, String rol, String username, String password) {
+            String master, Rol rol, String username, String password) {
         Investigador inv = investigadorRepository.findById(id).orElseThrow();
         inv.setNombre(nombre);
         inv.setApellidos(apellidos);
@@ -84,7 +85,7 @@ public class InvestigadorService {
 
     public void cambiarRol(Long id) {
         Investigador inv = investigadorRepository.findById(id).orElseThrow();
-        inv.setRol("COORDINADOR".equals(inv.getRol()) ? "INVESTIGADOR" : "COORDINADOR");
+        inv.setRol(inv.getRol() == Rol.COORDINADOR ? Rol.INVESTIGADOR : Rol.COORDINADOR);
         investigadorRepository.save(inv);
     }
 
