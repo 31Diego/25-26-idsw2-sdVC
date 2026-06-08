@@ -1,5 +1,7 @@
 package com.funiber.gipf.services;
 
+import com.funiber.gipf.config.InvestigadorUserDetails;
+import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.repositories.InvestigadorRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -17,7 +19,8 @@ public class AutenticacionService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return investigadorRepository.findByUsername(username)
+        Investigador investigador = investigadorRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+        return new InvestigadorUserDetails(investigador);
     }
 }

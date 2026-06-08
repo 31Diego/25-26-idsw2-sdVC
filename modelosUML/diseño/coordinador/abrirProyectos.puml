@@ -5,6 +5,7 @@ actor "Coordinador" as Coord
 participant "Navegador" as Nav
 participant "ProyectoController\n@Controller\nGET /proyectos" as Ctrl
 participant "ProyectoService\n@Service" as Service
+participant "ConsultaCoordinador\npolicies" as Consulta
 participant "ProyectoRepository\nJpaRepository" as Repo
 database "H2" as DB
 
@@ -15,21 +16,25 @@ activate Ctrl
 
 Ctrl -> Service : obtenerProyectosParaUsuario(investigador, criterio)
 activate Service
+Service -> Consulta : obtener(investigador, criterio)
+activate Consulta
 alt sin filtro
-    Service -> Repo : findAll()
+    Consulta -> Repo : findAll()
     activate Repo
     Repo -> DB : SELECT * FROM proyectos
     DB --> Repo : List<Proyecto>
     deactivate Repo
-    Repo --> Service : List<Proyecto>
+    Repo --> Consulta : List<Proyecto>
 else con filtro (?criterio=...)
-    Service -> Repo : buscarPorCriterio(criterio)
+    Consulta -> Repo : buscarPorCriterio(criterio)
     activate Repo
     Repo -> DB : SELECT ... WHERE titulo LIKE %criterio%
     DB --> Repo : List<Proyecto>
     deactivate Repo
-    Repo --> Service : List<Proyecto>
+    Repo --> Consulta : List<Proyecto>
 end
+deactivate Consulta
+Consulta --> Service : List<Proyecto>
 deactivate Service
 Service --> Ctrl : List<Proyecto>
 

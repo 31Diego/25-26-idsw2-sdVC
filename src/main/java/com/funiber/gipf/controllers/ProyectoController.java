@@ -1,5 +1,6 @@
 package com.funiber.gipf.controllers;
 
+import com.funiber.gipf.config.InvestigadorUserDetails;
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
 import com.funiber.gipf.services.InvestigadorService;
@@ -26,8 +27,9 @@ public class ProyectoController {
 
     @GetMapping("/proyectos")
     public String abrirProyectos(@RequestParam(required = false) String criterio,
-            @AuthenticationPrincipal Investigador investigador,
+            @AuthenticationPrincipal InvestigadorUserDetails userDetails,
             Model model) {
+        Investigador investigador = userDetails.getInvestigador();
         model.addAttribute("proyectos", proyectoService.obtenerProyectosParaUsuario(investigador, criterio));
         if (criterio != null && !criterio.isBlank()) {
             model.addAttribute("criterio", criterio);
@@ -49,8 +51,9 @@ public class ProyectoController {
 
     @GetMapping("/proyectos/{id}")
     public String abrirProyecto(@PathVariable Long id,
-            @AuthenticationPrincipal Investigador investigador,
+            @AuthenticationPrincipal InvestigadorUserDetails userDetails,
             Model model) {
+        Investigador investigador = userDetails.getInvestigador();
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
         if (!proyectoService.tieneAcceso(proyecto, investigador)) {
             return "redirect:/proyectos";
@@ -85,8 +88,9 @@ public class ProyectoController {
 
     @GetMapping("/proyectos/{id}/investigadores")
     public String abrirInvestigadoresDeProyecto(@PathVariable Long id,
-            @AuthenticationPrincipal Investigador investigador,
+            @AuthenticationPrincipal InvestigadorUserDetails userDetails,
             Model model) {
+        Investigador investigador = userDetails.getInvestigador();
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
         if (!proyectoService.tieneAcceso(proyecto, investigador)) {
             return "redirect:/proyectos";

@@ -1,5 +1,6 @@
 package com.funiber.gipf.controllers;
 
+import com.funiber.gipf.config.InvestigadorUserDetails;
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.services.InvestigadorService;
@@ -27,8 +28,9 @@ public class EliminacionController {
 
     @GetMapping("/investigadores/{id}/solicitar-eliminacion")
     public String mostrarFormularioSolicitud(@PathVariable Long id,
-            @AuthenticationPrincipal Investigador investigador,
+            @AuthenticationPrincipal InvestigadorUserDetails userDetails,
             Model model) {
+        Investigador investigador = userDetails.getInvestigador();
         if (investigador.getRol() == Rol.INVESTIGADOR && !investigador.getId().equals(id)) {
             return "redirect:/perfil/opciones";
         }
@@ -38,9 +40,10 @@ public class EliminacionController {
 
     @PostMapping("/investigadores/{id}/solicitar-eliminacion")
     public String enviarSolicitud(@PathVariable Long id,
-            @AuthenticationPrincipal Investigador investigador,
+            @AuthenticationPrincipal InvestigadorUserDetails userDetails,
             @RequestParam String motivo,
             HttpServletRequest request) {
+        Investigador investigador = userDetails.getInvestigador();
         if (investigador.getRol() == Rol.INVESTIGADOR && !investigador.getId().equals(id)) {
             return "redirect:/perfil/opciones";
         }
@@ -80,7 +83,8 @@ public class EliminacionController {
     @PostMapping("/investigadores/{id}/eliminar-perfil")
     @PreAuthorize("hasRole('COORDINADOR')")
     public String eliminarPerfil(@PathVariable Long id,
-            @AuthenticationPrincipal Investigador coordinador) {
+            @AuthenticationPrincipal InvestigadorUserDetails userDetails) {
+        Investigador coordinador = userDetails.getInvestigador();
         if (coordinador.getId().equals(id)) {
             return "redirect:/investigadores/" + id + "/opciones";
         }

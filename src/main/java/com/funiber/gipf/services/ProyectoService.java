@@ -3,23 +3,38 @@ package com.funiber.gipf.services;
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
 import com.funiber.gipf.models.Rol;
+import com.funiber.gipf.policies.AccesoCoordinador;
+import com.funiber.gipf.policies.AccesoInvestigador;
+import com.funiber.gipf.policies.ConsultaCoordinador;
+import com.funiber.gipf.policies.ConsultaInvestigador;
+import com.funiber.gipf.policies.PoliticaAcceso;
+import com.funiber.gipf.policies.PoliticaConsulta;
 import com.funiber.gipf.repositories.EntregableRepository;
 import com.funiber.gipf.repositories.ProyectoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProyectoService {
 
     private final ProyectoRepository proyectoRepository;
     private final EntregableRepository entregableRepository;
+    private final Map<Rol, PoliticaAcceso> politicas;
+    private final Map<Rol, PoliticaConsulta> consultas;
 
     public ProyectoService(ProyectoRepository proyectoRepository,
-                           EntregableRepository entregableRepository) {
+            EntregableRepository entregableRepository) {
         this.proyectoRepository = proyectoRepository;
         this.entregableRepository = entregableRepository;
+        this.politicas = Map.of(
+                Rol.COORDINADOR, new AccesoCoordinador(),
+                Rol.INVESTIGADOR, new AccesoInvestigador());
+        this.consultas = Map.of(
+                Rol.COORDINADOR, new ConsultaCoordinador(proyectoRepository),
+                Rol.INVESTIGADOR, new ConsultaInvestigador(proyectoRepository));
     }
 
     public Proyecto obtenerProyecto(Long id) {
@@ -75,20 +90,10 @@ public class ProyectoService {
     }
 
     public List<Proyecto> obtenerProyectosParaUsuario(Investigador investigador, String criterio) {
-        boolean esCoordinador = investigador.getRol() == Rol.COORDINADOR;
-        if (criterio != null && !criterio.isBlank()) {
-            return esCoordinador
-                    ? filtrarProyectos(criterio)
-                    : filtrarProyectosDeInvestigador(investigador, criterio);
-        }
-        return esCoordinador
-                ? obtenerProyectos()
-                : obtenerProyectosDeInvestigador(investigador);
+        return consultas.get(investigador.getRol()).obtener(investigador, criterio);
     }
 
     public boolean tieneAcceso(Proyecto proyecto, Investigador investigador) {
-        if (investigador.getRol() == Rol.COORDINADOR) return true;
-        return proyecto.getInvestigadores().stream()
-                .anyMatch(inv -> inv.getId().equals(investigador.getId()));
+        return politicas.get(investigador.getRol()).tieneAcceso(proyecto, investigador);
     }
 }
