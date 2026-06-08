@@ -4,6 +4,7 @@ skinparam linetype ortho
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
 participant "EntregableController\n@Controller\nGET|POST /proyectos/{proyectoId}/entregables/nuevo" as Ctrl
+participant "ProyectoService\n@Service" as ProyectoSvc
 participant "EntregableService\n@Service" as Service
 participant "ArchivoService\n@Service" as ArchivoSvc
 participant "ProyectoRepository\nJpaRepository" as ProyectoRepo
@@ -27,14 +28,19 @@ activate Ctrl
 
 note over Ctrl : validarDatos — campos requeridos en el binding
 
-Ctrl -> Service : guardarEntregable(entregable, archivo, proyectoId)
-activate Service
-Service -> ProyectoRepo : findById(proyectoId)
+Ctrl -> ProyectoSvc : obtenerProyecto(proyectoId)
+activate ProyectoSvc
+ProyectoSvc -> ProyectoRepo : findById(proyectoId)
 activate ProyectoRepo
 ProyectoRepo -> DB : SELECT * FROM proyectos WHERE id = ?
 DB --> ProyectoRepo : Proyecto
 deactivate ProyectoRepo
-ProyectoRepo --> Service : Proyecto
+ProyectoRepo --> ProyectoSvc : Proyecto
+deactivate ProyectoSvc
+ProyectoSvc --> Ctrl : Proyecto
+
+Ctrl -> Service : guardarEntregable(entregable, archivo, proyecto)
+activate Service
 Service -> Service : entregable.setProyecto(proyecto)
 
 alt archivo adjunto presente

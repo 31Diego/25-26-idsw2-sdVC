@@ -25,7 +25,7 @@ deactivate PRepo
 PRepo --> PService : Proyecto
 deactivate PService
 PService --> CtrlGet : Proyecto
-CtrlGet -> IService : obtenerTodosLosInvestigadores()
+CtrlGet -> IService : obtenerNoMiembros(proyecto)
 activate IService
 IService -> IRepo : findAll()
 activate IRepo
@@ -33,11 +33,10 @@ IRepo -> DB : SELECT * FROM investigadores
 DB --> IRepo : List<Investigador>
 deactivate IRepo
 IRepo --> IService : List<Investigador>
+IService -> IService : filtra los que ya son miembros del proyecto
 deactivate IService
-IService --> CtrlGet : List<Investigador>
-CtrlGet -> CtrlGet : filtra investigadores ya en el proyecto
-CtrlGet -> CtrlGet : model.addAttribute("proyecto", proyecto)
-CtrlGet -> CtrlGet : model.addAttribute("disponibles", disponibles)
+IService --> CtrlGet : List<Investigador> (disponibles)
+CtrlGet -> CtrlGet : model.addAttribute("proyecto", proyecto)\nmodel.addAttribute("disponibles", disponibles)
 CtrlGet --> Nav : 200 OK · agregar-investigador.html
 deactivate CtrlGet
 Nav --> Coord : muestra lista de investigadores disponibles

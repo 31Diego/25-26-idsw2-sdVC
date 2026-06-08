@@ -38,7 +38,7 @@ public class EntregableController {
     public String guardarEntregable(@PathVariable Long proyectoId,
             @ModelAttribute Entregable entregable,
             @RequestParam("archivo") MultipartFile archivo) throws Exception {
-        entregableService.guardarEntregable(entregable, archivo, proyectoId);
+        entregableService.guardarEntregable(entregable, archivo, proyectoService.obtenerProyecto(proyectoId));
         return "redirect:/proyectos/" + proyectoId + "/entregables";
     }
 

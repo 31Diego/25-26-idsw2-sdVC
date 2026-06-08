@@ -13,31 +13,27 @@ activate Nav
 Nav -> Ctrl : GET /investigadores
 activate Ctrl
 
+Ctrl -> Service : obtenerInvestigadores(criterio)
+activate Service
 alt sin filtro
-    Ctrl -> Service : obtenerTodosLosInvestigadores()
-    activate Service
     Service -> Repo : findAll()
     activate Repo
     Repo -> DB : SELECT * FROM investigadores
     DB --> Repo : List<Investigador>
     deactivate Repo
     Repo --> Service : List<Investigador>
-    deactivate Service
-    Service --> Ctrl : List<Investigador>
 else con filtro (?criterio=...)
-    Ctrl -> Service : filtrarInvestigadores(criterio)
-    activate Service
     Service -> Repo : buscarPorCriterio(criterio)
     activate Repo
     Repo -> DB : SELECT ... WHERE nombre LIKE %criterio%\n OR apellidos LIKE %criterio%\n OR campo LIKE %criterio%
     DB --> Repo : List<Investigador>
     deactivate Repo
     Repo --> Service : List<Investigador>
-    deactivate Service
-    Service --> Ctrl : List<Investigador>
 end
+deactivate Service
+Service --> Ctrl : List<Investigador>
 
-Ctrl -> Ctrl : model.addAttribute("investigadores", lista)
+Ctrl -> Ctrl : model.addAttribute("investigadores", lista)\nmodel.addAttribute("criterio", criterio)
 Ctrl --> Nav : 200 OK · investigadores.html
 deactivate Ctrl
 Nav --> Coord : muestra investigadores.html

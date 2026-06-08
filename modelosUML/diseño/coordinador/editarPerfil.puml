@@ -34,7 +34,7 @@ Coord -> Nav : rellena campos y pulsa "Guardar"
 activate Nav
 Nav -> CtrlPost : POST /investigadores/{id}/editar (nombre, apellidos, campo, carrera, master, rol, username, password)
 activate CtrlPost
-CtrlPost -> Service : actualizarPerfilConRol(id, nombre, apellidos, campo, carrera, master, rol, username, password)
+CtrlPost -> Service : actualizarPerfil(id, nombre, apellidos, campo, carrera, master, rol, username, password)
 activate Service
 Service -> Repo : findById(id)
 activate Repo

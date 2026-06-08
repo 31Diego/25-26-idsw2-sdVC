@@ -10,10 +10,13 @@ database "H2" as DB
 
 Coord -> Nav : clic en "Aprobar y eliminar perfil"\n(desde solicitud-eliminacion.html)
 activate Nav
-Nav -> Ctrl : POST /investigadores/{id}/eliminar-perfil
+Nav -> Ctrl : POST /investigadores/{id}/eliminar-perfil\n[@AuthenticationPrincipal coordinador]
 activate Ctrl
-Ctrl -> Service : eliminarPerfil(id)
+Ctrl -> Service : eliminarPerfil(coordinador.getId(), id)
 activate Service
+
+note over Service : actorId != targetId\nguarda anti-autoeliminación
+
 Service -> Repos : proyectoRepository.findAll()\n→ elimina de cada proyecto donde aparece
 Service -> Repos : solicitudEliminacionRepository\n.deleteByInvestigadorId(id)
 Service -> Repos : investigadorRepository.deleteById(id)
@@ -21,6 +24,7 @@ activate Repos
 Repos -> DB : DELETE / UPDATE proyectos\nDELETE solicitudes\nDELETE investigador
 DB --> Repos : OK
 deactivate Repos
+Service --> Ctrl : true
 deactivate Service
 Ctrl --> Nav : 302 redirect → /solicitudes-eliminacion
 deactivate Ctrl

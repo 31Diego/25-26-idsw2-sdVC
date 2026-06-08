@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Controller
 public class ProyectoController {
@@ -53,9 +52,7 @@ public class ProyectoController {
             Model model) {
         Investigador investigador = userDetails.getInvestigador();
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
-        if (!proyectoService.tieneAcceso(proyecto, investigador)) {
-            return "redirect:/proyectos";
-        }
+        if (sinAcceso(proyecto, investigador)) return "redirect:/proyectos";
         model.addAttribute("proyecto", proyecto);
         return "proyecto";
     }
@@ -90,12 +87,14 @@ public class ProyectoController {
             Model model) {
         Investigador investigador = userDetails.getInvestigador();
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
-        if (!proyectoService.tieneAcceso(proyecto, investigador)) {
-            return "redirect:/proyectos";
-        }
+        if (sinAcceso(proyecto, investigador)) return "redirect:/proyectos";
         model.addAttribute("proyecto", proyecto);
         model.addAttribute("investigadores", proyecto.getInvestigadores());
         return "investigadores-proyecto";
+    }
+
+    private boolean sinAcceso(Proyecto proyecto, Investigador investigador) {
+        return !proyectoService.tieneAcceso(proyecto, investigador);
     }
 
     @GetMapping("/proyectos/{id}/investigadores/agregar")

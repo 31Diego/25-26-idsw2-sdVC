@@ -1,8 +1,8 @@
 package com.funiber.gipf.services;
 
 import com.funiber.gipf.models.Entregable;
+import com.funiber.gipf.models.Proyecto;
 import com.funiber.gipf.repositories.EntregableRepository;
-import com.funiber.gipf.repositories.ProyectoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,14 +13,11 @@ import java.util.List;
 public class EntregableService {
 
     private final EntregableRepository entregableRepository;
-    private final ProyectoRepository proyectoRepository;
     private final ArchivoService archivoService;
 
     public EntregableService(EntregableRepository entregableRepository,
-                             ProyectoRepository proyectoRepository,
                              ArchivoService archivoService) {
         this.entregableRepository = entregableRepository;
-        this.proyectoRepository = proyectoRepository;
         this.archivoService = archivoService;
     }
 
@@ -32,8 +29,8 @@ public class EntregableService {
         return entregableRepository.findById(id).orElseThrow();
     }
 
-    public Entregable guardarEntregable(Entregable entregable, MultipartFile archivo, Long proyectoId) throws IOException {
-        entregable.setProyecto(proyectoRepository.findById(proyectoId).orElseThrow());
+    public Entregable guardarEntregable(Entregable entregable, MultipartFile archivo, Proyecto proyecto) throws IOException {
+        entregable.setProyecto(proyecto);
         if (archivo != null && !archivo.isEmpty()) {
             entregable.setRutaArchivo(archivoService.guardarArchivo(archivo));
         }

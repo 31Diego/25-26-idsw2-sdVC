@@ -73,22 +73,6 @@ public class ProyectoService {
         proyectoRepository.save(proyecto);
     }
 
-    public List<Proyecto> obtenerProyectos() {
-        return proyectoRepository.findAll();
-    }
-
-    public List<Proyecto> filtrarProyectos(String criterio) {
-        return proyectoRepository.buscarPorCriterio(criterio);
-    }
-
-    public List<Proyecto> obtenerProyectosDeInvestigador(Investigador investigador) {
-        return proyectoRepository.findByInvestigadoresContaining(investigador);
-    }
-
-    public List<Proyecto> filtrarProyectosDeInvestigador(Investigador investigador, String criterio) {
-        return proyectoRepository.buscarPorCriterioEInvestigador(investigador, criterio);
-    }
-
     public List<Proyecto> obtenerProyectosParaUsuario(Investigador investigador, String criterio) {
         return consultas.get(investigador.getRol()).obtener(investigador, criterio);
     }
