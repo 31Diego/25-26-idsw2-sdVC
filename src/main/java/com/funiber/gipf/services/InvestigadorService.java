@@ -41,13 +41,16 @@ public class InvestigadorService {
     }
 
     public void actualizarPerfil(Long id, String nombre, String apellidos, String campo, String carrera, String master,
-            String username, String password) {
+            Rol rol, String username, String password) {
         Investigador inv = investigadorRepository.findById(id).orElseThrow();
         inv.setNombre(nombre);
         inv.setApellidos(apellidos);
         inv.setCampo(campo);
         inv.setCarrera(carrera);
         inv.setMaster(master);
+        if (rol != null) {
+            inv.setRol(rol);
+        }
         inv.setUsername(username);
         if (password != null && !password.isBlank()) {
             inv.setPassword(passwordEncoder.encode(password));
@@ -55,28 +58,20 @@ public class InvestigadorService {
         investigadorRepository.save(inv);
     }
 
-    public void actualizarPerfilConRol(Long id, String nombre, String apellidos, String campo, String carrera,
-            String master, Rol rol, String username, String password) {
-        Investigador inv = investigadorRepository.findById(id).orElseThrow();
-        inv.setNombre(nombre);
-        inv.setApellidos(apellidos);
-        inv.setCampo(campo);
-        inv.setCarrera(carrera);
-        inv.setMaster(master);
-        inv.setRol(rol);
-        inv.setUsername(username);
-        if (password != null && !password.isBlank()) {
-            inv.setPassword(passwordEncoder.encode(password));
+    public List<Investigador> obtenerInvestigadores(String criterio) {
+        if (criterio != null && !criterio.isBlank()) {
+            return investigadorRepository.buscarPorCriterio(criterio);
         }
-        investigadorRepository.save(inv);
-    }
-
-    public List<Investigador> obtenerTodosLosInvestigadores() {
         return investigadorRepository.findAll();
     }
 
-    public List<Investigador> filtrarInvestigadores(String criterio) {
-        return investigadorRepository.buscarPorCriterio(criterio);
+    public List<Investigador> obtenerNoMiembros(Proyecto proyecto) {
+        List<Long> miembroIds = proyecto.getInvestigadores().stream()
+                .map(Investigador::getId)
+                .toList();
+        return investigadorRepository.findAll().stream()
+                .filter(inv -> !miembroIds.contains(inv.getId()))
+                .toList();
     }
 
     public Investigador obtenerInvestigadorPorUsername(String username) {
@@ -90,14 +85,18 @@ public class InvestigadorService {
     }
 
     @Transactional
-    public void eliminarPerfil(Long id) {
+    public boolean eliminarPerfil(Long actorId, Long targetId) {
+        if (actorId.equals(targetId)) {
+            return false;
+        }
         for (Proyecto p : proyectoRepository.findAll()) {
-            if (p.getInvestigadores().stream().anyMatch(i -> i.getId().equals(id))) {
-                p.getInvestigadores().removeIf(i -> i.getId().equals(id));
+            if (p.getInvestigadores().stream().anyMatch(i -> i.getId().equals(targetId))) {
+                p.getInvestigadores().removeIf(i -> i.getId().equals(targetId));
                 proyectoRepository.save(p);
             }
         }
-        solicitudEliminacionRepository.deleteAll(solicitudEliminacionRepository.findByInvestigadorId(id));
-        investigadorRepository.deleteById(id);
+        solicitudEliminacionRepository.deleteAll(solicitudEliminacionRepository.findByInvestigadorId(targetId));
+        investigadorRepository.deleteById(targetId);
+        return true;
     }
 }

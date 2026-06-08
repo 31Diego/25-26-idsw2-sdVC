@@ -2,7 +2,6 @@ package com.funiber.gipf.controllers;
 
 import com.funiber.gipf.config.InvestigadorUserDetails;
 import com.funiber.gipf.models.Investigador;
-import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.services.InvestigadorService;
 import com.funiber.gipf.services.SolicitudEliminacionService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +30,7 @@ public class EliminacionController {
             @AuthenticationPrincipal InvestigadorUserDetails userDetails,
             Model model) {
         Investigador investigador = userDetails.getInvestigador();
-        if (investigador.getRol() == Rol.INVESTIGADOR && !investigador.getId().equals(id)) {
+        if (!solicitudEliminacionService.puedeGestionar(investigador, id)) {
             return "redirect:/perfil/opciones";
         }
         model.addAttribute("investigadorDestino", investigadorService.obtenerInvestigador(id));
@@ -44,12 +43,12 @@ public class EliminacionController {
             @RequestParam String motivo,
             HttpServletRequest request) {
         Investigador investigador = userDetails.getInvestigador();
-        if (investigador.getRol() == Rol.INVESTIGADOR && !investigador.getId().equals(id)) {
+        if (!solicitudEliminacionService.puedeGestionar(investigador, id)) {
             return "redirect:/perfil/opciones";
         }
         Investigador objetivo = investigadorService.obtenerInvestigador(id);
         solicitudEliminacionService.crearSolicitud(objetivo, motivo);
-        if (investigador.getRol() == Rol.INVESTIGADOR) {
+        if (solicitudEliminacionService.requiereLogoutTrasEnviar(investigador)) {
             SecurityContextHolder.clearContext();
             HttpSession session = request.getSession(false);
             if (session != null)
@@ -85,10 +84,9 @@ public class EliminacionController {
     public String eliminarPerfil(@PathVariable Long id,
             @AuthenticationPrincipal InvestigadorUserDetails userDetails) {
         Investigador coordinador = userDetails.getInvestigador();
-        if (coordinador.getId().equals(id)) {
+        if (!investigadorService.eliminarPerfil(coordinador.getId(), id)) {
             return "redirect:/investigadores/" + id + "/opciones";
         }
-        investigadorService.eliminarPerfil(id);
         return "redirect:/solicitudes-eliminacion";
     }
 }

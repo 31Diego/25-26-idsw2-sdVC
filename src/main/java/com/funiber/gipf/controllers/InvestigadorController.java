@@ -18,12 +18,8 @@ public class InvestigadorController {
 
     @GetMapping("/investigadores")
     public String abrirInvestigadores(@RequestParam(required = false) String criterio, Model model) {
-        if (criterio != null && !criterio.isBlank()) {
-            model.addAttribute("investigadores", investigadorService.filtrarInvestigadores(criterio));
-            model.addAttribute("criterio", criterio);
-        } else {
-            model.addAttribute("investigadores", investigadorService.obtenerTodosLosInvestigadores());
-        }
+        model.addAttribute("investigadores", investigadorService.obtenerInvestigadores(criterio));
+        model.addAttribute("criterio", criterio);
         return "investigadores";
     }
 

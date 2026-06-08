@@ -51,12 +51,7 @@ public class PerfilController {
             @RequestParam(required = false) String password,
             @RequestParam(required = false) Rol rol) {
         Long id = investigadorService.obtenerInvestigadorPorUsername(authentication.getName()).getId();
-        if (rol != null) {
-            investigadorService.actualizarPerfilConRol(id, nombre, apellidos, campo, carrera, master, rol, username,
-                    password);
-        } else {
-            investigadorService.actualizarPerfil(id, nombre, apellidos, campo, carrera, master, username, password);
-        }
+        investigadorService.actualizarPerfil(id, nombre, apellidos, campo, carrera, master, rol, username, password);
         return "redirect:/perfil/opciones";
     }
 
@@ -79,8 +74,7 @@ public class PerfilController {
             @RequestParam Rol rol,
             @RequestParam String username,
             @RequestParam(required = false) String password) {
-        investigadorService.actualizarPerfilConRol(id, nombre, apellidos, campo, carrera, master, rol, username,
-                password);
+        investigadorService.actualizarPerfil(id, nombre, apellidos, campo, carrera, master, rol, username, password);
         return "redirect:/investigadores/" + id + "/opciones";
     }
 

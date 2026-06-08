@@ -1,6 +1,7 @@
 package com.funiber.gipf.services;
 
 import com.funiber.gipf.models.Investigador;
+import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.models.SolicitudEliminacion;
 import com.funiber.gipf.repositories.SolicitudEliminacionRepository;
 import org.springframework.stereotype.Service;
@@ -36,5 +37,13 @@ public class SolicitudEliminacionService {
 
     public void denegarSolicitud(Long id) {
         solicitudEliminacionRepository.deleteById(id);
+    }
+
+    public boolean puedeGestionar(Investigador investigador, Long targetId) {
+        return investigador.getRol() == Rol.COORDINADOR || investigador.getId().equals(targetId);
+    }
+
+    public boolean requiereLogoutTrasEnviar(Investigador investigador) {
+        return investigador.getRol() == Rol.INVESTIGADOR;
     }
 }

@@ -31,9 +31,7 @@ public class ProyectoController {
             Model model) {
         Investigador investigador = userDetails.getInvestigador();
         model.addAttribute("proyectos", proyectoService.obtenerProyectosParaUsuario(investigador, criterio));
-        if (criterio != null && !criterio.isBlank()) {
-            model.addAttribute("criterio", criterio);
-        }
+        model.addAttribute("criterio", criterio);
         return "proyectos";
     }
 
@@ -104,11 +102,8 @@ public class ProyectoController {
     @PreAuthorize("hasRole('COORDINADOR')")
     public String mostrarDisponibles(@PathVariable Long id, Model model) {
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
-        List<Investigador> disponibles = investigadorService.obtenerTodosLosInvestigadores().stream()
-                .filter(inv -> !proyecto.getInvestigadores().contains(inv))
-                .toList();
         model.addAttribute("proyecto", proyecto);
-        model.addAttribute("disponibles", disponibles);
+        model.addAttribute("disponibles", investigadorService.obtenerNoMiembros(proyecto));
         return "agregar-investigador";
     }
 
