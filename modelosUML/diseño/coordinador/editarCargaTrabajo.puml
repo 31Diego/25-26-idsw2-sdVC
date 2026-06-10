@@ -1,0 +1,60 @@
+@startuml editarCargaTrabajo-coordinador-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "CargaTrabajoController\n@Controller\nGET /investigadores/{id}/carga-trabajo/editar" as CtrlGet
+participant "CargaTrabajoController\n@Controller\nPOST /investigadores/{id}/carga-trabajo/editar" as CtrlPost
+participant "CargaTrabajoService\n@Service" as Service
+participant "CargaTrabajoRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : clic en "Editar" (fila del investigador)
+activate Nav
+Nav -> CtrlGet : GET /investigadores/{id}/carga-trabajo/editar
+activate CtrlGet
+CtrlGet -> Service : obtenerOCrearPorInvestigador(investigador)
+activate Service
+Service -> Repo : findByInvestigadorId(id)
+activate Repo
+Repo -> DB : SELECT * FROM cargas_trabajo WHERE investigador_id = ?
+DB --> Repo : CargaTrabajo
+deactivate Repo
+Repo --> Service : CargaTrabajo
+deactivate Service
+Service --> CtrlGet : CargaTrabajo
+CtrlGet -> CtrlGet : model.addAttribute("carga", carga)
+CtrlGet -> CtrlGet : model.addAttribute("investigador", investigador)
+CtrlGet --> Nav : 200 OK · editar-carga-trabajo.html
+deactivate CtrlGet
+Nav --> Coord : muestra formulario con datos actuales
+deactivate Nav
+
+Coord -> Nav : rellena campos y pulsa "Guardar"
+activate Nav
+Nav -> CtrlPost : POST /investigadores/{id}/carga-trabajo/editar\n(horasDocencia, horasInvestigacion, horasActividades)
+activate CtrlPost
+CtrlPost -> Service : obtenerOCrearPorInvestigador(investigador)
+activate Service
+Service -> Repo : findByInvestigadorId(id)
+Repo --> Service : CargaTrabajo
+deactivate Service
+CtrlPost -> Service : actualizar(carga.id, horasDocencia, horasInvestigacion, horasActividades)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM cargas_trabajo WHERE id = ?
+DB --> Repo : CargaTrabajo
+deactivate Repo
+Service -> Repo : save(carga)
+activate Repo
+Repo -> DB : UPDATE cargas_trabajo SET ... WHERE id = ?
+DB --> Repo : ok
+deactivate Repo
+deactivate Service
+CtrlPost --> Nav : redirect /carga-trabajo
+deactivate CtrlPost
+Nav --> Coord : muestra tabla global actualizada
+deactivate Nav
+
+@enduml

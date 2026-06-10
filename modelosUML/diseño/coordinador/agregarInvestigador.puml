@@ -7,6 +7,7 @@ participant "ProyectoController\n@Controller\nGET /proyectos/{id}/investigadores
 participant "ProyectoController\n@Controller\nPOST /proyectos/{id}/investigadores/agregar" as CtrlPost
 participant "ProyectoService\n@Service" as PService
 participant "InvestigadorService\n@Service" as IService
+participant "CargaTrabajoService\n@Service" as CTService
 participant "ProyectoRepository\nJpaRepository" as PRepo
 participant "InvestigadorRepository\nJpaRepository" as IRepo
 database "H2" as DB
@@ -36,24 +37,20 @@ IRepo --> IService : List<Investigador>
 IService -> IService : filtra los que ya son miembros del proyecto
 deactivate IService
 IService --> CtrlGet : List<Investigador> (disponibles)
-CtrlGet -> CtrlGet : model.addAttribute("proyecto", proyecto)\nmodel.addAttribute("disponibles", disponibles)
+CtrlGet -> CTService : excedeLimite(inv) para cada disponible
+activate CTService
+CTService --> CtrlGet : Set<Long> bloqueados (ids con ≥ 40 h/sem)
+deactivate CTService
+CtrlGet -> CtrlGet : model.addAttribute("proyecto", proyecto)\nmodel.addAttribute("disponibles", disponibles)\nmodel.addAttribute("bloqueados", bloqueados)
 CtrlGet --> Nav : 200 OK · agregar-investigador.html
 deactivate CtrlGet
-Nav --> Coord : muestra lista de investigadores disponibles
+Nav --> Coord : muestra lista; investigadores bloqueados con botón deshabilitado
 deactivate Nav
 
 Coord -> Nav : selecciona investigador y pulsa "Agregar"
 activate Nav
 Nav -> CtrlPost : POST /proyectos/{id}/investigadores/agregar (investigadorId)
 activate CtrlPost
-CtrlPost -> PService : obtenerProyecto(id)
-activate PService
-PService -> PRepo : findById(id)
-PRepo -> DB : SELECT * FROM proyectos WHERE id = ?
-DB --> PRepo : Proyecto
-PRepo --> PService : Proyecto
-deactivate PService
-PService --> CtrlPost : Proyecto
 CtrlPost -> IService : obtenerInvestigador(investigadorId)
 activate IService
 IService -> IRepo : findById(investigadorId)
@@ -62,16 +59,34 @@ DB --> IRepo : Investigador
 IRepo --> IService : Investigador
 deactivate IService
 IService --> CtrlPost : Investigador
-CtrlPost -> PService : agregarInvestigador(proyecto, investigador)
-activate PService
-PService -> PRepo : save(proyecto)
-PRepo -> DB : INSERT INTO proyecto_investigador ...
-PRepo --> PService : Proyecto
-deactivate PService
-PService --> CtrlPost : void
-CtrlPost --> Nav : redirect /proyectos/{id}
+CtrlPost -> CTService : excedeLimite(investigador)
+activate CTService
+CTService --> CtrlPost : boolean
+deactivate CTService
+
+alt carga < 40 h/sem
+    CtrlPost -> PService : obtenerProyecto(id)
+    activate PService
+    PService -> PRepo : findById(id)
+    PRepo -> DB : SELECT * FROM proyectos WHERE id = ?
+    DB --> PRepo : Proyecto
+    PRepo --> PService : Proyecto
+    deactivate PService
+    PService --> CtrlPost : Proyecto
+    CtrlPost -> PService : agregarInvestigador(proyecto, investigador)
+    activate PService
+    PService -> PRepo : save(proyecto)
+    PRepo -> DB : INSERT INTO proyecto_investigador ...
+    PRepo --> PService : Proyecto
+    deactivate PService
+    CtrlPost --> Nav : redirect /proyectos/{id}
+    Nav --> Coord : muestra proyecto con el investigador agregado
+else carga ≥ 40 h/sem
+    CtrlPost -> CtrlPost : redirectAttributes.addFlashAttribute("error", "...")
+    CtrlPost --> Nav : redirect /proyectos/{id}/investigadores/agregar
+    Nav --> Coord : muestra formulario con mensaje de error
+end
 deactivate CtrlPost
-Nav --> Coord : muestra proyecto con el investigador agregado
 deactivate Nav
 
 @enduml

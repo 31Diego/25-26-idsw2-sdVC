@@ -1,4 +1,4 @@
-# abrirOpcionesCargaTrabajo — Diseño
+# abrirOpcionesCargaTrabajo — Diseño · Coordinador
 
 ## Información del artefacto
 
@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Recuperar y mostrar el resumen de carga de trabajo de todos los investigadores del sistema.
+Recuperar y mostrar la tabla global de carga de trabajo de todos los usuarios del sistema (horas semanales por categoría).
 
 ## Diagrama de secuencia
 
@@ -22,19 +22,20 @@ Recuperar y mostrar el resumen de carga de trabajo de todos los investigadores d
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| CargaTrabajoView | `CargaTrabajoController` `@Controller` | Recibe GET /carga-trabajo; pone la lista en el Model y devuelve carga-trabajo.html |
-| CargaTrabajoController | `InvestigadorService` `@Service` | Orquesta la obtención de todos los investigadores |
-| InvestigadorRepository | `InvestigadorRepository` JpaRepository | Ejecuta la query SQL contra H2 |
-| Investigador | `Investigador` `@Entity` | Tabla investigadores en H2 |
+| CargaTrabajoView | `CargaTrabajoController` `@Controller` | Recibe GET /carga-trabajo; detecta rol COORDINADOR; pone la lista en el Model y devuelve carga-trabajo.html |
+| InvestigadorService | `InvestigadorService` `@Service` | Devuelve todos los investigadores vía `obtenerInvestigadores(null)` |
+| InvestigadorRepository | `InvestigadorRepository` JpaRepository | Ejecuta SELECT * FROM investigadores |
+| CargaTrabajo | `CargaTrabajo` `@Entity` | Tabla cargas_trabajo; cargada en EAGER desde `Investigador.cargaTrabajo` |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /carga-trabajo | Lista todos los investigadores con su carga de trabajo |
+| GET | /carga-trabajo | Tabla global (coordinador) o resumen personal (investigador) |
 
 ## Decisiones de diseño
 
-- Se reutiliza `InvestigadorService` ya existente; no se crea un servicio específico.
-- La vista muestra los proyectos activos de cada investigador derivados de la relación `Investigador ↔ Proyecto`.
-- Thymeleaf itera la lista con `th:each` para construir la tabla de carga.
+- La URL `/carga-trabajo` es compartida entre actores; el controller bifurca por `investigador.getRol()`.
+- `Investigador` declara `@OneToOne(mappedBy = "investigador", cascade = CascadeType.ALL)` hacia `CargaTrabajo`. Al ser `@OneToOne`, JPA carga la relación en EAGER por defecto; el template accede a `inv.cargaTrabajo` directamente sin consulta adicional.
+- Si un usuario aún no tiene `CargaTrabajo` asignada, el template muestra 0.0 con expresión condicional `th:text`.
+- El DataLoader inicializa entradas de `CargaTrabajo` para todos los usuarios al arrancar la aplicación por primera vez.

@@ -8,6 +8,10 @@
 
 <h1>Agregar investigador a <span th:text="${proyecto.titulo}"></span></h1>
 
+<div th:if="${error != null}" style="color: red; border: 1px solid red; padding: 6px;">
+    <p th:text="${error}"></p>
+</div>
+
 <table border="1" cellpadding="6">
     <thead>
         <tr>
@@ -15,6 +19,7 @@
             <th>Nombre</th>
             <th>Campo</th>
             <th>Rol</th>
+            <th>Carga total (h/sem)</th>
             <th></th>
         </tr>
     </thead>
@@ -24,15 +29,19 @@
             <td th:text="${inv.nombre + ' ' + (inv.apellidos != null ? inv.apellidos : '')}"></td>
             <td th:text="${inv.campo}"></td>
             <td th:text="${inv.rol}"></td>
+            <td th:text="${inv.cargaTrabajo != null ? (inv.cargaTrabajo.horasDocencia + inv.cargaTrabajo.horasInvestigacion + inv.cargaTrabajo.horasActividades) : 0.0}"
+                th:style="${bloqueados.contains(inv.id)} ? 'color: red; font-weight: bold;' : ''"></td>
             <td>
                 <form th:action="@{/proyectos/{id}/investigadores/agregar(id=${proyecto.id})}" method="post">
                     <input type="hidden" name="investigadorId" th:value="${inv.id}">
-                    <button type="submit">Agregar</button>
+                    <button type="submit" th:disabled="${bloqueados.contains(inv.id)}"
+                            th:text="${bloqueados.contains(inv.id)} ? 'Carga excedida' : 'Agregar'">
+                    </button>
                 </form>
             </td>
         </tr>
         <tr th:if="${#lists.isEmpty(disponibles)}">
-            <td colspan="5">Todos los investigadores ya pertenecen al proyecto.</td>
+            <td colspan="6">Todos los investigadores ya pertenecen al proyecto.</td>
         </tr>
     </tbody>
 </table>

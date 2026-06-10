@@ -1,8 +1,10 @@
 package com.funiber.gipf;
 
+import com.funiber.gipf.models.CargaTrabajo;
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
 import com.funiber.gipf.models.Rol;
+import com.funiber.gipf.repositories.CargaTrabajoRepository;
 import com.funiber.gipf.repositories.InvestigadorRepository;
 import com.funiber.gipf.repositories.ProyectoRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -16,13 +18,16 @@ public class DataLoader implements CommandLineRunner {
 
     private final InvestigadorRepository investigadorRepository;
     private final ProyectoRepository proyectoRepository;
+    private final CargaTrabajoRepository cargaTrabajoRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataLoader(InvestigadorRepository investigadorRepository,
                       ProyectoRepository proyectoRepository,
+                      CargaTrabajoRepository cargaTrabajoRepository,
                       PasswordEncoder passwordEncoder) {
         this.investigadorRepository = investigadorRepository;
         this.proyectoRepository = proyectoRepository;
+        this.cargaTrabajoRepository = cargaTrabajoRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -87,6 +92,17 @@ public class DataLoader implements CommandLineRunner {
             p3.setFechaInicio(LocalDate.of(2023, 3, 1));
             p3.setFechaFin(LocalDate.of(2024, 12, 31));
             proyectoRepository.save(p3);
+        }
+
+        if (cargaTrabajoRepository.count() == 0) {
+            investigadorRepository.findAll().forEach(inv -> {
+                CargaTrabajo carga = new CargaTrabajo();
+                carga.setInvestigador(inv);
+                carga.setHorasDocencia(inv.getRol() == Rol.INVESTIGADOR ? 15.0 : 8.0);
+                carga.setHorasInvestigacion(inv.getRol() == Rol.INVESTIGADOR ? 20.0 : 12.0);
+                carga.setHorasActividades(inv.getRol() == Rol.INVESTIGADOR ? 5.0 : 3.0);
+                cargaTrabajoRepository.save(carga);
+            });
         }
     }
 }

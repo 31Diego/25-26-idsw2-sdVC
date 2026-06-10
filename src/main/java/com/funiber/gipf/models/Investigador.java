@@ -29,5 +29,7 @@ public class Investigador {
     @Enumerated(EnumType.STRING)
     private Rol rol;
 
+    @OneToOne(mappedBy = "investigador", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CargaTrabajo cargaTrabajo;
 
 }

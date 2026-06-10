@@ -1,0 +1,44 @@
+@startuml abrirOpcionesCargaTrabajo-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "CargaTrabajoController\n@Controller\nGET /carga-trabajo" as Ctrl
+participant "CargaTrabajoService\n@Service" as Service
+participant "CargaTrabajoRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Inv -> Nav : clic en "Carga de trabajo"
+activate Nav
+Nav -> Ctrl : GET /carga-trabajo
+activate Ctrl
+Ctrl -> Ctrl : investigador.getRol() == INVESTIGADOR
+Ctrl -> Service : obtenerOCrearPorInvestigador(investigador)
+activate Service
+Service -> Repo : findByInvestigadorId(id)
+activate Repo
+Repo -> DB : SELECT * FROM cargas_trabajo\nWHERE investigador_id = ?
+DB --> Repo : Optional<CargaTrabajo>
+deactivate Repo
+
+alt CargaTrabajo existe
+    Repo --> Service : Optional[cargaTrabajo]
+    Service --> Ctrl : CargaTrabajo existente
+else no existe aún
+    Service -> Repo : save(nueva CargaTrabajo)
+    activate Repo
+    Repo -> DB : INSERT INTO cargas_trabajo ...
+    DB --> Repo : CargaTrabajo
+    deactivate Repo
+    Repo --> Service : CargaTrabajo nueva (0.0, 0.0, 0.0)
+    Service --> Ctrl : CargaTrabajo nueva
+end
+deactivate Service
+
+Ctrl -> Ctrl : model.addAttribute("carga", cargaTrabajo)
+Ctrl --> Nav : 200 OK · carga-trabajo.html
+deactivate Ctrl
+Nav --> Inv : muestra resumen personal de carga de trabajo
+deactivate Nav
+
+@enduml

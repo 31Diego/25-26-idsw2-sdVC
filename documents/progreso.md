@@ -24,7 +24,8 @@
 | `abrirPanelPrincipal` | ✅ | ✅ | ✅ | ⚠️ |
 | `abrirOpcionesPerfil` | ✅ | ✅ | ✅ | ⚠️ |
 | `editarPerfil` | ✅ | ✅ | ✅ | ⚠️ |
-| `abrirOpcionesCargaTrabajo` | ✅ | ✅ | ⬜ | ⬜ |
+| `abrirOpcionesCargaTrabajo` | ✅ | ✅ | ✅ | ⚠️ |
+| `editarCargaTrabajo` | ✅ | ✅ | ✅ | ⚠️ |
 
 ---
 
@@ -126,7 +127,8 @@
 | `abrirPanelPrincipal` | ✅ | ⬜ | ✅ † | ⚠️ |
 | `abrirOpcionesPerfil` | ✅ | ✅ | ✅ | ⚠️ |
 | `editarPerfil` | ✅ | ✅ | ✅ | ⚠️ |
-| `abrirOpcionesCargaTrabajo` | ✅ | ⬜ | ⬜ | ⬜ |
+| `abrirOpcionesCargaTrabajo` | ✅ | ✅ | ✅ | ⚠️ |
+| `editarCargaTrabajo` | ✅ | ✅ | ✅ | ⚠️ |
 
 ---
 

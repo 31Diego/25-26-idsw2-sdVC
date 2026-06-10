@@ -1,0 +1,59 @@
+@startuml editarCargaTrabajo-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "CargaTrabajoController\n@Controller\nGET /carga-trabajo/editar" as CtrlGet
+participant "CargaTrabajoController\n@Controller\nPOST /carga-trabajo/editar" as CtrlPost
+participant "CargaTrabajoService\n@Service" as Service
+participant "CargaTrabajoRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Inv -> Nav : clic en "Editar carga de trabajo"
+activate Nav
+Nav -> CtrlGet : GET /carga-trabajo/editar
+activate CtrlGet
+CtrlGet -> Service : obtenerOCrearPorInvestigador(investigador)
+activate Service
+Service -> Repo : findByInvestigadorId(id)
+activate Repo
+Repo -> DB : SELECT * FROM cargas_trabajo WHERE investigador_id = ?
+DB --> Repo : CargaTrabajo
+deactivate Repo
+Repo --> Service : CargaTrabajo
+deactivate Service
+Service --> CtrlGet : CargaTrabajo
+CtrlGet -> CtrlGet : model.addAttribute("carga", carga)
+CtrlGet --> Nav : 200 OK · editar-carga-trabajo.html
+deactivate CtrlGet
+Nav --> Inv : muestra formulario con datos actuales
+deactivate Nav
+
+Inv -> Nav : rellena campos y pulsa "Guardar"
+activate Nav
+Nav -> CtrlPost : POST /carga-trabajo/editar\n(horasDocencia, horasInvestigacion, horasActividades)
+activate CtrlPost
+CtrlPost -> Service : obtenerOCrearPorInvestigador(investigador)
+activate Service
+Service -> Repo : findByInvestigadorId(id)
+Repo --> Service : CargaTrabajo
+deactivate Service
+CtrlPost -> Service : actualizar(carga.id, horasDocencia, horasInvestigacion, horasActividades)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM cargas_trabajo WHERE id = ?
+DB --> Repo : CargaTrabajo
+deactivate Repo
+Service -> Repo : save(carga)
+activate Repo
+Repo -> DB : UPDATE cargas_trabajo SET ... WHERE id = ?
+DB --> Repo : ok
+deactivate Repo
+deactivate Service
+CtrlPost --> Nav : redirect /carga-trabajo
+deactivate CtrlPost
+Nav --> Inv : muestra resumen personal actualizado
+deactivate Nav
+
+@enduml

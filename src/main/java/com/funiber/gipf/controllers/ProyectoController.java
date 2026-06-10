@@ -3,6 +3,7 @@ package com.funiber.gipf.controllers;
 import com.funiber.gipf.config.InvestigadorUserDetails;
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
+import com.funiber.gipf.services.CargaTrabajoService;
 import com.funiber.gipf.services.InvestigadorService;
 import com.funiber.gipf.services.ProyectoService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,6 +11,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -17,11 +23,14 @@ public class ProyectoController {
 
     private final ProyectoService proyectoService;
     private final InvestigadorService investigadorService;
+    private final CargaTrabajoService cargaTrabajoService;
 
     public ProyectoController(ProyectoService proyectoService,
-            InvestigadorService investigadorService) {
+            InvestigadorService investigadorService,
+            CargaTrabajoService cargaTrabajoService) {
         this.proyectoService = proyectoService;
         this.investigadorService = investigadorService;
+        this.cargaTrabajoService = cargaTrabajoService;
     }
 
     @GetMapping("/proyectos")
@@ -101,16 +110,29 @@ public class ProyectoController {
     @PreAuthorize("hasRole('COORDINADOR')")
     public String mostrarDisponibles(@PathVariable Long id, Model model) {
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
+        List<Investigador> disponibles = investigadorService.obtenerNoMiembros(proyecto);
+        Set<Long> bloqueados = disponibles.stream()
+                .filter(cargaTrabajoService::excedeLimite)
+                .map(Investigador::getId)
+                .collect(Collectors.toSet());
         model.addAttribute("proyecto", proyecto);
-        model.addAttribute("disponibles", investigadorService.obtenerNoMiembros(proyecto));
+        model.addAttribute("disponibles", disponibles);
+        model.addAttribute("bloqueados", bloqueados);
         return "agregar-investigador";
     }
 
     @PostMapping("/proyectos/{id}/investigadores/agregar")
     @PreAuthorize("hasRole('COORDINADOR')")
-    public String agregarInvestigador(@PathVariable Long id, @RequestParam Long investigadorId) {
+    public String agregarInvestigador(@PathVariable Long id, @RequestParam Long investigadorId,
+            RedirectAttributes redirectAttributes) {
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
         Investigador investigador = investigadorService.obtenerInvestigador(investigadorId);
+        if (cargaTrabajoService.excedeLimite(investigador)) {
+            redirectAttributes.addFlashAttribute("error",
+                    "No se puede agregar a " + investigador.getNombre() + " " + investigador.getApellidos()
+                    + ": su carga de trabajo supera el límite de 40 h/sem.");
+            return "redirect:/proyectos/" + id + "/investigadores/agregar";
+        }
         proyectoService.agregarInvestigador(proyecto, investigador);
         return "redirect:/proyectos/" + id;
     }

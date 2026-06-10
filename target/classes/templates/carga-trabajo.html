@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Carga de trabajo</title>
+</head>
+<body>
+
+<h1>Carga de trabajo</h1>
+
+<a th:href="@{/panel}">Panel principal</a>
+
+<!-- Vista coordinador: tabla global de todos los usuarios -->
+<div th:if="${investigadores != null}">
+    <h2>Resumen global</h2>
+    <table border="1" cellpadding="6">
+        <thead>
+            <tr>
+                <th>Investigador</th>
+                <th>Rol</th>
+                <th>Docencia (h/sem)</th>
+                <th>Investigación (h/sem)</th>
+                <th>Actividades (h/sem)</th>
+                <th>Total (h/sem)</th>
+            <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="inv : ${investigadores}">
+                <td th:text="${inv.nombre + ' ' + inv.apellidos}"></td>
+                <td th:text="${inv.rol}"></td>
+                <td th:text="${inv.cargaTrabajo != null ? inv.cargaTrabajo.horasDocencia : 0.0}"></td>
+                <td th:text="${inv.cargaTrabajo != null ? inv.cargaTrabajo.horasInvestigacion : 0.0}"></td>
+                <td th:text="${inv.cargaTrabajo != null ? inv.cargaTrabajo.horasActividades : 0.0}"></td>
+                <td th:text="${inv.cargaTrabajo != null ? (inv.cargaTrabajo.horasDocencia + inv.cargaTrabajo.horasInvestigacion + inv.cargaTrabajo.horasActividades) : 0.0}"></td>
+                <td><a th:href="@{/investigadores/{id}/carga-trabajo/editar(id=${inv.id})}">Editar</a></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(investigadores)}">
+                <td colspan="7">No hay usuarios registrados.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Vista investigador: resumen personal -->
+<div th:if="${carga != null}">
+    <h2>Mi carga de trabajo</h2>
+    <table border="1" cellpadding="6">
+        <thead>
+            <tr>
+                <th>Categoría</th>
+                <th>Horas semanales</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Docencia</td>
+                <td th:text="${carga.horasDocencia}"></td>
+            </tr>
+            <tr>
+                <td>Investigación</td>
+                <td th:text="${carga.horasInvestigacion}"></td>
+            </tr>
+            <tr>
+                <td>Actividades académicas</td>
+                <td th:text="${carga.horasActividades}"></td>
+            </tr>
+            <tr>
+                <td><strong>Total semanal</strong></td>
+                <td><strong th:text="${carga.horasDocencia + carga.horasInvestigacion + carga.horasActividades}"></strong></td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <a th:href="@{/carga-trabajo/editar}">Editar carga de trabajo</a>
+</div>
+
+</body>
+</html>
