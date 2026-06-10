@@ -1,0 +1,31 @@
+@startuml abrirPublicaciones-coordinador-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "PublicacionController\n@Controller\nGET /publicaciones" as Ctrl
+participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : clic en "Publicaciones"
+activate Nav
+Nav -> Ctrl : GET /publicaciones
+activate Ctrl
+Ctrl -> Service : obtenerTodas()
+activate Service
+Service -> Repo : findAll()
+activate Repo
+Repo -> DB : SELECT * FROM publicaciones
+DB --> Repo : List<Publicacion>
+deactivate Repo
+Repo --> Service : List<Publicacion>
+deactivate Service
+Service --> Ctrl : List<Publicacion>
+Ctrl -> Ctrl : model.addAttribute("publicaciones", lista)
+Ctrl --> Nav : 200 OK · publicaciones.html
+deactivate Ctrl
+Nav --> Coord : muestra tabla de publicaciones\n(título, autor, fecha)
+deactivate Nav
+
+@enduml

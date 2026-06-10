@@ -1,0 +1,28 @@
+@startuml responderPublicacion-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "PublicacionController\n@Controller\nPOST /publicaciones/{id}/responder" as Ctrl
+participant "PublicacionService\n@Service" as Service
+participant "RespuestaRepository\nJpaRepository" as RRepo
+database "H2" as DB
+
+Inv -> Nav : introduce contenido y pulsa "Enviar respuesta"
+activate Nav
+Nav -> Ctrl : POST /publicaciones/{id}/responder\n(contenido)
+activate Ctrl
+Ctrl -> Service : responder(id, contenido, autor)
+activate Service
+Service -> RRepo : save(respuesta)
+activate RRepo
+RRepo -> DB : INSERT INTO respuestas
+DB --> RRepo : ok
+deactivate RRepo
+deactivate Service
+Ctrl --> Nav : redirect /publicaciones/{id}
+deactivate Ctrl
+Nav --> Inv : muestra publicación con nueva respuesta
+deactivate Nav
+
+@enduml

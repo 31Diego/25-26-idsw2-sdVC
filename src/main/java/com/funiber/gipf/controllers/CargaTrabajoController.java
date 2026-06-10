@@ -3,7 +3,6 @@ package com.funiber.gipf.controllers;
 import com.funiber.gipf.config.InvestigadorUserDetails;
 import com.funiber.gipf.models.CargaTrabajo;
 import com.funiber.gipf.models.Investigador;
-import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.services.CargaTrabajoService;
 import com.funiber.gipf.services.InvestigadorService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,19 +23,24 @@ public class CargaTrabajoController {
         this.investigadorService = investigadorService;
     }
 
+    @GetMapping("/coordinador/carga-trabajo")
+    @PreAuthorize("hasRole('COORDINADOR')")
+    public String abrirCargaTrabajoCoordinador(Model model) {
+        model.addAttribute("investigadores", investigadorService.obtenerTodos());
+        return "carga-trabajo";
+    }
+
     @GetMapping("/carga-trabajo")
-    public String abrirCargaTrabajo(@AuthenticationPrincipal InvestigadorUserDetails userDetails,
+    @PreAuthorize("hasRole('INVESTIGADOR')")
+    public String abrirCargaTrabajoInvestigador(@AuthenticationPrincipal InvestigadorUserDetails userDetails,
             Model model) {
         Investigador investigador = userDetails.getInvestigador();
-        if (investigador.getRol() == Rol.COORDINADOR) {
-            model.addAttribute("investigadores", investigadorService.obtenerInvestigadores(null));
-        } else {
-            model.addAttribute("carga", cargaTrabajoService.obtenerOCrearPorInvestigador(investigador));
-        }
+        model.addAttribute("carga", cargaTrabajoService.obtenerOCrearPorInvestigador(investigador));
         return "carga-trabajo";
     }
 
     @GetMapping("/carga-trabajo/editar")
+    @PreAuthorize("hasRole('INVESTIGADOR')")
     public String mostrarFormularioPropio(@AuthenticationPrincipal InvestigadorUserDetails userDetails,
             Model model) {
         Investigador investigador = userDetails.getInvestigador();
@@ -46,13 +50,14 @@ public class CargaTrabajoController {
     }
 
     @PostMapping("/carga-trabajo/editar")
+    @PreAuthorize("hasRole('INVESTIGADOR')")
     public String guardarPropio(@AuthenticationPrincipal InvestigadorUserDetails userDetails,
             @RequestParam double horasDocencia,
             @RequestParam double horasInvestigacion,
             @RequestParam double horasActividades) {
         Investigador investigador = userDetails.getInvestigador();
         CargaTrabajo carga = cargaTrabajoService.obtenerOCrearPorInvestigador(investigador);
-        cargaTrabajoService.actualizar(carga.getId(), horasDocencia, horasInvestigacion, horasActividades);
+        cargaTrabajoService.actualizar(carga, horasDocencia, horasInvestigacion, horasActividades);
         return "redirect:/carga-trabajo";
     }
 
@@ -74,7 +79,7 @@ public class CargaTrabajoController {
             @RequestParam double horasActividades) {
         Investigador investigador = investigadorService.obtenerInvestigador(id);
         CargaTrabajo carga = cargaTrabajoService.obtenerOCrearPorInvestigador(investigador);
-        cargaTrabajoService.actualizar(carga.getId(), horasDocencia, horasInvestigacion, horasActividades);
-        return "redirect:/carga-trabajo";
+        cargaTrabajoService.actualizar(carga, horasDocencia, horasInvestigacion, horasActividades);
+        return "redirect:/coordinador/carga-trabajo";
     }
 }

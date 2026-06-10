@@ -52,9 +52,9 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `abrirPublicaciones` | ✅ | ⬜ | ⬜ | ⬜ |
-| `abrirPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
-| `responderPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
+| `abrirPublicaciones` | ✅ | ✅ | ✅ | ⚠️ |
+| `abrirPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
+| `responderPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
 | `editarPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
 | `eliminarPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
 
@@ -150,9 +150,9 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `abrirPublicaciones` | ✅ | ⬜ | ⬜ | ⬜ |
-| `abrirPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
-| `responderPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
+| `abrirPublicaciones` | ✅ | ✅ | ✅ | ⚠️ |
+| `abrirPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
+| `responderPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
 
 ---
 

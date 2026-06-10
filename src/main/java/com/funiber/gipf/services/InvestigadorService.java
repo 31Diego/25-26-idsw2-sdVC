@@ -58,11 +58,15 @@ public class InvestigadorService {
         investigadorRepository.save(inv);
     }
 
-    public List<Investigador> obtenerInvestigadores(String criterio) {
-        if (criterio != null && !criterio.isBlank()) {
-            return investigadorRepository.buscarPorCriterio(criterio);
-        }
+    public List<Investigador> obtenerTodos() {
         return investigadorRepository.findAll();
+    }
+
+    public List<Investigador> obtenerInvestigadores(String criterio) {
+        if (criterio == null || criterio.isBlank()) {
+            return investigadorRepository.findAll();
+        }
+        return investigadorRepository.buscarPorCriterio(criterio);
     }
 
     public List<Investigador> obtenerNoMiembros(Proyecto proyecto) {
@@ -83,6 +87,8 @@ public class InvestigadorService {
         inv.setRol(inv.getRol() == Rol.COORDINADOR ? Rol.INVESTIGADOR : Rol.COORDINADOR);
         investigadorRepository.save(inv);
     }
+
+    // incumple principio SOLID de SRP, revisar
 
     @Transactional
     public boolean eliminarPerfil(Long actorId, Long targetId) {

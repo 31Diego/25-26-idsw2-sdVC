@@ -3,10 +3,14 @@ package com.funiber.gipf;
 import com.funiber.gipf.models.CargaTrabajo;
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
+import com.funiber.gipf.models.Publicacion;
+import com.funiber.gipf.models.Respuesta;
 import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.repositories.CargaTrabajoRepository;
 import com.funiber.gipf.repositories.InvestigadorRepository;
 import com.funiber.gipf.repositories.ProyectoRepository;
+import com.funiber.gipf.repositories.PublicacionRepository;
+import com.funiber.gipf.repositories.RespuestaRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,15 +23,21 @@ public class DataLoader implements CommandLineRunner {
     private final InvestigadorRepository investigadorRepository;
     private final ProyectoRepository proyectoRepository;
     private final CargaTrabajoRepository cargaTrabajoRepository;
+    private final PublicacionRepository publicacionRepository;
+    private final RespuestaRepository respuestaRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataLoader(InvestigadorRepository investigadorRepository,
                       ProyectoRepository proyectoRepository,
                       CargaTrabajoRepository cargaTrabajoRepository,
+                      PublicacionRepository publicacionRepository,
+                      RespuestaRepository respuestaRepository,
                       PasswordEncoder passwordEncoder) {
         this.investigadorRepository = investigadorRepository;
         this.proyectoRepository = proyectoRepository;
         this.cargaTrabajoRepository = cargaTrabajoRepository;
+        this.publicacionRepository = publicacionRepository;
+        this.respuestaRepository = respuestaRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -103,6 +113,52 @@ public class DataLoader implements CommandLineRunner {
                 carga.setHorasActividades(inv.getRol() == Rol.INVESTIGADOR ? 5.0 : 3.0);
                 cargaTrabajoRepository.save(carga);
             });
+        }
+
+        if (publicacionRepository.count() == 0) {
+            Investigador admin = investigadorRepository.findAll().stream()
+                    .filter(i -> i.getRol() == Rol.COORDINADOR).findFirst().orElse(null);
+            Investigador maria = investigadorRepository.findAll().stream()
+                    .filter(i -> i.getRol() == Rol.INVESTIGADOR).findFirst().orElse(null);
+
+            if (admin != null) {
+                Publicacion p1 = new Publicacion();
+                p1.setTitulo("Convocatoria Horizonte Europa 2026 — primeras noticias");
+                p1.setContenido("Se han publicado los primeros detalles de la próxima convocatoria Horizonte Europa para el año 2026.");
+                p1.setFecha(LocalDate.of(2025, 10, 5));
+                p1.setAutor(admin);
+                publicacionRepository.save(p1);
+            }
+
+            if (maria != null) {
+                Publicacion p2 = new Publicacion();
+                p2.setTitulo("Resultados preliminares: almacenamiento energético en zonas rurales");
+                p2.setContenido("Compartimos los primeros resultados obtenidos en el marco del proyecto Horizonte Europa 2025.");
+                p2.setFecha(LocalDate.of(2025, 11, 14));
+                p2.setAutor(maria);
+                publicacionRepository.save(p2);
+
+                Publicacion p3 = new Publicacion();
+                p3.setTitulo("Colaboración con la Universidad de Cantabria");
+                p3.setContenido("Se ha formalizado un acuerdo de colaboración para el intercambio de investigadores durante 2026.");
+                p3.setFecha(LocalDate.of(2026, 1, 20));
+                p3.setAutor(maria);
+                publicacionRepository.save(p3);
+            }
+        }
+
+        if (respuestaRepository.count() == 0) {
+            Investigador maria = investigadorRepository.findAll().stream()
+                    .filter(i -> i.getRol() == Rol.INVESTIGADOR).findFirst().orElse(null);
+            Publicacion primera = publicacionRepository.findAll().stream().findFirst().orElse(null);
+            if (maria != null && primera != null) {
+                Respuesta r = new Respuesta();
+                r.setContenido("Muy interesante. Estaremos atentos a las novedades de esta convocatoria.");
+                r.setFecha(LocalDate.of(2025, 10, 7));
+                r.setAutor(maria);
+                r.setPublicacion(primera);
+                respuestaRepository.save(r);
+            }
         }
     }
 }

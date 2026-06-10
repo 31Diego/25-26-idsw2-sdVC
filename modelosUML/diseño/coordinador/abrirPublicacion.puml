@@ -1,0 +1,31 @@
+@startuml abrirPublicacion-coordinador-diseño
+skinparam linetype ortho
+
+actor "Coordinador" as Coord
+participant "Navegador" as Nav
+participant "PublicacionController\n@Controller\nGET /publicaciones/{id}" as Ctrl
+participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Coord -> Nav : clic en "Ver" (desde lista)
+activate Nav
+Nav -> Ctrl : GET /publicaciones/{id}
+activate Ctrl
+Ctrl -> Service : obtenerPorId(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM publicaciones WHERE id=?
+DB --> Repo : Publicacion [con respuestas LAZY]
+deactivate Repo
+Repo --> Service : Publicacion
+deactivate Service
+Service --> Ctrl : Publicacion
+Ctrl -> Ctrl : model.addAttribute("publicacion", pub)
+Ctrl --> Nav : 200 OK · publicacion.html
+deactivate Ctrl
+Nav --> Coord : muestra título, contenido, autor,\nfecha y lista de respuestas
+deactivate Nav
+
+@enduml

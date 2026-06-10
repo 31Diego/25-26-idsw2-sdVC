@@ -32,7 +32,7 @@
     <br><br>
 
     <button type="submit">Guardar</button>
-    <a th:href="@{/carga-trabajo}">Cancelar</a>
+    <a th:href="${investigador != null} ? @{/coordinador/carga-trabajo} : @{/carga-trabajo}">Cancelar</a>
 </form>
 
 </body>

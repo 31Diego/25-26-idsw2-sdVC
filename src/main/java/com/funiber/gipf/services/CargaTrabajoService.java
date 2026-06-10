@@ -23,8 +23,7 @@ public class CargaTrabajoService {
                 });
     }
 
-    public void actualizar(Long id, double horasDocencia, double horasInvestigacion, double horasActividades) {
-        CargaTrabajo carga = cargaTrabajoRepository.findById(id).orElseThrow();
+    public void actualizar(CargaTrabajo carga, double horasDocencia, double horasInvestigacion, double horasActividades) {
         carga.setHorasDocencia(horasDocencia);
         carga.setHorasInvestigacion(horasInvestigacion);
         carga.setHorasActividades(horasActividades);
