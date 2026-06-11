@@ -80,4 +80,14 @@ public class ProyectoService {
     public boolean tieneAcceso(Proyecto proyecto, Investigador investigador) {
         return politicas.get(investigador.getRol()).tieneAcceso(proyecto, investigador);
     }
+
+    @Transactional
+    public void eliminarInvestigadorDeTodosLosProyectos(Long investigadorId) {
+        for (Proyecto p : proyectoRepository.findAll()) {
+            if (p.getInvestigadores().stream().anyMatch(i -> i.getId().equals(investigadorId))) {
+                p.getInvestigadores().removeIf(i -> i.getId().equals(investigadorId));
+                proyectoRepository.save(p);
+            }
+        }
+    }
 }

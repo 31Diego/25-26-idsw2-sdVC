@@ -32,9 +32,19 @@ deactivate Nav
 
 Inv -> Nav : rellena campos y pulsa "Guardar"
 activate Nav
-Nav -> CtrlPost : POST /perfil/editar (nombre, apellidos, campo, carrera, master, username, password)
+Nav -> CtrlPost : POST /perfil/editar\n(nombre, apellidos, campo, carrera, master, username, password)
 activate CtrlPost
-CtrlPost -> Service : actualizarPerfil(id, nombre, apellidos, campo, carrera, master, username, password)
+CtrlPost -> Service : obtenerInvestigadorPorUsername(username)
+activate Service
+Service -> Repo : findByUsername(username)
+activate Repo
+Repo -> DB : SELECT * FROM investigadores WHERE username = ?
+DB --> Repo : Investigador
+deactivate Repo
+Repo --> Service : Investigador
+deactivate Service
+Service --> CtrlPost : Investigador (con id)
+CtrlPost -> Service : actualizarPerfil(id, nombre, apellidos, campo, carrera, master, rol=null, username, password)
 activate Service
 Service -> Repo : findById(id)
 activate Repo

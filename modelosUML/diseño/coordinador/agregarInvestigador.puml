@@ -37,7 +37,7 @@ IRepo --> IService : List<Investigador>
 IService -> IService : filtra los que ya son miembros del proyecto
 deactivate IService
 IService --> CtrlGet : List<Investigador> (disponibles)
-CtrlGet -> CTService : excedeLimite(inv) para cada disponible
+CtrlGet -> CTService : obtenerIdsBloqueados(disponibles)
 activate CTService
 CTService --> CtrlGet : Set<Long> bloqueados (ids con ≥ 40 h/sem)
 deactivate CTService

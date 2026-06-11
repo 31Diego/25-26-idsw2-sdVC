@@ -4,7 +4,7 @@ import com.funiber.gipf.config.InvestigadorUserDetails;
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Recompensa;
 import com.funiber.gipf.models.Rol;
-import com.funiber.gipf.repositories.InvestigadorRepository;
+import com.funiber.gipf.services.InvestigadorService;
 import com.funiber.gipf.services.RecompensaService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,23 +16,18 @@ import org.springframework.web.bind.annotation.*;
 public class RecompensaController {
 
     private final RecompensaService recompensaService;
-    private final InvestigadorRepository investigadorRepository;
+    private final InvestigadorService investigadorService;
 
     public RecompensaController(RecompensaService recompensaService,
-                                InvestigadorRepository investigadorRepository) {
+                                InvestigadorService investigadorService) {
         this.recompensaService = recompensaService;
-        this.investigadorRepository = investigadorRepository;
+        this.investigadorService = investigadorService;
     }
 
     @GetMapping("/recompensas")
     public String abrirRecompensas(@AuthenticationPrincipal InvestigadorUserDetails userDetails,
                                    Model model) {
-        Investigador usuario = userDetails.getInvestigador();
-        if (usuario.getRol() == Rol.COORDINADOR) {
-            model.addAttribute("recompensas", recompensaService.obtenerTodas());
-        } else {
-            model.addAttribute("recompensas", recompensaService.obtenerPorDestinatario(usuario));
-        }
+        model.addAttribute("recompensas", recompensaService.obtenerParaUsuario(userDetails.getInvestigador()));
         return "recompensas";
     }
 
@@ -53,7 +48,7 @@ public class RecompensaController {
     @GetMapping("/recompensas/crear")
     @PreAuthorize("hasRole('COORDINADOR')")
     public String crearRecompensaForm(Model model) {
-        model.addAttribute("investigadores", investigadorRepository.findAll());
+        model.addAttribute("investigadores", investigadorService.obtenerTodos());
         return "crear-recompensa";
     }
 
@@ -73,7 +68,7 @@ public class RecompensaController {
     @PreAuthorize("hasRole('COORDINADOR')")
     public String editarRecompensaForm(@PathVariable Long id, Model model) {
         model.addAttribute("recompensa", recompensaService.obtenerPorId(id));
-        model.addAttribute("investigadores", investigadorRepository.findAll());
+        model.addAttribute("investigadores", investigadorService.obtenerTodos());
         return "editar-recompensa";
     }
 

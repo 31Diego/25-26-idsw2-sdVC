@@ -3,6 +3,7 @@ package com.funiber.gipf.services;
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Publicacion;
 import com.funiber.gipf.models.Respuesta;
+import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.repositories.PublicacionRepository;
 import com.funiber.gipf.repositories.RespuestaRepository;
 import org.springframework.stereotype.Service;
@@ -62,5 +63,10 @@ public class PublicacionService {
 
     public void eliminar(Long id) {
         publicacionRepository.deleteById(id);
+    }
+
+    public boolean puedeEditarOEliminar(Investigador usuario, Publicacion publicacion) {
+        return usuario.getRol().equals(Rol.COORDINADOR)
+                || publicacion.getAutor().getId().equals(usuario.getId());
     }
 }

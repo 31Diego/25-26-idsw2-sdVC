@@ -5,6 +5,7 @@ actor "Coordinador" as Coord
 participant "Navegador" as Nav
 participant "ProyectoController\n@Controller\nGET|POST /proyectos/{id}/eliminar" as Ctrl
 participant "ProyectoService\n@Service" as Service
+participant "EntregableRepository\nJpaRepository" as EntRepo
 participant "ProyectoRepository\nJpaRepository" as Repo
 database "H2" as DB
 
@@ -35,9 +36,15 @@ activate Ctrl
 
 Ctrl -> Service : eliminarProyecto(id)
 activate Service
+Service -> EntRepo : deleteByProyectoId(id)
+activate EntRepo
+EntRepo -> DB : DELETE FROM entregables WHERE proyecto_id = ?
+DB --> EntRepo : ok
+deactivate EntRepo
 Service -> Repo : deleteById(id)
 activate Repo
 Repo -> DB : DELETE FROM proyectos WHERE id = ?
+DB --> Repo : ok
 deactivate Repo
 deactivate Service
 

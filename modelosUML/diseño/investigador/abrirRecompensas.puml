@@ -9,9 +9,9 @@ database "H2" as DB
 
 User -> Controller: GET /recompensas
 activate Controller
-note right of Controller: rol == INVESTIGADOR\n→ filtrar por destinatario
-Controller -> Service: obtenerPorDestinatario(investigador)
+Controller -> Service: obtenerParaUsuario(investigador)
 activate Service
+note right of Service: rol == INVESTIGADOR\n→ obtenerPorDestinatario()
 Service -> Repo: findByDestinatario(investigador)
 activate Repo
 Repo -> DB: SELECT * FROM recompensas\nWHERE destinatario_id = ?

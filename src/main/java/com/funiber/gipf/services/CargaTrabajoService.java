@@ -5,6 +5,10 @@ import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.repositories.CargaTrabajoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class CargaTrabajoService {
 
@@ -34,5 +38,12 @@ public class CargaTrabajoService {
         return cargaTrabajoRepository.findByInvestigadorId(investigador.getId())
                 .map(c -> c.getHorasDocencia() + c.getHorasInvestigacion() + c.getHorasActividades() >= 40.0)
                 .orElse(false);
+    }
+
+    public Set<Long> obtenerIdsBloqueados(List<Investigador> investigadores) {
+        return investigadores.stream()
+                .filter(this::excedeLimite)
+                .map(Investigador::getId)
+                .collect(Collectors.toSet());
     }
 }

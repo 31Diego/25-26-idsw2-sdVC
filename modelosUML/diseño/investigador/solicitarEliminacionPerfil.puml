@@ -30,8 +30,8 @@ else puedeGestionar
     deactivate IRepo
     IRepo --> IService : Investigador
     deactivate IService
-    IService --> Ctrl : Investigador
-    Ctrl -> Ctrl : model.addAttribute("investigadorDestino", investigador)
+    IService --> Ctrl : objetivo
+    Ctrl -> Ctrl : model.addAttribute("investigadorDestino", objetivo)
     Ctrl --> Nav : 200 OK · solicitar-eliminacion.html
 end
 
@@ -53,8 +53,8 @@ else puedeGestionar
     DB --> IRepo : Investigador
     IRepo --> IService : Investigador
     deactivate IService
-    IService --> Ctrl : Investigador
-    Ctrl -> Service : crearSolicitud(investigador, motivo)
+    IService --> Ctrl : objetivo
+    Ctrl -> Service : crearSolicitud(objetivo, motivo)
     activate Service
     Service -> Repo : save(SolicitudEliminacion)
     activate Repo

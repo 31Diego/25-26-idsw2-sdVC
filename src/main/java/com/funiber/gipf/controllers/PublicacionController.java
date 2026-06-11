@@ -1,9 +1,7 @@
 package com.funiber.gipf.controllers;
 
 import com.funiber.gipf.config.InvestigadorUserDetails;
-import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Publicacion;
-import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.services.PublicacionService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -45,7 +43,7 @@ public class PublicacionController {
     public String editarPublicacionForm(@PathVariable Long id, Model model,
             @AuthenticationPrincipal InvestigadorUserDetails userDetails) {
         Publicacion pub = publicacionService.obtenerPorId(id);
-        if (!esCoordinadorOAutor(userDetails.getInvestigador(), pub)) {
+        if (!publicacionService.puedeEditarOEliminar(userDetails.getInvestigador(), pub)) {
             return "redirect:/publicaciones";
         }
         model.addAttribute("publicacion", pub);
@@ -58,7 +56,7 @@ public class PublicacionController {
             @RequestParam String contenido,
             @AuthenticationPrincipal InvestigadorUserDetails userDetails) {
         Publicacion pub = publicacionService.obtenerPorId(id);
-        if (!esCoordinadorOAutor(userDetails.getInvestigador(), pub)) {
+        if (!publicacionService.puedeEditarOEliminar(userDetails.getInvestigador(), pub)) {
             return "redirect:/publicaciones";
         }
         publicacionService.actualizar(id, titulo, contenido);
@@ -69,7 +67,7 @@ public class PublicacionController {
     public String eliminarPublicacionConfirm(@PathVariable Long id, Model model,
             @AuthenticationPrincipal InvestigadorUserDetails userDetails) {
         Publicacion pub = publicacionService.obtenerPorId(id);
-        if (!esCoordinadorOAutor(userDetails.getInvestigador(), pub)) {
+        if (!publicacionService.puedeEditarOEliminar(userDetails.getInvestigador(), pub)) {
             return "redirect:/publicaciones";
         }
         model.addAttribute("publicacion", pub);
@@ -80,7 +78,7 @@ public class PublicacionController {
     public String eliminarPublicacion(@PathVariable Long id,
             @AuthenticationPrincipal InvestigadorUserDetails userDetails) {
         Publicacion pub = publicacionService.obtenerPorId(id);
-        if (!esCoordinadorOAutor(userDetails.getInvestigador(), pub)) {
+        if (!publicacionService.puedeEditarOEliminar(userDetails.getInvestigador(), pub)) {
             return "redirect:/publicaciones";
         }
         publicacionService.eliminar(id);
@@ -120,10 +118,4 @@ public class PublicacionController {
         return "redirect:/mis-publicaciones/" + nueva.getId();
     }
 
-    // ── Helper ───────────────────────────────────────────────────────────────
-
-    private boolean esCoordinadorOAutor(Investigador usuario, Publicacion pub) {
-        return usuario.getRol().equals(Rol.COORDINADOR)
-                || pub.getAutor().getId().equals(usuario.getId());
-    }
 }

@@ -21,11 +21,23 @@ Repo --> Service: Publicacion
 deactivate Repo
 Service --> Controller: Publicacion
 deactivate Service
+Controller -> Service: puedeEditarOEliminar(usuario, publicacion)
+activate Service
+Service --> Controller: true
+deactivate Service
 Controller --> User: editar-publicacion.html\n(form pre-rellenado)
 deactivate Controller
 
 User -> Controller: POST /publicaciones/{id}/editar\n(titulo, contenido)
 activate Controller
+Controller -> Service: obtenerPorId(id)
+activate Service
+Service --> Controller: Publicacion
+deactivate Service
+Controller -> Service: puedeEditarOEliminar(usuario, publicacion)
+activate Service
+Service --> Controller: true
+deactivate Service
 Controller -> Service: actualizar(id, titulo, contenido)
 activate Service
 Service -> Repo: findById(id)

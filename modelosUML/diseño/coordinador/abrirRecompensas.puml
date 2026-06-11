@@ -9,8 +9,9 @@ database "H2" as DB
 
 User -> Controller: GET /recompensas
 activate Controller
-Controller -> Service: obtenerTodas()
+Controller -> Service: obtenerParaUsuario(investigador)
 activate Service
+note right of Service: rol == COORDINADOR\n→ obtenerTodas()
 Service -> Repo: findAll()
 activate Repo
 Repo -> DB: SELECT * FROM recompensas

@@ -4,28 +4,61 @@ skinparam linetype ortho
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
 participant "EliminacionController\n@Controller\nPOST /investigadores/{id}/eliminar-perfil" as Ctrl
-participant "InvestigadorService\n@Service" as Service
-participant "ProyectoRepository\nSolicitudEliminacionRepository\nInvestigadorRepository\nJpaRepository" as Repos
+participant "InvestigadorService\n@Service" as InvService
+participant "ProyectoService\n@Service" as PService
+participant "SolicitudEliminacionService\n@Service" as SolService
+participant "ProyectoRepository\nJpaRepository" as PRepo
+participant "SolicitudEliminacionRepository\nJpaRepository" as SolRepo
+participant "InvestigadorRepository\nJpaRepository" as InvRepo
 database "H2" as DB
 
 Coord -> Nav : clic en "Aprobar y eliminar perfil"\n(desde solicitud-eliminacion.html)
 activate Nav
 Nav -> Ctrl : POST /investigadores/{id}/eliminar-perfil\n[@AuthenticationPrincipal coordinador]
 activate Ctrl
-Ctrl -> Service : eliminarPerfil(coordinador.getId(), id)
-activate Service
+Ctrl -> InvService : eliminarPerfil(coordinador.getId(), id)
+activate InvService
 
-note over Service : actorId != targetId\nguarda anti-autoeliminación
+note over InvService : actorId != targetId\nguarda anti-autoeliminación
 
-Service -> Repos : proyectoRepository.findAll()\n→ elimina de cada proyecto donde aparece
-Service -> Repos : solicitudEliminacionRepository\n.deleteByInvestigadorId(id)
-Service -> Repos : investigadorRepository.deleteById(id)
-activate Repos
-Repos -> DB : DELETE / UPDATE proyectos\nDELETE solicitudes\nDELETE investigador
-DB --> Repos : OK
-deactivate Repos
-Service --> Ctrl : true
-deactivate Service
+InvService -> PService : eliminarInvestigadorDeTodosLosProyectos(targetId)
+activate PService
+PService -> PRepo : findAll()
+activate PRepo
+PRepo -> DB : SELECT * FROM proyectos
+DB --> PRepo : List<Proyecto>
+deactivate PRepo
+PService -> PRepo : save(proyecto) [por cada proyecto con el investigador]
+activate PRepo
+PRepo -> DB : UPDATE proyecto_investigador\n(elimina fila del investigador)
+DB --> PRepo : OK
+deactivate PRepo
+PService --> InvService : void
+deactivate PService
+
+InvService -> SolService : eliminarPorInvestigador(targetId)
+activate SolService
+SolService -> SolRepo : findByInvestigadorId(targetId)
+activate SolRepo
+SolRepo -> DB : SELECT * FROM solicitudes_eliminacion\nWHERE investigador_id = ?
+DB --> SolRepo : List<SolicitudEliminacion>
+deactivate SolRepo
+SolService -> SolRepo : deleteAll(solicitudes)
+activate SolRepo
+SolRepo -> DB : DELETE FROM solicitudes_eliminacion ...
+DB --> SolRepo : OK
+deactivate SolRepo
+SolService --> InvService : void
+deactivate SolService
+
+InvService -> InvRepo : deleteById(targetId)
+activate InvRepo
+InvRepo -> DB : DELETE FROM investigadores WHERE id = ?
+DB --> InvRepo : OK
+deactivate InvRepo
+
+InvService --> Ctrl : true
+deactivate InvService
 Ctrl --> Nav : 302 redirect → /solicitudes-eliminacion
 deactivate Ctrl
 Nav --> Coord : vuelve a la lista de solicitudes

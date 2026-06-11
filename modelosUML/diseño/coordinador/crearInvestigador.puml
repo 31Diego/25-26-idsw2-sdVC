@@ -23,10 +23,9 @@ activate Nav
 Nav -> Ctrl : POST /investigadores/nuevo\n[nombre, username, password, campo, ...]
 activate Ctrl
 
-note over Ctrl : rol = "INVESTIGADOR"\npassword = encode(password_del_formulario)
-
 Ctrl -> Service : guardarInvestigador(investigador)
 activate Service
+note over Service : rol = INVESTIGADOR\npassword = encode(password)
 Service -> Repo : save(investigador)
 activate Repo
 Repo -> DB : INSERT INTO investigadores (...)

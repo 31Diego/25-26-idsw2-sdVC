@@ -15,7 +15,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Controller
@@ -111,10 +110,7 @@ public class ProyectoController {
     public String mostrarDisponibles(@PathVariable Long id, Model model) {
         Proyecto proyecto = proyectoService.obtenerProyecto(id);
         List<Investigador> disponibles = investigadorService.obtenerNoMiembros(proyecto);
-        Set<Long> bloqueados = disponibles.stream()
-                .filter(cargaTrabajoService::excedeLimite)
-                .map(Investigador::getId)
-                .collect(Collectors.toSet());
+        Set<Long> bloqueados = cargaTrabajoService.obtenerIdsBloqueados(disponibles);
         model.addAttribute("proyecto", proyecto);
         model.addAttribute("disponibles", disponibles);
         model.addAttribute("bloqueados", bloqueados);

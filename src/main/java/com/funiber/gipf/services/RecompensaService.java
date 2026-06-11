@@ -2,7 +2,7 @@ package com.funiber.gipf.services;
 
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Recompensa;
-import com.funiber.gipf.repositories.InvestigadorRepository;
+import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.repositories.RecompensaRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +13,12 @@ import java.util.List;
 public class RecompensaService {
 
     private final RecompensaRepository recompensaRepository;
-    private final InvestigadorRepository investigadorRepository;
+    private final InvestigadorService investigadorService;
 
     public RecompensaService(RecompensaRepository recompensaRepository,
-                             InvestigadorRepository investigadorRepository) {
+                             InvestigadorService investigadorService) {
         this.recompensaRepository = recompensaRepository;
-        this.investigadorRepository = investigadorRepository;
+        this.investigadorService = investigadorService;
     }
 
     public List<Recompensa> obtenerTodas() {
@@ -27,6 +27,13 @@ public class RecompensaService {
 
     public List<Recompensa> obtenerPorDestinatario(Investigador destinatario) {
         return recompensaRepository.findByDestinatario(destinatario);
+    }
+
+    public List<Recompensa> obtenerParaUsuario(Investigador investigador) {
+        if (investigador.getRol() == Rol.COORDINADOR) {
+            return obtenerTodas();
+        }
+        return obtenerPorDestinatario(investigador);
     }
 
     public Recompensa obtenerPorId(Long id) {
@@ -42,7 +49,7 @@ public class RecompensaService {
         r.setDescripcion(descripcion);
         r.setCondiciones(condiciones);
         r.setFechaCreacion(LocalDate.now());
-        r.setDestinatario(investigadorRepository.findById(destinatarioId).orElseThrow());
+        r.setDestinatario(investigadorService.obtenerInvestigador(destinatarioId));
         return recompensaRepository.save(r);
     }
 
@@ -54,7 +61,7 @@ public class RecompensaService {
         r.setValor(valor);
         r.setDescripcion(descripcion);
         r.setCondiciones(condiciones);
-        r.setDestinatario(investigadorRepository.findById(destinatarioId).orElseThrow());
+        r.setDestinatario(investigadorService.obtenerInvestigador(destinatarioId));
         recompensaRepository.save(r);
     }
 

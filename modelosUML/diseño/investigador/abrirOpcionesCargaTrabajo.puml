@@ -3,7 +3,7 @@ skinparam linetype ortho
 
 actor "Investigador" as Inv
 participant "Navegador" as Nav
-participant "CargaTrabajoController\n@Controller\nGET /carga-trabajo" as Ctrl
+participant "CargaTrabajoController\n@Controller\nGET /carga-trabajo\n@PreAuthorize(INVESTIGADOR)" as Ctrl
 participant "CargaTrabajoService\n@Service" as Service
 participant "CargaTrabajoRepository\nJpaRepository" as Repo
 database "H2" as DB
@@ -12,7 +12,6 @@ Inv -> Nav : clic en "Carga de trabajo"
 activate Nav
 Nav -> Ctrl : GET /carga-trabajo
 activate Ctrl
-Ctrl -> Ctrl : investigador.getRol() == INVESTIGADOR
 Ctrl -> Service : obtenerOCrearPorInvestigador(investigador)
 activate Service
 Service -> Repo : findByInvestigadorId(id)

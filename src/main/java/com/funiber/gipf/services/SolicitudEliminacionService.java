@@ -46,4 +46,9 @@ public class SolicitudEliminacionService {
     public boolean requiereLogoutTrasEnviar(Investigador investigador) {
         return investigador.getRol() == Rol.INVESTIGADOR;
     }
+
+    public void eliminarPorInvestigador(Long investigadorId) {
+        solicitudEliminacionRepository.deleteAll(
+                solicitudEliminacionRepository.findByInvestigadorId(investigadorId));
+    }
 }

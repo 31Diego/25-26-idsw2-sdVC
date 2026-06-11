@@ -12,9 +12,9 @@ activate Controller
 Controller --> User: importar-convocatoria.html\n(formulario vacío)
 deactivate Controller
 
-User -> Controller: POST /convocatorias/importar\n(titulo, area, estado,\nfechaApertura, fechaCierre,\ndescripcion, requisitos,\ncriteriosEvaluacion, dotacion, contacto)
+User -> Controller: POST /convocatorias/importar\n(titulo, area, estado,\nfechaApertura, fechaCierre,\ndescripcion, requisitos,\ncriteriosEvaluacion, dotacion,\ndocumentacion, contacto)
 activate Controller
-Controller -> Service: guardar(datos)
+Controller -> Service: guardar(titulo, area, estado,\nfechaApertura, fechaCierre,\ndescripcion, requisitos,\ncriteriosEvaluacion, dotacion,\ndocumentacion, contacto)
 activate Service
 Service -> Service: convocatoria = new Convocatoria()\nconvocatoria.set*(datos)
 Service -> Repo: save(convocatoria)

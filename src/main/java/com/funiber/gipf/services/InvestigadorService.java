@@ -4,8 +4,6 @@ import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Proyecto;
 import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.repositories.InvestigadorRepository;
-import com.funiber.gipf.repositories.ProyectoRepository;
-import com.funiber.gipf.repositories.SolicitudEliminacionRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,17 +14,17 @@ import java.util.List;
 public class InvestigadorService {
 
     private final InvestigadorRepository investigadorRepository;
-    private final ProyectoRepository proyectoRepository;
-    private final SolicitudEliminacionRepository solicitudEliminacionRepository;
+    private final ProyectoService proyectoService;
+    private final SolicitudEliminacionService solicitudEliminacionService;
     private final PasswordEncoder passwordEncoder;
 
     public InvestigadorService(InvestigadorRepository investigadorRepository,
-            ProyectoRepository proyectoRepository,
-            SolicitudEliminacionRepository solicitudEliminacionRepository,
+            ProyectoService proyectoService,
+            SolicitudEliminacionService solicitudEliminacionService,
             PasswordEncoder passwordEncoder) {
         this.investigadorRepository = investigadorRepository;
-        this.proyectoRepository = proyectoRepository;
-        this.solicitudEliminacionRepository = solicitudEliminacionRepository;
+        this.proyectoService = proyectoService;
+        this.solicitudEliminacionService = solicitudEliminacionService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -88,20 +86,13 @@ public class InvestigadorService {
         investigadorRepository.save(inv);
     }
 
-    // incumple principio SOLID de SRP, revisar
-
     @Transactional
     public boolean eliminarPerfil(Long actorId, Long targetId) {
         if (actorId.equals(targetId)) {
             return false;
         }
-        for (Proyecto p : proyectoRepository.findAll()) {
-            if (p.getInvestigadores().stream().anyMatch(i -> i.getId().equals(targetId))) {
-                p.getInvestigadores().removeIf(i -> i.getId().equals(targetId));
-                proyectoRepository.save(p);
-            }
-        }
-        solicitudEliminacionRepository.deleteAll(solicitudEliminacionRepository.findByInvestigadorId(targetId));
+        proyectoService.eliminarInvestigadorDeTodosLosProyectos(targetId);
+        solicitudEliminacionService.eliminarPorInvestigador(targetId);
         investigadorRepository.deleteById(targetId);
         return true;
     }

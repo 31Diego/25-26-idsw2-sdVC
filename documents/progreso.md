@@ -67,8 +67,8 @@
 | `abrirMisPublicaciones` | ✅ | ✅ | ✅ | ⚠️ |
 | `abrirMiPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
 | `crearPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
-| `editarMiPublicacion` | ✅ | ⬜ | ✅ † | ⚠️ |
-| `eliminarMiPublicacion` | ✅ | ⬜ | ✅ † | ⚠️ |
+| `editarMiPublicacion` | ✅ | ✅ | ✅ † | ⚠️ |
+| `eliminarMiPublicacion` | ✅ | ✅ | ✅ † | ⚠️ |
 
 ---
 
@@ -123,9 +123,9 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `iniciarSesion` | ✅ | ⬜ | ✅ † | ⚠️ |
-| `cerrarSesion` | ✅ | ⬜ | ✅ † | ⚠️ |
-| `abrirPanelPrincipal` | ✅ | ⬜ | ✅ † | ⚠️ |
+| `iniciarSesion` | ✅ | ✅ | ✅ † | ⚠️ |
+| `cerrarSesion` | ✅ | ✅ | ✅ † | ⚠️ |
+| `abrirPanelPrincipal` | ✅ | ✅ | ✅ † | ⚠️ |
 | `abrirOpcionesPerfil` | ✅ | ✅ | ✅ | ⚠️ |
 | `editarPerfil` | ✅ | ✅ | ✅ | ⚠️ |
 | `abrirOpcionesCargaTrabajo` | ✅ | ✅ | ✅ | ⚠️ |
@@ -139,11 +139,11 @@
 |---|:---:|:---:|:---:|:---:|
 | `abrirProyectos` | ✅ | ✅ | ✅ | ⚠️ |
 | `abrirProyecto` | ✅ | ✅ | ✅ | ⚠️ |
-| `abrirEntregables` | ✅ | ⬜ | ✅ † | ⚠️ |
-| `abrirEntregable` | ✅ | ⬜ | ✅ † | ⚠️ |
-| `crearEntregable` | ✅ | ⬜ | ✅ † | ⚠️ |
-| `editarEntregable` | ✅ | ⬜ | ✅ † | ⚠️ |
-| `eliminarEntregable` | ✅ | ⬜ | ✅ † | ⚠️ |
+| `abrirEntregables` | ✅ | ✅ | ✅ † | ⚠️ |
+| `abrirEntregable` | ✅ | ✅ | ✅ † | ⚠️ |
+| `crearEntregable` | ✅ | ✅ | ✅ † | ⚠️ |
+| `editarEntregable` | ✅ | ✅ | ✅ † | ⚠️ |
+| `eliminarEntregable` | ✅ | ✅ | ✅ † | ⚠️ |
 
 ---
 
@@ -164,8 +164,8 @@
 | `abrirMisPublicaciones` | ✅ | ✅ | ✅ | ⚠️ |
 | `abrirMiPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
 | `crearPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
-| `editarPublicacion` | ✅ | ⬜ | ✅ † | ⚠️ |
-| `eliminarPublicacion` | ✅ | ⬜ | ✅ † | ⚠️ |
+| `editarPublicacion` | ✅ | ✅ | ✅ † | ⚠️ |
+| `eliminarPublicacion` | ✅ | ✅ | ✅ † | ⚠️ |
 
 ---
 
@@ -182,8 +182,8 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `abrirInvestigadores` | ✅ | ⬜ | ✅ † | ⚠️ |
-| `abrirInvestigador` | ✅ | ⬜ | ✅ † | ⚠️ |
+| `abrirInvestigadores` | ✅ | ✅ | ✅ † | ⚠️ |
+| `abrirInvestigador` | ✅ | ✅ | ✅ † | ⚠️ |
 
 ---
 
@@ -191,4 +191,4 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `solicitarEliminacionPerfil` | ✅ | ⬜ | ⬜ | ⬜ |
+| `solicitarEliminacionPerfil` | ✅ | ✅ | ✅ | ⚠️ |

@@ -5,6 +5,7 @@ actor "Coordinador" as Coord
 participant "Navegador" as Nav
 participant "PublicacionController\n@Controller\nPOST /publicaciones/{id}/responder" as Ctrl
 participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as PRepo
 participant "RespuestaRepository\nJpaRepository" as RRepo
 database "H2" as DB
 
@@ -14,10 +15,17 @@ Nav -> Ctrl : POST /publicaciones/{id}/responder\n(contenido)
 activate Ctrl
 Ctrl -> Service : responder(id, contenido, autor)
 activate Service
+Service -> PRepo : findById(id)
+activate PRepo
+PRepo -> DB : SELECT * FROM publicaciones WHERE id = ?
+DB --> PRepo : Publicacion
+deactivate PRepo
+PRepo --> Service : Publicacion
+Service -> Service : respuesta = new Respuesta()\nrespuesta.set*(contenido, fecha, autor, publicacion)
 Service -> RRepo : save(respuesta)
 activate RRepo
-RRepo -> DB : INSERT INTO respuestas
-DB --> RRepo : ok
+RRepo -> DB : INSERT INTO respuestas ...
+DB --> RRepo : Respuesta
 deactivate RRepo
 deactivate Service
 Ctrl --> Nav : redirect /publicaciones/{id}

@@ -3,22 +3,21 @@ skinparam linetype ortho
 
 actor "Coordinador" as Coord
 participant "Navegador" as Nav
-participant "CargaTrabajoController\n@Controller\nGET /carga-trabajo" as Ctrl
+participant "CargaTrabajoController\n@Controller\nGET /coordinador/carga-trabajo" as Ctrl
 participant "InvestigadorService\n@Service" as Service
 participant "InvestigadorRepository\nJpaRepository" as Repo
 database "H2" as DB
 
 Coord -> Nav : clic en "Carga de trabajo"
 activate Nav
-Nav -> Ctrl : GET /carga-trabajo
+Nav -> Ctrl : GET /coordinador/carga-trabajo
 activate Ctrl
-Ctrl -> Ctrl : investigador.getRol() == COORDINADOR
-Ctrl -> Service : obtenerInvestigadores(null)
+Ctrl -> Service : obtenerTodos()
 activate Service
 Service -> Repo : findAll()
 activate Repo
 Repo -> DB : SELECT * FROM investigadores
-DB --> Repo : List<Investigador> [con CargaTrabajo EAGER]
+DB --> Repo : List<Investigador>
 deactivate Repo
 Repo --> Service : List<Investigador>
 deactivate Service

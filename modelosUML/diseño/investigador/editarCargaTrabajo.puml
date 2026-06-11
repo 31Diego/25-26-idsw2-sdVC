@@ -38,13 +38,8 @@ activate Service
 Service -> Repo : findByInvestigadorId(id)
 Repo --> Service : CargaTrabajo
 deactivate Service
-CtrlPost -> Service : actualizar(carga.id, horasDocencia, horasInvestigacion, horasActividades)
+CtrlPost -> Service : actualizar(carga, horasDocencia, horasInvestigacion, horasActividades)
 activate Service
-Service -> Repo : findById(id)
-activate Repo
-Repo -> DB : SELECT * FROM cargas_trabajo WHERE id = ?
-DB --> Repo : CargaTrabajo
-deactivate Repo
 Service -> Repo : save(carga)
 activate Repo
 Repo -> DB : UPDATE cargas_trabajo SET ... WHERE id = ?
