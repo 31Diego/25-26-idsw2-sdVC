@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Convocatoria</title>
+</head>
+<body>
+
+<h1 th:text="${convocatoria.titulo}">Título</h1>
+
+<table>
+    <tr><th>Área</th><td th:text="${convocatoria.area}"></td></tr>
+    <tr><th>Estado</th><td th:text="${convocatoria.estado}"></td></tr>
+    <tr><th>Fecha apertura</th><td th:text="${convocatoria.fechaApertura}"></td></tr>
+    <tr><th>Fecha cierre</th><td th:text="${convocatoria.fechaCierre}"></td></tr>
+    <tr><th>Contacto</th><td th:text="${convocatoria.contacto}"></td></tr>
+</table>
+
+<h2>Descripción</h2>
+<p th:text="${convocatoria.descripcion}"></p>
+
+<h2>Requisitos y condiciones</h2>
+<p th:text="${convocatoria.requisitos}"></p>
+
+<h2>Criterios de evaluación y dotación</h2>
+<p th:text="${convocatoria.criteriosEvaluacion}"></p>
+<p th:text="${convocatoria.dotacion}"></p>
+
+<h2>Documentación asociada</h2>
+<p th:text="${convocatoria.documentacion}"></p>
+
+<p>
+    <a th:href="@{/convocatorias/importar}">Importar convocatoria</a> |
+    <a th:href="@{/convocatorias/{id}/eliminar(id=${convocatoria.id})}">Eliminar</a> |
+    <a th:href="@{/convocatorias}">Volver a convocatorias</a>
+</p>
+
+</body>
+</html>

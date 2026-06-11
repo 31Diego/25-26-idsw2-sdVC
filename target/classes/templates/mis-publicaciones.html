@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Mis publicaciones</title>
+</head>
+<body>
+
+<h1>Mis publicaciones</h1>
+
+<a th:href="@{/panel}">Panel principal</a> |
+<a th:href="@{/mis-publicaciones/crear}">Nueva publicación</a>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="pub : ${publicaciones}">
+            <td th:text="${pub.titulo}"></td>
+            <td th:text="${pub.fecha}"></td>
+            <td><a th:href="@{/mis-publicaciones/{id}(id=${pub.id})}">Ver</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(publicaciones)}">
+            <td colspan="3">No tienes publicaciones todavía.</td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

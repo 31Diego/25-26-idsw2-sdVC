@@ -1,0 +1,58 @@
+@startuml
+title Diagrama de Secuencia — editarRecompensa (Coordinador)
+
+actor "Coordinador" as User
+participant "RecompensaController\n@Controller" as Controller
+participant "RecompensaService\n@Service" as Service
+participant "InvestigadorRepository\nJpaRepository" as InvRepo
+participant "RecompensaRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /recompensas/{id}/editar
+activate Controller
+Controller -> Service: obtenerPorId(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM recompensas WHERE id = ?
+activate DB
+DB --> Repo: Recompensa
+deactivate DB
+Repo --> Service: Recompensa
+deactivate Repo
+Service --> Controller: Recompensa
+deactivate Service
+Controller -> InvRepo: findAll()
+activate InvRepo
+InvRepo -> DB: SELECT * FROM investigadores
+activate DB
+DB --> InvRepo: List<Investigador>
+deactivate DB
+InvRepo --> Controller: List<Investigador>
+deactivate InvRepo
+Controller --> User: editar-recompensa.html\n(formulario pre-rellenado)
+deactivate Controller
+
+User -> Controller: POST /recompensas/{id}/editar\n(titulo, tipo, valor,\ndescripcion, condiciones, destinatarioId)
+activate Controller
+Controller -> Service: actualizar(id, titulo, tipo, valor,\ndescripcion, condiciones, destinatario)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo --> Service: Recompensa
+deactivate Repo
+Service -> Service: recompensa.set*(datos)
+Service -> Repo: save(recompensa)
+activate Repo
+Repo -> DB: UPDATE recompensas ...
+activate DB
+DB --> Repo: Recompensa
+deactivate DB
+Repo --> Service: Recompensa
+deactivate Repo
+Service --> Controller: Recompensa
+deactivate Service
+Controller --> User: redirect:/recompensas/{id}
+deactivate Controller
+
+@enduml

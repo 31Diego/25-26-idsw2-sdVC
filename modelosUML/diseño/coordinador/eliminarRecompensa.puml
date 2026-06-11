@@ -1,0 +1,42 @@
+@startuml
+title Diagrama de Secuencia — eliminarRecompensa (Coordinador)
+
+actor "Coordinador" as User
+participant "RecompensaController\n@Controller" as Controller
+participant "RecompensaService\n@Service" as Service
+participant "RecompensaRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /recompensas/{id}/eliminar
+activate Controller
+Controller -> Service: obtenerPorId(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM recompensas WHERE id = ?
+activate DB
+DB --> Repo: Recompensa
+deactivate DB
+Repo --> Service: Recompensa
+deactivate Repo
+Service --> Controller: Recompensa
+deactivate Service
+Controller --> User: eliminar-recompensa.html\n(confirmación con título, tipo, valor, destinatario)
+deactivate Controller
+
+User -> Controller: POST /recompensas/{id}/eliminar
+activate Controller
+Controller -> Service: eliminar(id)
+activate Service
+Service -> Repo: deleteById(id)
+activate Repo
+Repo -> DB: DELETE FROM recompensas WHERE id = ?
+activate DB
+DB --> Repo: ok
+deactivate DB
+deactivate Repo
+deactivate Service
+Controller --> User: redirect:/recompensas
+deactivate Controller
+
+@enduml

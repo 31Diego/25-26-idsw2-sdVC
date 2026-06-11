@@ -1,0 +1,53 @@
+@startuml
+title Diagrama de Secuencia — editarPublicacion (Coordinador)
+
+actor "Coordinador" as User
+participant "PublicacionController\n@Controller" as Controller
+participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /publicaciones/{id}/editar
+activate Controller
+Controller -> Service: obtenerPorId(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM publicaciones WHERE id=?
+activate DB
+DB --> Repo: Publicacion
+deactivate DB
+Repo --> Service: Publicacion
+deactivate Repo
+Service --> Controller: Publicacion
+deactivate Service
+Controller --> User: editar-publicacion.html\n(form pre-rellenado)
+deactivate Controller
+
+User -> Controller: POST /publicaciones/{id}/editar\n(titulo, contenido)
+activate Controller
+Controller -> Service: actualizar(id, titulo, contenido)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT...
+activate DB
+DB --> Repo: Publicacion
+deactivate DB
+Repo --> Service: Publicacion
+deactivate Repo
+Service -> Service: publicacion.setTitulo(titulo)\npublicacion.setContenido(contenido)
+Service -> Repo: save(publicacion)
+activate Repo
+Repo -> DB: UPDATE publicaciones SET ...
+activate DB
+DB --> Repo: ok
+deactivate DB
+Repo --> Service: Publicacion
+deactivate Repo
+Service --> Controller: ok
+deactivate Service
+Controller --> User: redirect:/publicaciones/{id}
+deactivate Controller
+
+@enduml

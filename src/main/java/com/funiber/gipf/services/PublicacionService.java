@@ -39,4 +39,28 @@ public class PublicacionService {
         respuesta.setPublicacion(publicacion);
         respuestaRepository.save(respuesta);
     }
+
+    public List<Publicacion> obtenerPorAutor(Investigador autor) {
+        return publicacionRepository.findByAutor(autor);
+    }
+
+    public Publicacion crear(String titulo, String contenido, Investigador autor) {
+        Publicacion publicacion = new Publicacion();
+        publicacion.setTitulo(titulo);
+        publicacion.setContenido(contenido);
+        publicacion.setFecha(LocalDate.now());
+        publicacion.setAutor(autor);
+        return publicacionRepository.save(publicacion);
+    }
+
+    public void actualizar(Long id, String titulo, String contenido) {
+        Publicacion publicacion = publicacionRepository.findById(id).orElseThrow();
+        publicacion.setTitulo(titulo);
+        publicacion.setContenido(contenido);
+        publicacionRepository.save(publicacion);
+    }
+
+    public void eliminar(Long id) {
+        publicacionRepository.deleteById(id);
+    }
 }

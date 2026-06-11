@@ -1,0 +1,32 @@
+@startuml
+title Diagrama de Secuencia — abrirRecompensa (Investigador)
+
+actor "Investigador" as User
+participant "RecompensaController\n@Controller" as Controller
+participant "RecompensaService\n@Service" as Service
+participant "RecompensaRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /recompensas/{id}
+activate Controller
+Controller -> Service: obtenerPorId(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM recompensas WHERE id = ?
+activate DB
+DB --> Repo: Recompensa
+deactivate DB
+Repo --> Service: Recompensa
+deactivate Repo
+Service --> Controller: Recompensa
+deactivate Service
+
+alt destinatario == usuario autenticado
+    Controller --> User: recompensa.html\n(detalle, sin botones de gestión)
+else acceso denegado
+    Controller --> User: redirect:/recompensas
+end
+deactivate Controller
+
+@enduml

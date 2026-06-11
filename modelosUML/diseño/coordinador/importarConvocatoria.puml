@@ -1,0 +1,33 @@
+@startuml
+title Diagrama de Secuencia — importarConvocatoria (Coordinador)
+
+actor "Coordinador" as User
+participant "ConvocatoriaController\n@Controller" as Controller
+participant "ConvocatoriaService\n@Service" as Service
+participant "ConvocatoriaRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /convocatorias/importar
+activate Controller
+Controller --> User: importar-convocatoria.html\n(formulario vacío)
+deactivate Controller
+
+User -> Controller: POST /convocatorias/importar\n(titulo, area, estado,\nfechaApertura, fechaCierre,\ndescripcion, requisitos,\ncriteriosEvaluacion, dotacion, contacto)
+activate Controller
+Controller -> Service: guardar(datos)
+activate Service
+Service -> Service: convocatoria = new Convocatoria()\nconvocatoria.set*(datos)
+Service -> Repo: save(convocatoria)
+activate Repo
+Repo -> DB: INSERT INTO convocatorias ...
+activate DB
+DB --> Repo: Convocatoria (con id)
+deactivate DB
+Repo --> Service: Convocatoria
+deactivate Repo
+Service --> Controller: Convocatoria
+deactivate Service
+Controller --> User: redirect:/convocatorias/{id}
+deactivate Controller
+
+@enduml

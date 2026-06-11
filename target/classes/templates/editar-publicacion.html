@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Editar publicación</title>
+</head>
+<body>
+
+<h1>Editar publicación</h1>
+
+<form th:action="@{/publicaciones/{id}/editar(id=${publicacion.id})}" method="post">
+    <label for="titulo">Título:</label><br>
+    <input id="titulo" type="text" name="titulo" th:value="${publicacion.titulo}" required size="60"><br><br>
+
+    <label for="contenido">Contenido:</label><br>
+    <textarea id="contenido" name="contenido" rows="8" cols="60" required th:text="${publicacion.contenido}"></textarea><br><br>
+
+    <button type="submit">Guardar cambios</button>
+    <a th:href="@{/publicaciones/{id}(id=${publicacion.id})}">Cancelar</a>
+</form>
+
+</body>
+</html>

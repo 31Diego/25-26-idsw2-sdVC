@@ -1,0 +1,28 @@
+@startuml
+title Diagrama de Secuencia — abrirMiPublicacion (Investigador)
+
+actor "Investigador" as User
+participant "PublicacionController\n@Controller" as Controller
+participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /mis-publicaciones/{id}
+activate Controller
+Controller -> Service: obtenerPorId(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM publicaciones WHERE id=?
+activate DB
+DB --> Repo: Publicacion
+deactivate DB
+Repo --> Service: Publicacion
+deactivate Repo
+Service --> Controller: Publicacion
+deactivate Service
+Controller -> Controller: verificar autor == investigador
+Controller --> User: mi-publicacion.html\n(detalle + enlaces Editar/Eliminar)
+deactivate Controller
+
+@enduml

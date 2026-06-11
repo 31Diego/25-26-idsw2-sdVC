@@ -1,0 +1,44 @@
+@startuml
+title Diagrama de Secuencia — eliminarPublicacion (Coordinador)
+
+actor "Coordinador" as User
+participant "PublicacionController\n@Controller" as Controller
+participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /publicaciones/{id}/eliminar
+activate Controller
+Controller -> Service: obtenerPorId(id)
+activate Service
+Service -> Repo: findById(id)
+activate Repo
+Repo -> DB: SELECT * FROM publicaciones WHERE id=?
+activate DB
+DB --> Repo: Publicacion
+deactivate DB
+Repo --> Service: Publicacion
+deactivate Repo
+Service --> Controller: Publicacion
+deactivate Service
+Controller --> User: eliminar-publicacion.html\n(confirmación)
+deactivate Controller
+
+User -> Controller: POST /publicaciones/{id}/eliminar
+activate Controller
+Controller -> Service: eliminar(id)
+activate Service
+Service -> Repo: deleteById(id)
+activate Repo
+Repo -> DB: DELETE FROM publicaciones WHERE id=?\n(+ respuestas en cascada)
+activate DB
+DB --> Repo: ok
+deactivate DB
+Repo --> Service: ok
+deactivate Repo
+Service --> Controller: ok
+deactivate Service
+Controller --> User: redirect:/publicaciones
+deactivate Controller
+
+@enduml

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Recompensa</title>
+</head>
+<body>
+
+<h1 th:text="${recompensa.titulo}">Título</h1>
+
+<p><a th:href="@{/recompensas}">← Recompensas</a></p>
+
+<dl>
+    <dt>Tipo</dt>
+    <dd th:text="${recompensa.tipo}"></dd>
+
+    <dt>Valor</dt>
+    <dd th:text="${recompensa.valor}"></dd>
+
+    <dt>Descripción</dt>
+    <dd th:text="${recompensa.descripcion}"></dd>
+
+    <dt>Condiciones</dt>
+    <dd th:text="${recompensa.condiciones}"></dd>
+
+    <dt>Destinatario</dt>
+    <dd th:text="${recompensa.destinatario.nombre + ' ' + recompensa.destinatario.apellidos}"></dd>
+
+    <dt>Fecha de creación</dt>
+    <dd th:text="${recompensa.fechaCreacion}"></dd>
+</dl>
+
+<sec:authorize access="hasRole('COORDINADOR')">
+    <p>
+        <a th:href="@{/recompensas/{id}/editar(id=${recompensa.id})}">Editar</a>
+        &nbsp;|&nbsp;
+        <a th:href="@{/recompensas/{id}/eliminar(id=${recompensa.id})}">Eliminar</a>
+    </p>
+</sec:authorize>
+
+</body>
+</html>

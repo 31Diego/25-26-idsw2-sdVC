@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Eliminar convocatoria</title>
+</head>
+<body>
+
+<h1>Eliminar convocatoria</h1>
+
+<p>¿Estás seguro de que deseas eliminar la siguiente convocatoria? Esta acción no se puede deshacer.</p>
+
+<p><strong>Título:</strong> <span th:text="${convocatoria.titulo}"></span></p>
+<p><strong>Área:</strong> <span th:text="${convocatoria.area}"></span></p>
+<p><strong>Estado:</strong> <span th:text="${convocatoria.estado}"></span></p>
+<p><strong>Fecha de cierre:</strong> <span th:text="${convocatoria.fechaCierre}"></span></p>
+
+<form th:action="@{/convocatorias/{id}/eliminar(id=${convocatoria.id})}" method="post">
+    <button type="submit">Confirmar eliminación</button>
+    <a th:href="@{/convocatorias/{id}(id=${convocatoria.id})}">Cancelar</a>
+</form>
+
+</body>
+</html>

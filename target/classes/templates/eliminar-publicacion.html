@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Eliminar publicación</title>
+</head>
+<body>
+
+<h1>Eliminar publicación</h1>
+
+<p>¿Estás seguro de que deseas eliminar la siguiente publicación? Esta acción no se puede deshacer.</p>
+
+<p><strong>Título:</strong> <span th:text="${publicacion.titulo}"></span></p>
+<p><strong>Autor:</strong> <span th:text="${publicacion.autor.nombre + ' ' + publicacion.autor.apellidos}"></span></p>
+<p><strong>Fecha:</strong> <span th:text="${publicacion.fecha}"></span></p>
+<p><strong>Respuestas:</strong> <span th:text="${#lists.size(publicacion.respuestas)}"></span></p>
+
+<form th:action="@{/publicaciones/{id}/eliminar(id=${publicacion.id})}" method="post">
+    <button type="submit">Confirmar eliminación</button>
+    <a th:href="@{/publicaciones/{id}(id=${publicacion.id})}">Cancelar</a>
+</form>
+
+</body>
+</html>

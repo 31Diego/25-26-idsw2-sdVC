@@ -1,0 +1,42 @@
+@startuml
+title Diagrama de Secuencia — crearRecompensa (Coordinador)
+
+actor "Coordinador" as User
+participant "RecompensaController\n@Controller" as Controller
+participant "RecompensaService\n@Service" as Service
+participant "InvestigadorRepository\nJpaRepository" as InvRepo
+participant "RecompensaRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /recompensas/crear
+activate Controller
+Controller -> InvRepo: findAll()
+activate InvRepo
+InvRepo -> DB: SELECT * FROM investigadores
+activate DB
+DB --> InvRepo: List<Investigador>
+deactivate DB
+InvRepo --> Controller: List<Investigador>
+deactivate InvRepo
+Controller --> User: crear-recompensa.html\n(formulario vacío + selector de investigadores)
+deactivate Controller
+
+User -> Controller: POST /recompensas/crear\n(titulo, tipo, valor,\ndescripcion, condiciones, destinatarioId)
+activate Controller
+Controller -> Service: crear(titulo, tipo, valor,\ndescripcion, condiciones, destinatario)
+activate Service
+Service -> Service: recompensa = new Recompensa()\nrecompensa.set*(datos)
+Service -> Repo: save(recompensa)
+activate Repo
+Repo -> DB: INSERT INTO recompensas ...
+activate DB
+DB --> Repo: Recompensa (con id)
+deactivate DB
+Repo --> Service: Recompensa
+deactivate Repo
+Service --> Controller: Recompensa
+deactivate Service
+Controller --> User: redirect:/recompensas/{id}
+deactivate Controller
+
+@enduml

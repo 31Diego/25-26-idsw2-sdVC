@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Convocatorias</title>
+</head>
+<body>
+
+<h1>Convocatorias</h1>
+
+<form th:action="@{/convocatorias}" method="get">
+    <input type="text" name="q" th:value="${q}" placeholder="Buscar por título">
+    <input type="text" name="area" th:value="${area}" placeholder="Área">
+    <select name="estado">
+        <option value="" th:selected="${estado == ''}">Todos los estados</option>
+        <option value="ABIERTA" th:selected="${estado == 'ABIERTA'}">Abierta</option>
+        <option value="CERRADA" th:selected="${estado == 'CERRADA'}">Cerrada</option>
+        <option value="PENDIENTE" th:selected="${estado == 'PENDIENTE'}">Pendiente</option>
+    </select>
+    <button type="submit">Buscar</button>
+    <a th:href="@{/convocatorias}">Limpiar filtros</a>
+</form>
+
+<p><a th:href="@{/convocatorias/importar}">Importar convocatoria</a></p>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Área</th>
+            <th>Estado</th>
+            <th>Fecha cierre</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="c : ${convocatorias}">
+            <td th:text="${c.id}"></td>
+            <td th:text="${c.titulo}"></td>
+            <td th:text="${c.area}"></td>
+            <td th:text="${c.estado}"></td>
+            <td th:text="${c.fechaCierre}"></td>
+            <td><a th:href="@{/convocatorias/{id}(id=${c.id})}">Ver</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(convocatorias)}">
+            <td colspan="6">No hay convocatorias registradas.</td>
+        </tr>
+    </tbody>
+</table>
+
+<p><a th:href="@{/panel}">Volver al panel</a></p>
+
+</body>
+</html>

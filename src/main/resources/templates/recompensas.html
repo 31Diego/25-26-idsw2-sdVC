@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Recompensas</title>
+</head>
+<body>
+
+<h1>Recompensas</h1>
+
+<p><a th:href="@{/panel}">← Panel principal</a></p>
+
+<sec:authorize access="hasRole('COORDINADOR')">
+    <p><a th:href="@{/recompensas/crear}">Nueva recompensa</a></p>
+</sec:authorize>
+
+<th:block th:if="${recompensas.empty}">
+    <p>No hay recompensas registradas.</p>
+</th:block>
+
+<table th:unless="${recompensas.empty}">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <sec:authorize access="hasRole('COORDINADOR')">
+                <th>Destinatario</th>
+            </sec:authorize>
+            <th>Fecha</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="r : ${recompensas}">
+            <td th:text="${r.titulo}"></td>
+            <td th:text="${r.tipo}"></td>
+            <td th:text="${r.valor}"></td>
+            <sec:authorize access="hasRole('COORDINADOR')">
+                <td th:text="${r.destinatario.nombre + ' ' + r.destinatario.apellidos}"></td>
+            </sec:authorize>
+            <td th:text="${r.fechaCreacion}"></td>
+            <td><a th:href="@{/recompensas/{id}(id=${r.id})}">Ver detalle</a></td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

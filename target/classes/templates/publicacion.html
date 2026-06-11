@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
 <head>
     <meta charset="UTF-8">
     <title>GIPF — Publicación</title>
@@ -15,6 +16,11 @@
 </p>
 
 <p th:text="${publicacion.contenido}"></p>
+
+<div sec:authorize="hasRole('COORDINADOR')">
+    <a th:href="@{/publicaciones/{id}/editar(id=${publicacion.id})}">Editar</a> |
+    <a th:href="@{/publicaciones/{id}/eliminar(id=${publicacion.id})}">Eliminar</a>
+</div>
 
 <a th:href="@{/publicaciones}">Volver a publicaciones</a>
 

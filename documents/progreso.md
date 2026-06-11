@@ -55,8 +55,8 @@
 | `abrirPublicaciones` | ✅ | ✅ | ✅ | ⚠️ |
 | `abrirPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
 | `responderPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
-| `editarPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
-| `eliminarPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
+| `editarPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
+| `eliminarPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
 
 ---
 
@@ -64,11 +64,11 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `abrirMisPublicaciones` | ✅ | ⬜ | ⬜ | ⬜ |
-| `abrirMiPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
-| `crearPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
-| `editarMiPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
-| `eliminarMiPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
+| `abrirMisPublicaciones` | ✅ | ✅ | ✅ | ⚠️ |
+| `abrirMiPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
+| `crearPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
+| `editarMiPublicacion` | ✅ | ⬜ | ✅ † | ⚠️ |
+| `eliminarMiPublicacion` | ✅ | ⬜ | ✅ † | ⚠️ |
 
 ---
 
@@ -76,9 +76,10 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `abrirConvocatorias` | ✅ | ⬜ | ⬜ | ⬜ |
-| `abrirConvocatoria` | ✅ | ⬜ | ⬜ | ⬜ |
-| `importarConvocatoria` | ✅ | ⬜ | ⬜ | ⬜ |
+| `abrirConvocatorias` | ✅ | ✅ | ✅ | ⚠️ |
+| `abrirConvocatoria` | ✅ | ✅ | ✅ | ⚠️ |
+| `importarConvocatoria` | ✅ | ✅ | ✅ | ⚠️ |
+| `eliminarConvocatoria` | ✅ | ✅ | ✅ | ⚠️ |
 
 ---
 
@@ -86,11 +87,11 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `abrirRecompensas` | ✅ | ⬜ | ⬜ | ⬜ |
-| `abrirRecompensa` | ✅ | ⬜ | ⬜ | ⬜ |
-| `crearRecompensa` | ✅ | ⬜ | ⬜ | ⬜ |
-| `editarRecompensa` | ✅ | ⬜ | ⬜ | ⬜ |
-| `eliminarRecompensa` | ✅ | ⬜ | ⬜ | ⬜ |
+| `abrirRecompensas` | ✅ | ✅ | ✅ | ⚠️ |
+| `abrirRecompensa` | ✅ | ✅ | ✅ | ⚠️ |
+| `crearRecompensa` | ✅ | ✅ | ✅ | ⚠️ |
+| `editarRecompensa` | ✅ | ✅ | ✅ | ⚠️ |
+| `eliminarRecompensa` | ✅ | ✅ | ✅ | ⚠️ |
 
 ---
 
@@ -160,11 +161,11 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `abrirMisPublicaciones` | ✅ | ⬜ | ⬜ | ⬜ |
-| `abrirMiPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
-| `crearPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
-| `editarPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
-| `eliminarPublicacion` | ✅ | ⬜ | ⬜ | ⬜ |
+| `abrirMisPublicaciones` | ✅ | ✅ | ✅ | ⚠️ |
+| `abrirMiPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
+| `crearPublicacion` | ✅ | ✅ | ✅ | ⚠️ |
+| `editarPublicacion` | ✅ | ⬜ | ✅ † | ⚠️ |
+| `eliminarPublicacion` | ✅ | ⬜ | ✅ † | ⚠️ |
 
 ---
 
@@ -172,8 +173,8 @@
 
 | Caso de uso | Análisis | Diseño | Código | Doc. Desarrollo |
 |---|:---:|:---:|:---:|:---:|
-| `abrirRecompensas` | ✅ | ⬜ | ⬜ | ⬜ |
-| `abrirRecompensa` | ✅ | ⬜ | ⬜ | ⬜ |
+| `abrirRecompensas` | ✅ | ✅ | ✅ | ⚠️ |
+| `abrirRecompensa` | ✅ | ✅ | ✅ | ⚠️ |
 
 ---
 

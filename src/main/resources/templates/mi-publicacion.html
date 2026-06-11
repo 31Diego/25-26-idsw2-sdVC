@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Mi publicación</title>
+</head>
+<body>
+
+<h1 th:text="${publicacion.titulo}"></h1>
+
+<p>
+    <strong>Fecha:</strong> <span th:text="${publicacion.fecha}"></span>
+</p>
+
+<p th:text="${publicacion.contenido}"></p>
+
+<div>
+    <a th:href="@{/publicaciones/{id}/editar(id=${publicacion.id})}">Editar</a> |
+    <a th:href="@{/publicaciones/{id}/eliminar(id=${publicacion.id})}">Eliminar</a>
+</div>
+
+<a th:href="@{/mis-publicaciones}">Volver a mis publicaciones</a>
+
+<hr>
+
+<h2>Respuestas (<span th:text="${#lists.size(publicacion.respuestas)}"></span>)</h2>
+
+<div th:if="${#lists.isEmpty(publicacion.respuestas)}">
+    <p>No hay respuestas todavía.</p>
+</div>
+
+<div th:each="resp : ${publicacion.respuestas}">
+    <p>
+        <strong th:text="${resp.autor.nombre + ' ' + resp.autor.apellidos}"></strong>
+        · <span th:text="${resp.fecha}"></span>
+    </p>
+    <p th:text="${resp.contenido}"></p>
+    <hr>
+</div>
+
+</body>
+</html>

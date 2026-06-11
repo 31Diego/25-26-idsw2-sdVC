@@ -1,0 +1,33 @@
+@startuml
+title Diagrama de Secuencia — crearPublicacion (Investigador)
+
+actor "Investigador" as User
+participant "PublicacionController\n@Controller" as Controller
+participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /mis-publicaciones/crear
+activate Controller
+Controller --> User: crear-publicacion.html\n(formulario vacío)
+deactivate Controller
+
+User -> Controller: POST /mis-publicaciones/crear\n(titulo, contenido)
+activate Controller
+Controller -> Service: crear(titulo, contenido, investigador)
+activate Service
+Service -> Service: publicacion = new Publicacion()\npublicacion.setFecha(LocalDate.now())
+Service -> Repo: save(publicacion)
+activate Repo
+Repo -> DB: INSERT INTO publicaciones ...
+activate DB
+DB --> Repo: Publicacion (con id)
+deactivate DB
+Repo --> Service: Publicacion
+deactivate Repo
+Service --> Controller: Publicacion
+deactivate Service
+Controller --> User: redirect:/mis-publicaciones/{id}
+deactivate Controller
+
+@enduml

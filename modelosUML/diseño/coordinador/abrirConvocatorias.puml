@@ -1,0 +1,44 @@
+@startuml
+title Diagrama de Secuencia — abrirConvocatorias (Coordinador)
+
+actor "Coordinador" as User
+participant "ConvocatoriaController\n@Controller" as Controller
+participant "ConvocatoriaService\n@Service" as Service
+participant "ConvocatoriaRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /convocatorias
+activate Controller
+Controller -> Service: obtenerTodas()
+activate Service
+Service -> Repo: findAll()
+activate Repo
+Repo -> DB: SELECT * FROM convocatorias
+activate DB
+DB --> Repo: List<Convocatoria>
+deactivate DB
+Repo --> Service: List<Convocatoria>
+deactivate Repo
+Service --> Controller: List<Convocatoria>
+deactivate Service
+Controller --> User: convocatorias.html
+deactivate Controller
+
+User -> Controller: GET /convocatorias?q=...&area=...&estado=...
+activate Controller
+Controller -> Service: buscarPorCriterios(q, area, estado)
+activate Service
+Service -> Repo: findByFiltros(q, area, estado)
+activate Repo
+Repo -> DB: SELECT * FROM convocatorias WHERE ...
+activate DB
+DB --> Repo: List<Convocatoria>
+deactivate DB
+Repo --> Service: List<Convocatoria>
+deactivate Repo
+Service --> Controller: List<Convocatoria>
+deactivate Service
+Controller --> User: convocatorias.html (filtrado)
+deactivate Controller
+
+@enduml

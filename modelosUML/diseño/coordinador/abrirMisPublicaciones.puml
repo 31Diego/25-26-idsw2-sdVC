@@ -1,0 +1,27 @@
+@startuml
+title Diagrama de Secuencia — abrirMisPublicaciones (Coordinador)
+
+actor "Coordinador" as User
+participant "PublicacionController\n@Controller" as Controller
+participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+User -> Controller: GET /mis-publicaciones
+activate Controller
+Controller -> Service: obtenerPorAutor(coordinador)
+activate Service
+Service -> Repo: findByAutor(coordinador)
+activate Repo
+Repo -> DB: SELECT * FROM publicaciones WHERE autor_id=?
+activate DB
+DB --> Repo: List<Publicacion>
+deactivate DB
+Repo --> Service: List<Publicacion>
+deactivate Repo
+Service --> Controller: List<Publicacion>
+deactivate Service
+Controller --> User: mis-publicaciones.html\n(listado filtrado por autor)
+deactivate Controller
+
+@enduml

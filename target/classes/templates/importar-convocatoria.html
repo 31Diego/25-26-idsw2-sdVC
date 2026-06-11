@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Importar convocatoria</title>
+</head>
+<body>
+
+<h1>Importar convocatoria</h1>
+
+<form th:action="@{/convocatorias/importar}" method="post">
+
+    <label for="titulo">Título:</label><br>
+    <input id="titulo" type="text" name="titulo" required size="60"><br><br>
+
+    <label for="area">Área:</label><br>
+    <input id="area" type="text" name="area" size="40"><br><br>
+
+    <label for="estado">Estado:</label><br>
+    <select id="estado" name="estado" required>
+        <option value="ABIERTA">Abierta</option>
+        <option value="CERRADA">Cerrada</option>
+        <option value="PENDIENTE">Pendiente</option>
+    </select><br><br>
+
+    <label for="fechaApertura">Fecha de apertura:</label><br>
+    <input id="fechaApertura" type="date" name="fechaApertura"><br><br>
+
+    <label for="fechaCierre">Fecha de cierre:</label><br>
+    <input id="fechaCierre" type="date" name="fechaCierre"><br><br>
+
+    <label for="descripcion">Descripción:</label><br>
+    <textarea id="descripcion" name="descripcion" rows="5" cols="60"></textarea><br><br>
+
+    <label for="requisitos">Requisitos y condiciones:</label><br>
+    <textarea id="requisitos" name="requisitos" rows="5" cols="60"></textarea><br><br>
+
+    <label for="criteriosEvaluacion">Criterios de evaluación:</label><br>
+    <textarea id="criteriosEvaluacion" name="criteriosEvaluacion" rows="5" cols="60"></textarea><br><br>
+
+    <label for="dotacion">Dotación:</label><br>
+    <textarea id="dotacion" name="dotacion" rows="3" cols="60"></textarea><br><br>
+
+    <label for="documentacion">Documentación asociada:</label><br>
+    <textarea id="documentacion" name="documentacion" rows="3" cols="60"></textarea><br><br>
+
+    <label for="contacto">Información de contacto:</label><br>
+    <input id="contacto" type="text" name="contacto" size="60"><br><br>
+
+    <button type="submit">Importar</button>
+    <a th:href="@{/convocatorias}">Cancelar</a>
+</form>
+
+</body>
+</html>

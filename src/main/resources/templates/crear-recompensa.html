@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>GIPF — Nueva recompensa</title>
+</head>
+<body>
+
+<h1>Nueva recompensa</h1>
+
+<p><a th:href="@{/recompensas}">← Recompensas</a></p>
+
+<form th:action="@{/recompensas/crear}" method="post">
+
+    <div>
+        <label for="titulo">Título *</label><br>
+        <input type="text" id="titulo" name="titulo" required>
+    </div>
+
+    <div>
+        <label for="tipo">Tipo *</label><br>
+        <select id="tipo" name="tipo" required>
+            <option value="">-- Seleccionar --</option>
+            <option value="Económica">Económica</option>
+            <option value="Reconocimiento">Reconocimiento</option>
+            <option value="Tiempo libre">Tiempo libre</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="valor">Valor *</label><br>
+        <input type="text" id="valor" name="valor" required>
+    </div>
+
+    <div>
+        <label for="descripcion">Descripción</label><br>
+        <textarea id="descripcion" name="descripcion" rows="4" cols="60"></textarea>
+    </div>
+
+    <div>
+        <label for="condiciones">Condiciones</label><br>
+        <textarea id="condiciones" name="condiciones" rows="4" cols="60"></textarea>
+    </div>
+
+    <div>
+        <label for="destinatarioId">Destinatario *</label><br>
+        <select id="destinatarioId" name="destinatarioId" required>
+            <option value="">-- Seleccionar investigador --</option>
+            <option th:each="inv : ${investigadores}"
+                    th:value="${inv.id}"
+                    th:text="${inv.nombre + ' ' + inv.apellidos}"></option>
+        </select>
+    </div>
+
+    <br>
+    <button type="submit">Guardar</button>
+    <a th:href="@{/recompensas}">Cancelar</a>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+@startuml eliminarConvocatoria-analisis
+skinparam linetype polyline
+
+rectangle #CDEBA5 ":CONVOCATORIA_ABIERTA" as ConvocatoriaAbierta
+
+package eliminarConvocatoria as "eliminarConvocatoria()" {
+    rectangle #629EF9 EliminarConvocatoriaView
+    rectangle #b5bd68 ConvocatoriaController
+    rectangle #F2AC4E ConvocatoriaRepository
+    rectangle #F2AC4E Convocatoria
+}
+
+rectangle #CDEBA5 ":CONVOCATORIAS_ABIERTAS" as ConvocatoriasSalida
+rectangle #CDEBA5 ":CONVOCATORIA_ABIERTA" as ConvocatoriaAbiertaSalida
+
+ConvocatoriaAbierta -r-> EliminarConvocatoriaView: eliminarConvocatoria()
+
+EliminarConvocatoriaView -d-> ConvocatoriaController: cargarConvocatoriaParaEliminacion(id) : Convocatoria
+
+ConvocatoriaController --> ConvocatoriaRepository: obtenerPorId(id) : Convocatoria
+
+ConvocatoriaRepository -- Convocatoria
+
+EliminarConvocatoriaView --> ConvocatoriaController: eliminarConvocatoria(id) : void
+
+ConvocatoriaController --> ConvocatoriaRepository: eliminarPorId(id) : void
+
+EliminarConvocatoriaView ..> ConvocatoriasSalida: abrirConvocatorias()
+EliminarConvocatoriaView ..> ConvocatoriaAbiertaSalida: cancelar()
+
+@enduml
