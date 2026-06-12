@@ -54,6 +54,7 @@ public class ProyectoController {
         return "redirect:/proyectos";
     }
 
+    //logica de negocio ? - R: no, la regla no esta en el controller, esta en el service 
     @GetMapping("/proyectos/{id}")
     public String abrirProyecto(@PathVariable Long id,
             @AuthenticationPrincipal InvestigadorUserDetails userDetails,

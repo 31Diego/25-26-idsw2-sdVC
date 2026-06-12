@@ -2,7 +2,6 @@ package com.funiber.gipf.controllers;
 
 import com.funiber.gipf.services.ArchivoService;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,14 +17,14 @@ public class ArchivoController {
         this.archivoService = archivoService;
     }
 
+    // el if puede considerarase logica de negocio ? por lo demas bien
+
     @GetMapping("/archivos/{nombre}")
     public ResponseEntity<Resource> descargarArchivo(@PathVariable String nombre) throws Exception {
-        Resource resource = new UrlResource(archivoService.obtenerRuta(nombre).toUri());
-        if (!resource.exists()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombre + "\"")
-                .body(resource);
+        return archivoService.obtenerRecurso(nombre)
+                .map(r -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombre + "\"")
+                        .body(r))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

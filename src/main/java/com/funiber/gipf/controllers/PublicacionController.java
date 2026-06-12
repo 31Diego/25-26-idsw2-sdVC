@@ -39,6 +39,7 @@ public class PublicacionController {
         return "redirect:/publicaciones/" + id;
     }
 
+    // logica de negocio ? -R: no, el controller no decide nada, se lo pasa al service
     @GetMapping("/publicaciones/{id}/editar")
     public String editarPublicacionForm(@PathVariable Long id, Model model,
             @AuthenticationPrincipal InvestigadorUserDetails userDetails) {
@@ -98,7 +99,7 @@ public class PublicacionController {
     public String abrirMiPublicacion(@PathVariable Long id, Model model,
             @AuthenticationPrincipal InvestigadorUserDetails userDetails) {
         Publicacion pub = publicacionService.obtenerPorId(id);
-        if (!pub.getAutor().getId().equals(userDetails.getInvestigador().getId())) {
+        if (!publicacionService.esAutor(userDetails.getInvestigador(), pub)) {
             return "redirect:/mis-publicaciones";
         }
         model.addAttribute("publicacion", pub);

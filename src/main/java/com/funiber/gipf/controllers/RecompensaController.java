@@ -3,7 +3,6 @@ package com.funiber.gipf.controllers;
 import com.funiber.gipf.config.InvestigadorUserDetails;
 import com.funiber.gipf.models.Investigador;
 import com.funiber.gipf.models.Recompensa;
-import com.funiber.gipf.models.Rol;
 import com.funiber.gipf.services.InvestigadorService;
 import com.funiber.gipf.services.RecompensaService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,26 +18,26 @@ public class RecompensaController {
     private final InvestigadorService investigadorService;
 
     public RecompensaController(RecompensaService recompensaService,
-                                InvestigadorService investigadorService) {
+            InvestigadorService investigadorService) {
         this.recompensaService = recompensaService;
         this.investigadorService = investigadorService;
     }
 
     @GetMapping("/recompensas")
     public String abrirRecompensas(@AuthenticationPrincipal InvestigadorUserDetails userDetails,
-                                   Model model) {
+            Model model) {
         model.addAttribute("recompensas", recompensaService.obtenerParaUsuario(userDetails.getInvestigador()));
         return "recompensas";
     }
 
+    // no es logica de negocio, se lo pasa al service
     @GetMapping("/recompensas/{id}")
     public String abrirRecompensa(@PathVariable Long id,
-                                  @AuthenticationPrincipal InvestigadorUserDetails userDetails,
-                                  Model model) {
+            @AuthenticationPrincipal InvestigadorUserDetails userDetails,
+            Model model) {
         Recompensa recompensa = recompensaService.obtenerPorId(id);
         Investigador usuario = userDetails.getInvestigador();
-        if (usuario.getRol() != Rol.COORDINADOR
-                && !recompensa.getDestinatario().getId().equals(usuario.getId())) {
+        if (!recompensaService.puedeVer(usuario, recompensa)) {
             return "redirect:/recompensas";
         }
         model.addAttribute("recompensa", recompensa);
@@ -55,11 +54,11 @@ public class RecompensaController {
     @PostMapping("/recompensas/crear")
     @PreAuthorize("hasRole('COORDINADOR')")
     public String crearRecompensa(@RequestParam String titulo,
-                                  @RequestParam String tipo,
-                                  @RequestParam String valor,
-                                  @RequestParam(required = false) String descripcion,
-                                  @RequestParam(required = false) String condiciones,
-                                  @RequestParam Long destinatarioId) {
+            @RequestParam String tipo,
+            @RequestParam String valor,
+            @RequestParam(required = false) String descripcion,
+            @RequestParam(required = false) String condiciones,
+            @RequestParam Long destinatarioId) {
         Recompensa nueva = recompensaService.crear(titulo, tipo, valor, descripcion, condiciones, destinatarioId);
         return "redirect:/recompensas/" + nueva.getId();
     }
@@ -75,12 +74,12 @@ public class RecompensaController {
     @PostMapping("/recompensas/{id}/editar")
     @PreAuthorize("hasRole('COORDINADOR')")
     public String editarRecompensa(@PathVariable Long id,
-                                   @RequestParam String titulo,
-                                   @RequestParam String tipo,
-                                   @RequestParam String valor,
-                                   @RequestParam(required = false) String descripcion,
-                                   @RequestParam(required = false) String condiciones,
-                                   @RequestParam Long destinatarioId) {
+            @RequestParam String titulo,
+            @RequestParam String tipo,
+            @RequestParam String valor,
+            @RequestParam(required = false) String descripcion,
+            @RequestParam(required = false) String condiciones,
+            @RequestParam Long destinatarioId) {
         recompensaService.actualizar(id, titulo, tipo, valor, descripcion, condiciones, destinatarioId);
         return "redirect:/recompensas/" + id;
     }

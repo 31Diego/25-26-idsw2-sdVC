@@ -69,4 +69,8 @@ public class PublicacionService {
         return usuario.getRol().equals(Rol.COORDINADOR)
                 || publicacion.getAutor().getId().equals(usuario.getId());
     }
+
+    public boolean esAutor(Investigador investigador, Publicacion publicacion) {
+        return publicacion.getAutor().getId().equals(investigador.getId());
+    }
 }

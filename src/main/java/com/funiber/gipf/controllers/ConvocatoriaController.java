@@ -22,9 +22,9 @@ public class ConvocatoriaController {
 
     @GetMapping("/convocatorias")
     public String abrirConvocatorias(@RequestParam(required = false) String q,
-                                     @RequestParam(required = false) String area,
-                                     @RequestParam(required = false) String estado,
-                                     Model model) {
+            @RequestParam(required = false) String area,
+            @RequestParam(required = false) String estado,
+            Model model) {
         model.addAttribute("convocatorias", convocatoriaService.buscarPorCriterios(q, area, estado));
         model.addAttribute("q", q != null ? q : "");
         model.addAttribute("area", area != null ? area : "");
@@ -55,18 +55,19 @@ public class ConvocatoriaController {
         return "redirect:/convocatorias";
     }
 
+    // no entiendo muy bien este metodo
     @PostMapping("/convocatorias/importar")
     public String importarConvocatoria(@RequestParam String titulo,
-                                       @RequestParam String area,
-                                       @RequestParam String estado,
-                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaApertura,
-                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCierre,
-                                       @RequestParam(required = false) String descripcion,
-                                       @RequestParam(required = false) String requisitos,
-                                       @RequestParam(required = false) String criteriosEvaluacion,
-                                       @RequestParam(required = false) String dotacion,
-                                       @RequestParam(required = false) String documentacion,
-                                       @RequestParam(required = false) String contacto) {
+            @RequestParam String area,
+            @RequestParam String estado,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaApertura,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaCierre,
+            @RequestParam(required = false) String descripcion,
+            @RequestParam(required = false) String requisitos,
+            @RequestParam(required = false) String criteriosEvaluacion,
+            @RequestParam(required = false) String dotacion,
+            @RequestParam(required = false) String documentacion,
+            @RequestParam(required = false) String contacto) {
         Convocatoria nueva = convocatoriaService.guardar(titulo, area, estado,
                 fechaApertura, fechaCierre, descripcion, requisitos,
                 criteriosEvaluacion, dotacion, documentacion, contacto);

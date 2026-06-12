@@ -36,10 +36,10 @@ public class ConvocatoriaService {
     }
 
     public Convocatoria guardar(String titulo, String area, String estado,
-                                LocalDate fechaApertura, LocalDate fechaCierre,
-                                String descripcion, String requisitos,
-                                String criteriosEvaluacion, String dotacion,
-                                String documentacion, String contacto) {
+            LocalDate fechaApertura, LocalDate fechaCierre,
+            String descripcion, String requisitos,
+            String criteriosEvaluacion, String dotacion,
+            String documentacion, String contacto) {
         Convocatoria c = new Convocatoria();
         c.setTitulo(titulo);
         c.setArea(area);

@@ -65,6 +65,11 @@ public class RecompensaService {
         recompensaRepository.save(r);
     }
 
+    public boolean puedeVer(Investigador usuario, Recompensa recompensa) {
+        return usuario.getRol() == Rol.COORDINADOR
+                || recompensa.getDestinatario().getId().equals(usuario.getId());
+    }
+
     public void eliminar(Long id) {
         recompensaRepository.deleteById(id);
     }

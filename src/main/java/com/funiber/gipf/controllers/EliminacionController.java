@@ -25,6 +25,7 @@ public class EliminacionController {
         this.solicitudEliminacionService = solicitudEliminacionService;
     }
 
+    // logica de negocio ? - R: no, el controller se lo pasa al service y el decide
     @GetMapping("/investigadores/{id}/solicitar-eliminacion")
     public String mostrarFormularioSolicitud(@PathVariable Long id,
             @AuthenticationPrincipal InvestigadorUserDetails userDetails,
