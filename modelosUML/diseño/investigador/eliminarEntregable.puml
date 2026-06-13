@@ -1,0 +1,62 @@
+@startuml eliminarEntregable-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "EntregableController\n@Controller\nGET|POST /proyectos/{proyectoId}/entregables/{id}/eliminar" as Ctrl
+participant "EntregableService\n@Service" as Service
+participant "ArchivoService\n@Service" as ArchivoSvc
+participant "EntregableRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Inv -> Nav : clic en "Eliminar"
+activate Nav
+Nav -> Ctrl : GET /proyectos/{proyectoId}/entregables/{id}/eliminar
+activate Ctrl
+Ctrl -> Service : obtenerEntregable(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM entregables WHERE id = ?
+DB --> Repo : Optional<Entregable>
+deactivate Repo
+Repo --> Service : Entregable
+deactivate Service
+Service --> Ctrl : Entregable
+Ctrl -> Ctrl : model.addAttribute("entregable", ...)\nmodel.addAttribute("proyectoId", ...)
+Ctrl --> Nav : 200 OK · eliminar-entregable.html
+deactivate Ctrl
+Nav --> Inv : muestra pantalla de confirmación
+deactivate Nav
+
+Inv -> Nav : confirma eliminación
+activate Nav
+Nav -> Ctrl : POST /proyectos/{proyectoId}/entregables/{id}/eliminar
+activate Ctrl
+
+Ctrl -> Service : eliminarEntregable(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM entregables WHERE id = ?
+DB --> Repo : Optional<Entregable>
+deactivate Repo
+Repo --> Service : Entregable
+
+alt tiene archivo adjunto
+    Service -> ArchivoSvc : eliminarArchivo(rutaArchivo)
+end
+
+Service -> Repo : deleteById(id)
+activate Repo
+Repo -> DB : DELETE FROM entregables WHERE id = ?
+DB --> Repo : void
+deactivate Repo
+deactivate Service
+
+Ctrl --> Nav : 302 redirect → /proyectos/{proyectoId}/entregables
+deactivate Ctrl
+Nav --> Inv : navega al listado de entregables
+deactivate Nav
+
+@enduml

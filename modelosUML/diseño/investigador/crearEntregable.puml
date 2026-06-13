@@ -1,0 +1,66 @@
+@startuml crearEntregable-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "EntregableController\n@Controller\nGET|POST /proyectos/{proyectoId}/entregables/nuevo" as Ctrl
+participant "ProyectoService\n@Service" as ProyectoSvc
+participant "EntregableService\n@Service" as Service
+participant "ArchivoService\n@Service" as ArchivoSvc
+participant "ProyectoRepository\nJpaRepository" as ProyectoRepo
+participant "EntregableRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Inv -> Nav : clic en "Nuevo entregable"
+activate Nav
+Nav -> Ctrl : GET /proyectos/{proyectoId}/entregables/nuevo
+activate Ctrl
+Ctrl -> Ctrl : model.addAttribute("entregable", new Entregable())
+Ctrl --> Nav : 200 OK · crear-entregable.html
+deactivate Ctrl
+Nav --> Inv : muestra formulario vacío
+deactivate Nav
+
+Inv -> Nav : rellena formulario y adjunta archivo (opcional)
+activate Nav
+Nav -> Ctrl : POST /proyectos/{proyectoId}/entregables/nuevo\n[titulo, tipo, fechaLimite, estado, descripcion, archivo]
+activate Ctrl
+
+note over Ctrl : validarDatos — campos requeridos en el binding
+
+Ctrl -> ProyectoSvc : obtenerProyecto(proyectoId)
+activate ProyectoSvc
+ProyectoSvc -> ProyectoRepo : findById(proyectoId)
+activate ProyectoRepo
+ProyectoRepo -> DB : SELECT * FROM proyectos WHERE id = ?
+DB --> ProyectoRepo : Proyecto
+deactivate ProyectoRepo
+ProyectoRepo --> ProyectoSvc : Proyecto
+deactivate ProyectoSvc
+ProyectoSvc --> Ctrl : Proyecto
+
+Ctrl -> Service : guardarEntregable(entregable, archivo, proyecto)
+activate Service
+Service -> Service : entregable.setProyecto(proyecto)
+
+alt archivo adjunto presente
+    Service -> ArchivoSvc : guardarArchivo(archivo)
+    ArchivoSvc --> Service : nombre
+    Service -> Service : entregable.setRutaArchivo(nombre)
+end
+
+Service -> Repo : save(entregable)
+activate Repo
+Repo -> DB : INSERT INTO entregables (...)
+DB --> Repo : Entregable (con id)
+deactivate Repo
+Repo --> Service : Entregable
+deactivate Service
+Service --> Ctrl : Entregable
+
+Ctrl --> Nav : 302 redirect → /proyectos/{proyectoId}/entregables
+deactivate Ctrl
+Nav --> Inv : navega al listado de entregables
+deactivate Nav
+
+@enduml

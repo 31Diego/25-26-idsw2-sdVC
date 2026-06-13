@@ -1,0 +1,68 @@
+@startuml editarPublicacion-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "PublicacionController\n@Controller\nGET|POST /publicaciones/{id}/editar" as Ctrl
+participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Inv -> Nav : clic en "Editar" en su publicación
+activate Nav
+Nav -> Ctrl : GET /publicaciones/{id}/editar
+activate Ctrl
+Ctrl -> Service : obtenerPorId(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM publicaciones WHERE id = ?
+DB --> Repo : Publicacion
+deactivate Repo
+Repo --> Service : Publicacion
+deactivate Service
+Service --> Ctrl : Publicacion
+Ctrl -> Service : puedeEditarOEliminar(usuario, publicacion)
+activate Service
+Service --> Ctrl : true
+deactivate Service
+Ctrl --> Nav : 200 OK · editar-publicacion.html\n(form pre-rellenado)
+deactivate Ctrl
+Nav --> Inv : muestra formulario de edición
+deactivate Nav
+
+Inv -> Nav : modifica título y contenido
+activate Nav
+Nav -> Ctrl : POST /publicaciones/{id}/editar\n[titulo, contenido]
+activate Ctrl
+Ctrl -> Service : obtenerPorId(id)
+activate Service
+Service --> Ctrl : Publicacion
+deactivate Service
+Ctrl -> Service : puedeEditarOEliminar(usuario, publicacion)
+activate Service
+Service --> Ctrl : true
+deactivate Service
+Ctrl -> Service : actualizar(id, titulo, contenido)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM publicaciones WHERE id = ?
+DB --> Repo : Publicacion
+deactivate Repo
+Repo --> Service : Publicacion
+Service -> Service : publicacion.setTitulo(titulo)\npublicacion.setContenido(contenido)
+Service -> Repo : save(publicacion)
+activate Repo
+Repo -> DB : UPDATE publicaciones SET ... WHERE id = ?
+DB --> Repo : Publicacion
+deactivate Repo
+Repo --> Service : Publicacion
+deactivate Service
+Service --> Ctrl : ok
+Ctrl --> Nav : 302 redirect → /publicaciones/{id}
+deactivate Ctrl
+Nav --> Inv : navega al detalle de la publicación
+deactivate Nav
+
+@enduml

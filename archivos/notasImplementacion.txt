@@ -1,0 +1,15 @@
+PRUEBAS COORDINADOR/INVESTIGADOR
+
+PROYECTOS 
+
+
+fallo: cuando se agrega un investigador a un proyecto te lleva a otra pantalla, no se queda en proyecto abierto, distinto de lo que pone en el diagrama de contexto
+
+
+INVESTIGADORES/OPCIONES_PERFIL
+
+no se puede cambiar el correo al editarPerfil debido a que puede causar problemas en el sistema
+en abrirPerfil, no sale ni usuario ni contraseña por seguridad, todo el mundo puede abrirInvestigador
+cuando solicitarEliminacionPerfil si no es el propio usuario no cierra sesion
+
+fallo: cuando abrirInvestigadores(proyectoid) te deja volver al proyecto, no al panel -> corregir diagrama contexto

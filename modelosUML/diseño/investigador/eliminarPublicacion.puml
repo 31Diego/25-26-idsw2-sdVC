@@ -1,0 +1,61 @@
+@startuml eliminarPublicacion-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "PublicacionController\n@Controller\nGET|POST /publicaciones/{id}/eliminar" as Ctrl
+participant "PublicacionService\n@Service" as Service
+participant "PublicacionRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Inv -> Nav : clic en "Eliminar" en su publicación
+activate Nav
+Nav -> Ctrl : GET /publicaciones/{id}/eliminar
+activate Ctrl
+Ctrl -> Service : obtenerPorId(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM publicaciones WHERE id = ?
+DB --> Repo : Publicacion
+deactivate Repo
+Repo --> Service : Publicacion
+deactivate Service
+Service --> Ctrl : Publicacion
+Ctrl -> Service : puedeEditarOEliminar(usuario, publicacion)
+activate Service
+Service --> Ctrl : true
+deactivate Service
+Ctrl --> Nav : 200 OK · eliminar-publicacion.html\n(confirmación)
+deactivate Ctrl
+Nav --> Inv : muestra pantalla de confirmación
+deactivate Nav
+
+Inv -> Nav : confirma eliminación
+activate Nav
+Nav -> Ctrl : POST /publicaciones/{id}/eliminar
+activate Ctrl
+Ctrl -> Service : obtenerPorId(id)
+activate Service
+Service --> Ctrl : Publicacion
+deactivate Service
+Ctrl -> Service : puedeEditarOEliminar(usuario, publicacion)
+activate Service
+Service --> Ctrl : true
+deactivate Service
+Ctrl -> Service : eliminar(id)
+activate Service
+Service -> Repo : deleteById(id)
+activate Repo
+Repo -> DB : DELETE FROM publicaciones WHERE id = ?\n(+ respuestas en cascada)
+DB --> Repo : ok
+deactivate Repo
+Repo --> Service : ok
+deactivate Service
+Service --> Ctrl : ok
+Ctrl --> Nav : 302 redirect → /publicaciones
+deactivate Ctrl
+Nav --> Inv : navega al listado de publicaciones
+deactivate Nav
+
+@enduml

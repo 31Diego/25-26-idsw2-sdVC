@@ -1,0 +1,31 @@
+@startuml abrirInvestigador-investigador-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "InvestigadorController\n@Controller\nGET /investigadores/{id}" as Ctrl
+participant "InvestigadorService\n@Service" as Service
+participant "InvestigadorRepository\nJpaRepository" as Repo
+database "H2" as DB
+
+Inv -> Nav : clic en investigador de la lista
+activate Nav
+Nav -> Ctrl : GET /investigadores/{id}
+activate Ctrl
+Ctrl -> Service : obtenerInvestigador(id)
+activate Service
+Service -> Repo : findById(id)
+activate Repo
+Repo -> DB : SELECT * FROM investigadores WHERE id = ?
+DB --> Repo : Investigador
+deactivate Repo
+Repo --> Service : Investigador
+deactivate Service
+Service --> Ctrl : Investigador
+Ctrl -> Ctrl : model.addAttribute("investigador", investigador)
+Ctrl --> Nav : 200 OK · investigador.html
+deactivate Ctrl
+Nav --> Inv : muestra perfil del investigador
+deactivate Nav
+
+@enduml
