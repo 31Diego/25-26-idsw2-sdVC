@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `crearRecompensa()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para registrar una nueva recompensa en el sistema.
+Análisis de colaboración del caso de uso `crearRecompensa()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador registre una nueva recompensa en el sistema.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: crearRecompensa()](../../../images/analisis/crearRecompensa-analisis.svg)|
+|![Análisis: crearRecompensa()](../../../images/analisis/coordinador/crearRecompensa-analisis.svg)|
 |-|
 |Código fuente: [crearRecompensa.puml](../../../modelosUML/analisis/coordinador/crearRecompensa.puml)|
 
@@ -30,36 +30,34 @@ Análisis de colaboración del caso de uso `crearRecompensa()` mediante el patr�
 #### CrearRecompensaView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de creación de recompensa al Coordinador
-- Capturar los datos de la nueva recompensa
-- Invocar el guardado en el controlador
-- Navegar a la lista de recompensas tras la creación
+- Recibir la solicitud `crearRecompensa()` desde `:RECOMPENSAS_ABIERTAS`
+- Solicitar al controlador la validación de datos mediante `validarDatos(datos) : boolean`
+- Solicitar al controlador el guardado de la nueva recompensa mediante `guardarRecompensa(datos) : Recompensa`
+- Navegar de vuelta al listado de recompensas
 
 **Colaboraciones**:
-- **Entrada**: Recibe `crearRecompensa()` desde `:RECOMPENSAS_ABIERTAS`
-- **Control**: Se comunica con `RecompensaController`
-- **Salida**: Navega a `:RECOMPENSAS_ABIERTAS`
+- **Entrada**: Desde `:RECOMPENSAS_ABIERTAS` con `crearRecompensa()`
+- **Control**: Se comunica con `RecompensaController` mediante `validarDatos(datos) : boolean` y `guardarRecompensa(datos) : Recompensa`
+- **Salida**: Transita a `:RECOMPENSAS_ABIERTAS` con `abrirRecompensas()`
 
 ### clases de control
 
 #### RecompensaController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de creación de la nueva recompensa
-- Validar los datos recibidos del formulario
-- Persistir la nueva recompensa a través del repositorio
+- Recibir y ejecutar `validarDatos(datos) : boolean`
+- Recibir `guardarRecompensa(datos)` y delegar la creación al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `CrearRecompensaView`
-- **Repositorio**: Delega la persistencia a `RecompensaRepository`
+- **Repositorio**: Delega la persistencia a `RecompensaRepository` mediante `crear(recompensa) : Recompensa`
 
 ### clases de entidad (entity)
 
 #### RecompensaRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de recompensas
-- Proporcionar método para crear una nueva recompensa
+- Persistir una nueva recompensa mediante `crear(recompensa) : Recompensa`
 
 **Colaboraciones**:
 - **Control**: Responde a `RecompensaController`
@@ -68,8 +66,7 @@ Análisis de colaboración del caso de uso `crearRecompensa()` mediante el patr�
 #### Recompensa
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de la nueva recompensa
-- Encapsular atributos: título, descripción, tipo, valor, condiciones
+- Representar los datos de la nueva recompensa a crear
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `RecompensaRepository`
@@ -78,27 +75,31 @@ Análisis de colaboración del caso de uso `crearRecompensa()` mediante el patr�
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:RECOMPENSAS_ABIERTAS` → `CrearRecompensaView.crearRecompensa()`
-2. **Captura**: El Coordinador rellena el formulario
-3. **Guardado**: `CrearRecompensaView` → `RecompensaController.guardarRecompensa(datos)` : `Recompensa`
-4. **Persistencia**: `RecompensaController` → `RecompensaRepository.crear(recompensa)` : `Recompensa`
-5. **Finalización**: `CrearRecompensaView` → `:RECOMPENSAS_ABIERTAS.abrirRecompensas()`
+1. El sistema está en `:RECOMPENSAS_ABIERTAS`
+2. El coordinador solicita crear recompensa: `CrearRecompensaView` recibe `crearRecompensa()`
+3. El coordinador rellena el formulario con los datos de la recompensa
+4. `CrearRecompensaView` invoca `validarDatos(datos)` en `RecompensaController` → devuelve `boolean`
+5. Si la validación es correcta, `CrearRecompensaView` invoca `guardarRecompensa(datos)` en `RecompensaController`
+6. `RecompensaController` delega en `RecompensaRepository.crear(recompensa)` y obtiene el objeto `Recompensa` creado
+7. La vista navega de vuelta → `:RECOMPENSAS_ABIERTAS` con `abrirRecompensas()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario de creación|`CrearRecompensaView`|Captura datos de la nueva recompensa|
-|Persistir nueva recompensa|`RecompensaController`|`guardarRecompensa(datos)` → `RecompensaRepository.crear()`|
-|Confirmar creación|`CrearRecompensaView`|→ `:RECOMPENSAS_ABIERTAS`|
+|Presentar formulario de creación|`CrearRecompensaView`|`crearRecompensa()`|
+|Validar datos del formulario|`RecompensaController`|`validarDatos(datos) : boolean`|
+|Persistir nueva recompensa|`RecompensaController`|`guardarRecompensa(datos) : Recompensa`|
+|Crear recompensa en repositorio|`RecompensaRepository`|`crear(recompensa) : Recompensa`|
+|Volver al listado de recompensas|`CrearRecompensaView`|`abrirRecompensas()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Coordinador
+- **Vista**: Solo presentación del formulario e interacción con el coordinador
 - **Control**: Solo coordinación de la validación y persistencia
-- **Entidad**: Solo datos y reglas de negocio de la recompensa
+- **Entidad**: Solo datos y reglas de negocio de las recompensas
 
 ### agnóstico tecnológicamente
 

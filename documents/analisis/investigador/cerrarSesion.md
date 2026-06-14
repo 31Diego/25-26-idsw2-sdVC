@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para finalizar la sesión activa del Investigador.
+Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para finalizar la sesión activa del investigador.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: cerrarSesion()](../../../images/analisis/investigador/cerrarSesion-analisis.svg)|
+|![Análisis: cerrarSesion()](../../../images/analisis/investigador/cerrarSesion-investigador-analisis.svg)|
 |-|
 |Código fuente: [cerrarSesion.puml](../../../modelosUML/analisis/investigador/cerrarSesion.puml)|
 
@@ -30,34 +30,33 @@ Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón 
 #### SesionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de cierre de sesión
-- Invalidar la sesión activa del Investigador
-- Redirigir al estado de sesión cerrada
+- Recibir `cerrarSesion()` desde `:PANEL_PRINCIPAL_ABIERTO` e invalidar la sesión activa del investigador
+- Transitar al estado de sesión cerrada
 
 **Colaboraciones**:
-- **Entrada**: Recibe `cerrarSesion()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Salida**: Navega a `:SESION_CERRADA`
+- **Entrada**: Desde `:PANEL_PRINCIPAL_ABIERTO` con `cerrarSesion()`
+- **Salida**: Transita a `:SESION_CERRADA` con `sesionCerrada()`
 
 ## flujo de colaboración
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `SesionController.cerrarSesion()`
-2. **Cierre**: `SesionController` invalida la sesión activa
-3. **Redirección**: `SesionController` → `:SESION_CERRADA.sesionCerrada()`
+1. El sistema está en `:PANEL_PRINCIPAL_ABIERTO`
+2. El investigador solicita cerrar sesión: `SesionController` recibe `cerrarSesion()`
+3. `SesionController` invalida la sesión activa y transita a `:SESION_CERRADA` con `sesionCerrada()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
 |Cerrar la sesión activa|`SesionController`|`cerrarSesion()`|
-|Redirigir al estado cerrado|`SesionController`|→ `:SESION_CERRADA`|
+|Transitar a sesión cerrada|`SesionController`|`sesionCerrada()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Control**: Coordina el cierre de sesión sin necesidad de vista propia — la acción se dispara directamente desde el panel principal
+- **Control**: Coordina el cierre de sesión sin necesidad de vista propia; la acción se dispara directamente desde el panel principal y no requiere acceso a datos persistentes
 
 ### agnóstico tecnológicamente
 
@@ -73,7 +72,7 @@ Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón 
 ## patrones aplicados
 
 ### mvc pattern
-Solo interviene la clase de control `SesionController`. No se requiere vista propia (acción directa desde el panel) ni entidad (no se accede a datos persistentes).
+Solo interviene la clase de control `SesionController`. No se requiere vista propia ni entidad.
 
 ## referencias
 

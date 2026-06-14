@@ -1,4 +1,4 @@
-# agregarInvestigador — Diseño (Coordinador)
+# agregarInvestigador — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Mostrar la lista de investigadores que aún no pertenecen al proyecto y permitir al coordinador añadir uno de ellos a la relación `proyecto_investigador`.
+Mostrar la lista de investigadores disponibles para agregar al proyecto y, tras la selección, incorporar al investigador elegido al equipo del proyecto; bloqueando a los que superen el límite de carga de trabajo.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/agregarInvestigador-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/agregarInvestigador-coordinador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/agregarInvestigador.puml)
 
@@ -22,22 +22,24 @@ Mostrar la lista de investigadores que aún no pertenecen al proyecto y permitir
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| AgregarInvestigadorView (azul) | `AgregarInvestigadorController` `@Controller` | Recibe GET y POST; orquesta la carga y el guardado |
-| AgregarInvestigadorController (amarillo) | `ProyectoService` + `InvestigadorService` `@Service` | Obtiene el proyecto y la lista filtrada de disponibles |
-| ProyectoRepository (naranja) | `ProyectoRepository` JpaRepository | SELECT y UPDATE del proyecto |
-| InvestigadorRepository (naranja) | `InvestigadorRepository` JpaRepository | SELECT de todos los investigadores |
-| Proyecto / Investigador (naranja) | `Proyecto` / `Investigador` `@Entity` | Relación `@ManyToMany` en tabla `proyecto_investigador` |
+| Controlador de proyectos (GET) | ProyectoController @Controller GET /proyectos/{id}/investigadores/agregar | Carga el proyecto, la lista de disponibles y los ids bloqueados |
+| Controlador de proyectos (POST) | ProyectoController @Controller POST /proyectos/{id}/investigadores/agregar | Verifica la carga y agrega el investigador |
+| Servicio de proyectos | ProyectoService @Service | `obtenerProyecto(id)` y `agregarInvestigador(proyecto, investigador)` |
+| Servicio de investigador | InvestigadorService @Service | `obtenerNoMiembros(proyecto)` filtra los que ya son miembros |
+| Servicio de carga de trabajo | CargaTrabajoService @Service | `obtenerIdsBloqueados(disponibles)` devuelve ids con >= 40 h/sem; `excedeLimite(investigador)` en POST |
+| Repositorio de proyectos | ProyectoRepository JpaRepository | SELECT por id y UPDATE (INSERT en proyecto_investigador) via save |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | findAll() para obtener todos y filtrar disponibles |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
-| Método | URL | Acción | Restricción |
-|---|---|---|---|
-| GET | /proyectos/{id}/investigadores/agregar | Muestra investigadores disponibles | Solo COORDINADOR |
-| POST | /proyectos/{id}/investigadores/agregar | Añade el investigador seleccionado al proyecto | Solo COORDINADOR |
+| Método | URL | Acción |
+|---|---|---|
+| GET | /proyectos/{id}/investigadores/agregar | Muestra la lista de investigadores disponibles |
+| POST | /proyectos/{id}/investigadores/agregar | Agrega al investigador seleccionado (investigadorId como parámetro) |
 
 ## Decisiones de diseño
 
-- El GET filtra en memoria los investigadores que ya pertenecen al proyecto, usando `proyecto.getInvestigadores().contains(inv)`. Evita mostrar duplicados sin consulta adicional.
-- El POST recibe `investigadorId` como `@RequestParam` y delega la operación a `ProyectoService.agregarInvestigador(proyecto, investigador)`, que hace `add` a la lista y llama a `save`.
-- Ambos endpoints están protegidos con `@PreAuthorize("hasRole('COORDINADOR')")`.
-- Tras el POST redirige al proyecto (`/proyectos/{id}`) para confirmar visualmente el cambio.
+- El GET añade al modelo: `"proyecto"`, `"disponibles"` (investigadores no miembros) y `"bloqueados"` (Set<Long> con ids que tienen >= 40 h/sem). El template deshabilita el botón de agregar para los bloqueados.
+- Flujo alternativo `alt` en el POST: si la carga es < 40 h/sem → `agregarInvestigador(proyecto, investigador)` hace `save` con INSERT en proyecto_investigador, redirect a `/proyectos/{id}`; si es >= 40 h/sem → `redirectAttributes.addFlashAttribute("error", "...")` y redirect al formulario de agregar con mensaje de error.
+- `InvestigadorService.obtenerNoMiembros(proyecto)` usa `findAll()` y filtra en memoria los que ya son miembros.

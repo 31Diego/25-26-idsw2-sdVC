@@ -6,12 +6,12 @@
 - **Fase**: Análisis
 - **Disciplina**: Análisis y Diseño
 - **Versión**: 1.0
-- **Fecha**: 2026-05-22
+- **Fecha**: 2026-05-23
 - **Autor**: Diego Martínez
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirConvocatoria()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el detalle de una convocatoria al Coordinador.
+Análisis de colaboración del caso de uso `abrirConvocatoria()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el detalle de una convocatoria concreta a partir del listado de convocatorias abiertas.
 
 ## diagrama de colaboración
 
@@ -30,35 +30,34 @@ Análisis de colaboración del caso de uso `abrirConvocatoria()` mediante el pat
 #### ConvocatoriaView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Recibir la solicitud de apertura de una convocatoria concreta
-- Interactuar con el controlador para obtener el detalle de la convocatoria
-- Presentar al Coordinador: título, área, estado, fechas, descripción, requisitos, criterios, documentación e información de contacto
-- Ofrecer opciones de navegación: importar convocatoria, volver a la lista, volver al panel principal
+- Recibir la solicitud `abrirConvocatoria(id)` desde el estado `:CONVOCATORIAS_ABIERTAS`
+- Solicitar al controlador los datos de la convocatoria seleccionada mediante `obtenerConvocatoria(id) : Convocatoria`
+- Mostrar el detalle de la convocatoria al coordinador
+- Ofrecer navegación: importar convocatoria o volver al listado de convocatorias
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirConvocatoria(id)` desde `:CONVOCATORIAS_ABIERTAS`
-- **Control**: Se comunica con `ConvocatoriaController`
-- **Salida**: Navega a `CONVOCATORIA_ABIERTA`, a `CONVOCATORIAS_ABIERTAS` o a `importarConvocatoria()`
+- **Entrada**: Desde el estado `:CONVOCATORIAS_ABIERTAS` con `abrirConvocatoria(id)`
+- **Control**: Se comunica con `ConvocatoriaController` mediante `obtenerConvocatoria(id) : Convocatoria`
+- **Salida**: Transita a `CONVOCATORIA_ABIERTA` (`convocatoriaMostrada()`), a `:Collaboration ImportarConvocatoria` (`importarConvocatoria()`) o a `:CONVOCATORIAS_ABIERTAS` (`abrirConvocatorias()`)
 
 ### clases de control
 
 #### ConvocatoriaController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle de la convocatoria solicitada
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerConvocatoria(id)` desde la vista
+- Delegar la recuperación de la convocatoria al repositorio mediante `obtenerPorId(id)`
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `ConvocatoriaView`
-- **Repositorio**: Delega el acceso a datos a `ConvocatoriaRepository`
+- **Repositorio**: Delega el acceso a datos a `ConvocatoriaRepository` mediante `obtenerPorId(id) : Convocatoria`
 
 ### clases de entidad (entity)
 
 #### ConvocatoriaRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de convocatorias
-- Proporcionar método para obtener una convocatoria por identificador
+- Recuperar una convocatoria concreta por su identificador mediante `obtenerPorId(id) : Convocatoria`
 
 **Colaboraciones**:
 - **Control**: Responde a `ConvocatoriaController`
@@ -67,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirConvocatoria()` mediante el pat
 #### Convocatoria
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de una convocatoria
-- Encapsular atributos: título, área, estado, fechas relevantes, descripción, requisitos y condiciones, criterios de evaluación y dotación, documentación asociada, información de contacto
+- Representar los datos de una convocatoria de financiación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ConvocatoriaRepository`
@@ -77,29 +75,32 @@ Análisis de colaboración del caso de uso `abrirConvocatoria()` mediante el pat
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:CONVOCATORIAS_ABIERTAS` → `ConvocatoriaView.abrirConvocatoria(id)`
-2. **Obtención de detalle**: `ConvocatoriaView` → `ConvocatoriaController.obtenerConvocatoria(id)`
-3. **Acceso a datos**: `ConvocatoriaController` → `ConvocatoriaRepository.obtenerPorId(id)` : `Convocatoria`
-4. **Presentación**: `ConvocatoriaView` presenta el detalle completo al Coordinador
-5. **Finalización**: `ConvocatoriaView` → `CONVOCATORIAS_ABIERTAS` (`abrirConvocatorias()`) o → `importarConvocatoria()`
+1. El sistema llega al estado `:CONVOCATORIAS_ABIERTAS` (listado visible)
+2. El coordinador selecciona una convocatoria: `ConvocatoriaView` recibe `abrirConvocatoria(id)`
+3. `ConvocatoriaView` invoca `obtenerConvocatoria(id)` en `ConvocatoriaController`
+4. `ConvocatoriaController` delega en `ConvocatoriaRepository.obtenerPorId(id)` y obtiene un objeto `Convocatoria`
+5. `ConvocatoriaView` muestra el detalle → estado `CONVOCATORIA_ABIERTA` con `convocatoriaMostrada()`
+6. Desde la vista el coordinador puede:
+   - Importar la convocatoria → `:Collaboration ImportarConvocatoria` con `importarConvocatoria()`
+   - Volver al listado → `:CONVOCATORIAS_ABIERTAS` con `abrirConvocatorias()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar detalle de la convocatoria|`ConvocatoriaView`|Coordina con `ConvocatoriaController.obtenerConvocatoria(id)`|
-|Título, área, estado, fechas, descripción, requisitos, criterios, documentación, contacto|`Convocatoria`|Encapsula todos los atributos|
-|Acceso a datos de la convocatoria|`ConvocatoriaRepository`|`obtenerPorId(id)`|
-|Navegar a importar convocatoria|`ConvocatoriaView`|Colaboración con `ImportarConvocatoria`|
-|Volver a la lista de convocatorias|`ConvocatoriaView`|Colaboración con `CONVOCATORIAS_ABIERTAS`|
+|Mostrar detalle de una convocatoria|`ConvocatoriaView`|`abrirConvocatoria(id)`|
+|Recuperar la convocatoria por id|`ConvocatoriaController`|`obtenerConvocatoria(id) : Convocatoria`|
+|Acceder a datos de la convocatoria|`ConvocatoriaRepository`|`obtenerPorId(id) : Convocatoria`|
+|Navegar a importar convocatoria|`ConvocatoriaView`|`importarConvocatoria()`|
+|Volver al listado de convocatorias|`ConvocatoriaView`|`abrirConvocatorias()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y obtención del detalle
-- **Entidad**: Solo datos y reglas de negocio de la convocatoria
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación del objeto `Convocatoria`
+- **Entidad**: Solo datos y reglas de negocio de las convocatorias
 
 ### agnóstico tecnológicamente
 

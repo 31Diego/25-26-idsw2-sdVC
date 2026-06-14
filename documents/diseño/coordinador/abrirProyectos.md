@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Recuperar y mostrar la lista de proyectos del sistema. Soporta búsqueda por criterio de texto.
+Recuperar y mostrar la lista completa de proyectos del sistema. Soporta búsqueda opcional por criterio de texto.
 
 ## Diagrama de secuencia
 
@@ -22,20 +22,22 @@ Recuperar y mostrar la lista de proyectos del sistema. Soporta búsqueda por cri
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| ProyectosView (azul) | `ProyectosController` `@Controller` | Recibe GET /proyectos; pone la lista en el Model y devuelve proyectos.html |
-| ProyectosController (amarillo) | `ProyectosService` `@Service` | Orquesta la consulta: sin filtro llama findAll(), con filtro llama buscarPorCriterio() |
-| ProyectoRepository (naranja) | `ProyectoRepository` JpaRepository | Ejecuta la query SQL contra H2 |
-| Proyecto (naranja) | `Proyecto` `@Entity` | Tabla proyectos en H2 |
+| Controlador de proyectos | ProyectoController @Controller | Atiende GET /proyectos y prepara el modelo |
+| Servicio de proyectos | ProyectoService @Service | `obtenerProyectosParaUsuario(investigador, criterio)` delega en la policy |
+| Policy de consulta | ConsultaCoordinador policies | Decide entre findAll() o buscarPorCriterio(criterio) según el parámetro |
+| Repositorio de proyectos | ProyectoRepository JpaRepository | Ejecuta la consulta SQL sobre la tabla proyectos |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /proyectos | Lista todos los proyectos |
-| GET | /proyectos?criterio=texto | Lista proyectos filtrados |
+| GET | /proyectos | Lista todos los proyectos del sistema |
+| GET | /proyectos?criterio=texto | Lista proyectos filtrados por título |
 
 ## Decisiones de diseño
 
-- El filtro se pasa como `@RequestParam` opcional; si está vacío o ausente se devuelven todos.
-- El método del repositorio `buscarPorCriterio` usa `@Query` con `LIKE` sobre título y descripción.
-- Thymeleaf recibe la lista como `model.addAttribute("proyectos", lista)`.
+- Flujo alternativo `alt`: sin filtro → `findAll()` con SELECT * FROM proyectos; con filtro → `buscarPorCriterio(criterio)` con SELECT ... WHERE titulo LIKE %criterio%.
+- El criterio de búsqueda se pasa como `@RequestParam` opcional.
+- La lista se añade al modelo con `model.addAttribute("proyectos", lista)`.
+- La vista muestra el botón "Nuevo proyecto" (solo disponible para el coordinador).

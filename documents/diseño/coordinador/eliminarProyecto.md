@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Mostrar la ficha del proyecto a eliminar como confirmación, y borrarlo definitivamente tras la confirmación del usuario.
+Mostrar la ficha del proyecto a eliminar como pantalla de confirmación, y borrarlo definitivamente junto con sus entregables tras la confirmación del coordinador.
 
 ## Diagrama de secuencia
 
@@ -22,20 +22,22 @@ Mostrar la ficha del proyecto a eliminar como confirmación, y borrarlo definiti
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EliminarProyectoView (azul) | `EliminarProyectoController` `@Controller` | GET muestra la confirmación; POST ejecuta el borrado |
-| ProyectoController (amarillo) | `ProyectoService` `@Service` | `obtenerProyecto(id)` para mostrar qué se elimina; `eliminarProyecto(id)` para el borrado |
-| ProyectoRepository (naranja) | `ProyectoRepository` JpaRepository | SELECT (carga confirmación) + DELETE |
-| Proyecto (naranja) | `Proyecto` `@Entity` | Tabla proyectos en H2 |
+| Controlador de proyectos (GET) | ProyectoController @Controller GET /proyectos/{id}/eliminar | Carga el proyecto y muestra la confirmación |
+| Controlador de proyectos (POST) | ProyectoController @Controller POST /proyectos/{id}/eliminar | Ejecuta la eliminación |
+| Servicio de proyectos | ProyectoService @Service | `obtenerProyecto(id)` y `eliminarProyecto(id)` |
+| Repositorio de entregables | EntregableRepository JpaRepository | Ejecuta DELETE FROM entregables WHERE proyecto_id = ? primero |
+| Repositorio de proyectos | ProyectoRepository JpaRepository | Ejecuta DELETE FROM proyectos WHERE id = ? |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
 | GET | /proyectos/{id}/eliminar | Muestra la página de confirmación con los datos del proyecto |
-| POST | /proyectos/{id}/eliminar | Ejecuta el DELETE |
+| POST | /proyectos/{id}/eliminar | Elimina los entregables y el proyecto, y redirige a la lista |
 
 ## Decisiones de diseño
 
-- El GET carga el proyecto y lo muestra al usuario para que confirme que es el correcto (`cargarProyectoParaEliminacion` del análisis).
-- El POST llama a `deleteById(id)` y redirige a `/proyectos` (PRG pattern).
-- Thymeleaf genera un `<form method="post">` con botón "Confirmar eliminación" y un enlace "Cancelar" que vuelve a `/proyectos/{id}`.
+- En el GET, el proyecto se carga con `obtenerProyecto(id)` y se añade al modelo con `model.addAttribute("proyecto", proyecto)`.
+- El POST llama a `eliminarProyecto(id)` que primero hace `EntregableRepository.deleteByProyectoId(id)` y luego `ProyectoRepository.deleteById(id)` para mantener la integridad referencial.
+- Tras eliminar, redirige a `/proyectos` (302 redirect, patrón PRG).

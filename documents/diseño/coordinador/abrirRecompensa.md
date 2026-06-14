@@ -1,4 +1,4 @@
-# abrirRecompensa — Diseño · Coordinador
+# abrirRecompensa — Diseño
 
 ## Información del artefacto
 
@@ -14,7 +14,7 @@ Mostrar el detalle completo de una recompensa concreta. El coordinador puede acc
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/abrirRecompensa-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/abrirRecompensa.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/abrirRecompensa.puml)
 
@@ -22,19 +22,18 @@ Mostrar el detalle completo de una recompensa concreta. El coordinador puede acc
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| RecompensaView | `RecompensaController` `@Controller` | GET /recompensas/{id} — carga el detalle |
-| RecompensaController | `RecompensaService` `@Service` | `obtenerPorId(id)` |
-| RecompensaRepository | `RecompensaRepository` JpaRepository | SELECT … WHERE id = ? |
-| Recompensa | `Recompensa` `@Entity` | Tabla recompensas |
+| Controlador de recompensas | RecompensaController @Controller | Atiende GET /recompensas/{id} y devuelve recompensa.html |
+| Servicio de recompensas | RecompensaService @Service | `obtenerPorId(id)` recupera la recompensa |
+| Repositorio de recompensas | RecompensaRepository JpaRepository | Ejecuta SELECT * FROM recompensas WHERE id = ? vía findById(id) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /recompensas/{id} | Muestra el detalle de la recompensa |
+| GET | /recompensas/{id} | Muestra el detalle completo de la recompensa |
 
 ## Decisiones de diseño
 
-- El coordinador puede acceder al detalle de cualquier recompensa sin restricción adicional.
-- El detalle muestra todos los campos: título, tipo, valor, descripción, condiciones, fecha de creación y destinatario.
-- Desde el detalle el coordinador accede a editar y eliminar.
+- El id llega como `@PathVariable`.
+- La vista `recompensa.html` muestra el detalle completo e incluye los enlaces Editar y Eliminar (solo visibles para el coordinador).

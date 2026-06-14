@@ -6,12 +6,12 @@
 - **Fase**: Análisis
 - **Disciplina**: Análisis y Diseño
 - **Versión**: 1.0
-- **Fecha**: 2026-06-11
+- **Fecha**: 2026-05-23
 - **Autor**: Diego Martínez
 
 ## propósito
 
-Análisis de colaboración del caso de uso `eliminarConvocatoria()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para eliminar una convocatoria del sistema.
+Análisis de colaboración del caso de uso `eliminarConvocatoria()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador elimine una convocatoria del sistema.
 
 ## diagrama de colaboración
 
@@ -30,35 +30,36 @@ Análisis de colaboración del caso de uso `eliminarConvocatoria()` mediante el 
 #### EliminarConvocatoriaView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Mostrar los datos de la convocatoria como pantalla de confirmación antes de eliminar
-- Invocar la eliminación en el controlador tras confirmación del Coordinador
-- Navegar al listado de convocatorias tras la operación
+- Recibir la solicitud `eliminarConvocatoria()` desde `:CONVOCATORIA_ABIERTA`
+- Solicitar al controlador los datos de la convocatoria a eliminar mediante `cargarConvocatoriaParaEliminacion(id) : Convocatoria`
+- Mostrar la pantalla de confirmación con los datos de la convocatoria
+- Solicitar al controlador la eliminación definitiva mediante `eliminarConvocatoria(id) : void`
+- Navegar al listado de convocatorias o cancelar volviendo al estado anterior
 
 **Colaboraciones**:
-- **Entrada**: Recibe `eliminarConvocatoria()` desde `:CONVOCATORIA_ABIERTA`
-- **Control**: Se comunica con `ConvocatoriaController`
-- **Salida**: Navega a `:CONVOCATORIAS_ABIERTAS` o cancela volviendo a `:CONVOCATORIA_ABIERTA`
+- **Entrada**: Desde `:CONVOCATORIA_ABIERTA` con `eliminarConvocatoria()`
+- **Control**: Se comunica con `ConvocatoriaController` mediante `cargarConvocatoriaParaEliminacion(id)` y `eliminarConvocatoria(id)`
+- **Salida**: Transita a `:CONVOCATORIAS_ABIERTAS` (`abrirConvocatorias()`) o cancela con `cancelar()` a `:CONVOCATORIA_ABIERTA`
 
 ### clases de control
 
 #### ConvocatoriaController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Cargar la convocatoria a eliminar para mostrarla en la confirmación
-- Coordinar el proceso de eliminación definitiva
+- Recibir `cargarConvocatoriaParaEliminacion(id)` y delegar en el repositorio la obtención de la convocatoria
+- Recibir `eliminarConvocatoria(id)` y delegar la eliminación al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EliminarConvocatoriaView`
-- **Repositorio**: Delega la eliminación a `ConvocatoriaRepository`
+- **Repositorio**: Delega en `ConvocatoriaRepository` mediante `obtenerPorId(id) : Convocatoria` y `eliminarPorId(id) : void`
 
 ### clases de entidad (entity)
 
 #### ConvocatoriaRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de convocatorias
-- Proporcionar método para obtener una convocatoria por identificador
-- Proporcionar método para eliminar una convocatoria por identificador
+- Recuperar una convocatoria por id mediante `obtenerPorId(id) : Convocatoria`
+- Eliminar una convocatoria del sistema mediante `eliminarPorId(id) : void`
 
 **Colaboraciones**:
 - **Control**: Responde a `ConvocatoriaController`
@@ -67,8 +68,7 @@ Análisis de colaboración del caso de uso `eliminarConvocatoria()` mediante el 
 #### Convocatoria
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la convocatoria a eliminar
-- Encapsular la información mostrada en la pantalla de confirmación
+- Representar los datos de la convocatoria mostrados en la confirmación de eliminación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ConvocatoriaRepository`
@@ -77,32 +77,35 @@ Análisis de colaboración del caso de uso `eliminarConvocatoria()` mediante el 
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:CONVOCATORIA_ABIERTA` → `EliminarConvocatoriaView.eliminarConvocatoria()`
-2. **Carga para confirmación**: `EliminarConvocatoriaView` → `ConvocatoriaController.cargarConvocatoriaParaEliminacion(id)` : `Convocatoria`
-3. **Acceso a datos**: `ConvocatoriaController` → `ConvocatoriaRepository.obtenerPorId(id)` : `Convocatoria`
-4. **Confirmación**: El Coordinador confirma la eliminación
-5. **Eliminación**: `EliminarConvocatoriaView` → `ConvocatoriaController.eliminarConvocatoria(id)` : `void`
-6. **Persistencia**: `ConvocatoriaController` → `ConvocatoriaRepository.eliminarPorId(id)` : `void`
-7. **Finalización**: `EliminarConvocatoriaView` → `:CONVOCATORIAS_ABIERTAS.abrirConvocatorias()`
+1. El sistema está en `:CONVOCATORIA_ABIERTA`
+2. El coordinador solicita eliminar convocatoria: `EliminarConvocatoriaView` recibe `eliminarConvocatoria()`
+3. `EliminarConvocatoriaView` invoca `cargarConvocatoriaParaEliminacion(id)` en `ConvocatoriaController`
+4. `ConvocatoriaController` delega en `ConvocatoriaRepository.obtenerPorId(id)` y obtiene un objeto `Convocatoria`
+5. La pantalla de confirmación se muestra con los datos de la convocatoria
+6. El coordinador confirma: `EliminarConvocatoriaView` invoca `eliminarConvocatoria(id) : void` en `ConvocatoriaController`
+7. `ConvocatoriaController` delega en `ConvocatoriaRepository.eliminarPorId(id)`
+8. La vista navega → `:CONVOCATORIAS_ABIERTAS` con `abrirConvocatorias()`
 
 ### flujo alternativo: cancelación
 
-Si el Coordinador cancela, `EliminarConvocatoriaView` navega de vuelta a `:CONVOCATORIA_ABIERTA` sin ningún cambio en los datos.
+Si el coordinador cancela, `EliminarConvocatoriaView` navega de vuelta a `:CONVOCATORIA_ABIERTA` con `cancelar()` sin ningún cambio en los datos.
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar confirmación con datos|`EliminarConvocatoriaView`|Coordina con `ConvocatoriaController.cargarConvocatoriaParaEliminacion(id)`|
-|Eliminar convocatoria|`ConvocatoriaController`|`eliminarConvocatoria(id)` → `ConvocatoriaRepository.eliminarPorId()`|
-|Volver al listado tras eliminar|`EliminarConvocatoriaView`|→ `:CONVOCATORIAS_ABIERTAS`|
-|Cancelar sin cambios|`EliminarConvocatoriaView`|→ `:CONVOCATORIA_ABIERTA`|
+|Cargar datos para confirmación|`ConvocatoriaController`|`cargarConvocatoriaParaEliminacion(id) : Convocatoria`|
+|Acceder a la convocatoria por id|`ConvocatoriaRepository`|`obtenerPorId(id) : Convocatoria`|
+|Eliminar convocatoria del sistema|`ConvocatoriaController`|`eliminarConvocatoria(id) : void`|
+|Persistir la eliminación|`ConvocatoriaRepository`|`eliminarPorId(id) : void`|
+|Navegar al listado de convocatorias|`EliminarConvocatoriaView`|`abrirConvocatorias()`|
+|Cancelar sin cambios|`EliminarConvocatoriaView`|`cancelar()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación de la confirmación e interacción con el Coordinador
+- **Vista**: Solo presentación de la confirmación e interacción con el coordinador
 - **Control**: Solo coordinación del proceso de eliminación
 - **Entidad**: Solo datos y gestión de la persistencia
 
@@ -114,14 +117,14 @@ Si el Coordinador cancela, `EliminarConvocatoriaView` navega de vuelta a `:CONVO
 
 ### trazabilidad completa
 
-- **Origen**: Caso de uso `eliminarConvocatoria()` (añadido sobre la priorización inicial)
+- **Origen**: Caso de uso detallado `eliminarConvocatoria()`
 - **Destino**: Base para diseño arquitectónico
 - **Conexión**: Diagrama de estados → Análisis de colaboración
 
 ## patrones aplicados
 
 ### repository pattern
-`ConvocatoriaRepository` abstrae el acceso a datos, compartido con `abrirConvocatorias`, `abrirConvocatoria` e `importarConvocatoria`.
+`ConvocatoriaRepository` abstrae el acceso a datos, permitiendo diferentes implementaciones sin afectar al controlador.
 
 ### mvc pattern
 Separación clara entre presentación (`EliminarConvocatoriaView`), lógica de aplicación (`ConvocatoriaController`) y datos (`Convocatoria`, `ConvocatoriaRepository`).

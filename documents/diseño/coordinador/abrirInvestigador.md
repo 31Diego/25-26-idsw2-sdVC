@@ -22,20 +22,19 @@ Recuperar y mostrar el perfil completo de un investigador dado su identificador.
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| InvestigadorView (azul) | `InvestigadorController` `@Controller` | Recibe GET /investigadores/{id}; carga el investigador y devuelve investigador.html |
-| InvestigadorController (amarillo) | `InvestigadorService` `@Service` | Recupera el investigador por id con orElseThrow() |
-| InvestigadorRepository (naranja) | `InvestigadorRepository` JpaRepository | Ejecuta SELECT por id |
-| Investigador (naranja) | `Investigador` `@Entity` | Tabla investigadores en H2 |
+| Controlador de investigadores | InvestigadorController @Controller | Atiende GET /investigadores/{id} y prepara el modelo |
+| Servicio de investigador | InvestigadorService @Service | `obtenerInvestigador(id)` recupera el investigador por id |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | Ejecuta SELECT * FROM investigadores WHERE id = ? vía findById(id) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /investigadores/{id} | Muestra el perfil del investigador |
+| GET | /investigadores/{id} | Muestra el perfil completo del investigador |
 
 ## Decisiones de diseño
 
-- Si el id no existe, `orElseThrow()` lanza excepción y Spring devuelve 404.
-- El perfil muestra: id, nombre, apellidos, campo, carrera, master, email, institución y rol.
-- La vista ofrece enlace de vuelta a la lista `/investigadores`.
-- El cambio de rol se gestiona desde `abrirOpcionesPerfil` (`GET /investigadores/{id}/opciones`), no desde esta vista.
+- El id llega como `@PathVariable Long id`.
+- El investigador se añade al modelo con `model.addAttribute("investigador", investigador)`.
+- La vista `investigador.html` muestra el perfil y enlaza a las opciones del perfil (`/investigadores/{id}/opciones`).

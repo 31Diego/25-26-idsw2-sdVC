@@ -1,4 +1,4 @@
-# abrirPublicacion — Diseño · Coordinador
+# abrirPublicacion — Diseño
 
 ## Información del artefacto
 
@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Recuperar y mostrar el detalle de una publicación: título, contenido, autor, fecha y lista de respuestas asociadas. Comportamiento idéntico al del investigador; la URL es compartida.
+Recuperar y mostrar el detalle de una publicación: título, contenido, autor, fecha y lista de respuestas asociadas.
 
 ## Diagrama de secuencia
 
@@ -22,20 +22,20 @@ Recuperar y mostrar el detalle de una publicación: título, contenido, autor, f
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| PublicacionView | `PublicacionController` `@Controller` | Recibe GET /publicaciones/{id}; pone la publicación en el Model y devuelve publicacion.html |
-| PublicacionService | `PublicacionService` `@Service` | Recupera la publicación vía `obtenerPorId(id)` |
-| PublicacionRepository | `PublicacionRepository` JpaRepository | Ejecuta SELECT * FROM publicaciones WHERE id=? |
-| Publicacion | `Publicacion` `@Entity` | Entidad con relación `@OneToMany` hacia `Respuesta` (LAZY por defecto) |
-| Respuesta | `Respuesta` `@Entity` | Cargada al acceder a `publicacion.respuestas` en el template (open-in-view activo) |
+| Controlador de publicaciones | PublicacionController @Controller | Atiende GET /publicaciones/{id} y prepara el modelo |
+| Servicio de publicaciones | PublicacionService @Service | `obtenerPorId(id)` recupera la publicación con sus respuestas LAZY |
+| Repositorio de publicaciones | PublicacionRepository JpaRepository | Ejecuta SELECT * FROM publicaciones WHERE id=? |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /publicaciones/{id} | Muestra el detalle de la publicación con sus respuestas |
+| GET | /publicaciones/{id} | Muestra el detalle de la publicación con su lista de respuestas |
 
 ## Decisiones de diseño
 
-- La relación `@OneToMany` entre `Publicacion` y `Respuesta` es LAZY por defecto. Spring Boot activa `open-in-view=true`, por lo que Thymeleaf puede acceder a `publicacion.respuestas` sin N+1 adicional dentro del mismo request.
-- Las respuestas se ordenan por `fecha ASC` mediante `@OrderBy`, sin necesidad de ordenación en el template.
-- El formulario de `responderPublicacion` está embebido en la misma vista; no se necesita una pantalla separada.
+- El repositorio devuelve la `Publicacion` con las respuestas cargadas en LAZY; el acceso en el template se resuelve por open-in-view.
+- La publicación se añade al modelo con `model.addAttribute("publicacion", pub)`.
+- La vista `publicacion.html` muestra título, contenido, autor, fecha y lista de respuestas.
+- El formulario de `responderPublicacion` está embebido en la misma vista.

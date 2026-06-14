@@ -6,11 +6,11 @@
 - **Fase RUP**: Elaboración
 - **Disciplina**: Diseño
 - **Actor**: Coordinador
-- **Caso de uso**: eliminarPerfil(id)
+- **Caso de uso**: eliminarPerfil()
 
 ## Propósito
 
-Eliminar definitivamente el perfil de un investigador del sistema. El coordinador accede desde las opciones de perfil de ese investigador. No puede eliminar su propio perfil.
+Eliminar definitivamente el perfil de un investigador del sistema, incluyendo su eliminación de todos los proyectos y el borrado de sus solicitudes de eliminación pendientes. El coordinador no puede eliminar su propio perfil.
 
 ## Diagrama de secuencia
 
@@ -22,23 +22,24 @@ Eliminar definitivamente el perfil de un investigador del sistema. El coordinado
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EliminarPerfilView (azul) | `EliminarPerfilController` `@Controller` | GET muestra confirmación; POST ejecuta la eliminación |
-| EliminacionController (amarillo) | `InvestigadorService` `@Service` | Orquesta la eliminación en tres pasos |
-| Repositorios (naranja) | `ProyectoRepository`, `SolicitudEliminacionRepository`, `InvestigadorRepository` | Cada uno ejecuta su operación en BD |
+| Controlador de eliminación | EliminacionController @Controller POST /investigadores/{id}/eliminar-perfil | Recibe @AuthenticationPrincipal coordinador y delega en el servicio |
+| Servicio de investigador | InvestigadorService @Service | `eliminarPerfil(coordinador.getId(), id)` orquesta la eliminación en tres pasos |
+| Servicio de proyectos | ProyectoService @Service | `eliminarInvestigadorDeTodosLosProyectos(targetId)` retira al investigador de cada proyecto |
+| Servicio de solicitudes | SolicitudEliminacionService @Service | `eliminarPorInvestigador(targetId)` borra las solicitudes asociadas |
+| Repositorio de proyectos | ProyectoRepository JpaRepository | findAll() y save(proyecto) para actualizar las relaciones |
+| Repositorio de solicitudes | SolicitudEliminacionRepository JpaRepository | findByInvestigadorId y deleteAll |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | deleteById(targetId) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /investigadores/{id}/eliminar-perfil | Muestra la página de confirmación |
-| POST | /investigadores/{id}/eliminar-perfil | Elimina el perfil |
+| POST | /investigadores/{id}/eliminar-perfil | Elimina el perfil del investigador en tres pasos y redirige |
 
 ## Decisiones de diseño
 
-- Acceso restringido a `COORDINADOR` mediante `@PreAuthorize("hasRole('COORDINADOR')")`.
-- Si el coordinador intenta eliminar su propio perfil (id == coordinador.getId()), se redirige a sus propias opciones.
-- La eliminación es un proceso en tres pasos en `InvestigadorService.eliminarPerfil(id)` anotado con `@Transactional`:
-  1. Quitar al investigador de todos los proyectos donde aparece.
-  2. Eliminar sus solicitudes de eliminación (integridad referencial).
-  3. Eliminar el investigador.
-- Tras el POST, redirige a `/investigadores`.
+- Nota anti-autoeliminación en `InvestigadorService`: si `actorId == targetId`, no se ejecuta la eliminación.
+- La eliminación se realiza en tres pasos en orden: 1) quitar al investigador de todos los proyectos; 2) eliminar sus solicitudes de eliminación; 3) eliminar el investigador con `deleteById(targetId)`.
+- `eliminarInvestigadorDeTodosLosProyectos(targetId)` hace `findAll()` de proyectos y para cada uno que contenga al investigador hace `save(proyecto)` que actualiza la tabla `proyecto_investigador`.
+- Tras la eliminación, redirige a `/solicitudes-eliminacion` (302).

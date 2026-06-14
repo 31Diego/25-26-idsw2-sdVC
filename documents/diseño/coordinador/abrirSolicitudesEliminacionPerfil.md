@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Recuperar y mostrar la lista de todas las solicitudes de eliminación de perfil registradas en el sistema, permitiendo al coordinador acceder al detalle de cada una.
+Recuperar y mostrar la lista de todas las solicitudes de eliminación de perfil registradas en el sistema.
 
 ## Diagrama de secuencia
 
@@ -22,10 +22,10 @@ Recuperar y mostrar la lista de todas las solicitudes de eliminación de perfil 
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| SolicitudesEliminacionView (azul) | `SolicitudesEliminacionController` `@Controller` | Recibe GET /solicitudes-eliminacion; pone la lista en el Model y devuelve solicitudes-eliminacion.html |
-| EliminacionController (amarillo) | `SolicitudEliminacionService` `@Service` | Llama a findAll() a través del repositorio |
-| SolicitudEliminacionRepository (naranja) | `SolicitudEliminacionRepository` JpaRepository | Ejecuta SELECT * FROM solicitudes_eliminacion |
-| SolicitudEliminacion (naranja) | `SolicitudEliminacion` `@Entity` | Tabla solicitudes_eliminacion en H2 |
+| Controlador de eliminación | EliminacionController @Controller | Atiende GET /solicitudes-eliminacion y prepara el modelo |
+| Servicio de solicitud de eliminación | SolicitudEliminacionService @Service | `obtenerSolicitudes()` recupera todas las solicitudes |
+| Repositorio de solicitudes | SolicitudEliminacionRepository JpaRepository | Ejecuta SELECT * FROM solicitudes_eliminacion vía findAll() |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
@@ -35,8 +35,5 @@ Recuperar y mostrar la lista de todas las solicitudes de eliminación de perfil 
 
 ## Decisiones de diseño
 
-- Acceso restringido a `COORDINADOR` mediante `@PreAuthorize("hasRole('COORDINADOR')")`.
-- `SolicitudEliminacion` es una entidad nueva con campos: `investigador` (ManyToOne), `motivo`, `fecha`, `estado` (PENDIENTE / ACEPTADA / RECHAZADA).
-- El servicio delega directamente en `findAll()` sin filtrado — el coordinador ve todas las solicitudes.
-- La vista enlaza a `abrirSolicitudEliminacionPerfil` para cada fila y ofrece volver al panel.
-- El enlace de entrada se añade en `panel.html` bajo `sec:authorize="hasRole('COORDINADOR')"`.
+- La lista se añade al modelo con `model.addAttribute("solicitudes", lista)`.
+- La vista `solicitudes-eliminacion.html` enlaza a cada solicitud con `/solicitudes-eliminacion/{id}`.

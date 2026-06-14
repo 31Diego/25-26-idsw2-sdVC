@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirSolicitudesEliminacionPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para listar las solicitudes de eliminación de perfil pendientes.
+Análisis de colaboración del caso de uso `abrirSolicitudesEliminacionPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el listado de solicitudes de eliminación de perfil pendientes.
 
 ## diagrama de colaboración
 
@@ -30,34 +30,33 @@ Análisis de colaboración del caso de uso `abrirSolicitudesEliminacionPerfil()`
 #### SolicitudesEliminacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la lista de solicitudes de eliminación de perfil al Coordinador
-- Ofrecer acceso a una solicitud concreta
-- Navegar de vuelta al panel principal
+- Recibir la solicitud `abrirSolicitudesEliminacionPerfil()` desde `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO` o `:SOLICITUD_ELIMINACION_PERFIL_ABIERTA`
+- Solicitar al controlador el listado de solicitudes mediante `obtenerSolicitudes() : List<SolicitudEliminacion>`
+- Mostrar el listado al coordinador
+- Ofrecer navegación a una solicitud concreta o volver a las opciones de perfil del investigador
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirSolicitudesEliminacionPerfil()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Control**: Se comunica con `EliminacionController`
-- **Salida**: Navega a `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS` y colaboración `AbrirSolicitudEliminacionPerfil`
+- **Entrada**: Desde `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO` o `:SOLICITUD_ELIMINACION_PERFIL_ABIERTA` con `abrirSolicitudesEliminacionPerfil()`
+- **Control**: Se comunica con `EliminacionController` mediante `obtenerSolicitudes() : List<SolicitudEliminacion>`
+- **Salida**: Transita a `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS` (`solicitudesCargadas()`), a `:Collaboration AbrirSolicitudEliminacionPerfil` (`abrirSolicitudEliminacionPerfil(id)`) o a `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO` (`abrirOpcionesPerfilInvestigador(id)`)
 
 ### clases de control
 
 #### EliminacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de todas las solicitudes de eliminación
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerSolicitudes()` y devolver la lista completa
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `SolicitudesEliminacionView`
-- **Repositorio**: Delega el acceso a datos a `SolicitudEliminacionRepository`
+- **Repositorio**: Delega el acceso a datos a `SolicitudEliminacionRepository` mediante `obtenerTodos() : List<SolicitudEliminacion>`
 
 ### clases de entidad (entity)
 
 #### SolicitudEliminacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de solicitudes de eliminación
-- Proporcionar método para obtener todas las solicitudes
+- Recuperar todas las solicitudes de eliminación mediante `obtenerTodos() : List<SolicitudEliminacion>`
 
 **Colaboraciones**:
 - **Control**: Responde a `EliminacionController`
@@ -66,8 +65,7 @@ Análisis de colaboración del caso de uso `abrirSolicitudesEliminacionPerfil()`
 #### SolicitudEliminacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de una solicitud de eliminación de perfil
-- Encapsular atributos: investigador, motivo, fecha, estado
+- Representar los datos de una solicitud de eliminación de perfil
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `SolicitudEliminacionRepository`
@@ -76,25 +74,32 @@ Análisis de colaboración del caso de uso `abrirSolicitudesEliminacionPerfil()`
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `SolicitudesEliminacionView.abrirSolicitudesEliminacionPerfil()`
-2. **Listado**: `SolicitudesEliminacionView` → `EliminacionController.obtenerSolicitudes()` : `List<SolicitudEliminacion>`
-3. **Acceso a datos**: `EliminacionController` → `SolicitudEliminacionRepository.obtenerTodos()` : `List<SolicitudEliminacion>`
-4. **Presentación**: `SolicitudesEliminacionView` → `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS.solicitudesCargadas()`
+1. El sistema está en `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO` o en `:SOLICITUD_ELIMINACION_PERFIL_ABIERTA`
+2. El coordinador solicita ver el listado: `SolicitudesEliminacionView` recibe `abrirSolicitudesEliminacionPerfil()`
+3. `SolicitudesEliminacionView` invoca `obtenerSolicitudes()` en `EliminacionController`
+4. `EliminacionController` delega en `SolicitudEliminacionRepository.obtenerTodos()` y obtiene `List<SolicitudEliminacion>`
+5. El listado se muestra → estado `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS` con `solicitudesCargadas()`
+6. Desde la vista el coordinador puede:
+   - Abrir una solicitud → `:Collaboration AbrirSolicitudEliminacionPerfil` con `abrirSolicitudEliminacionPerfil(id)`
+   - Volver a opciones de perfil → `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO` con `abrirOpcionesPerfilInvestigador(id)`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Listar solicitudes de eliminación|`SolicitudesEliminacionView`|Coordina con `EliminacionController.obtenerSolicitudes()`|
-|Abrir solicitud concreta|`SolicitudesEliminacionView`|→ Colaboración `AbrirSolicitudEliminacionPerfil`|
+|Mostrar listado de solicitudes de eliminación|`SolicitudesEliminacionView`|`obtenerSolicitudes() : List<SolicitudEliminacion>`|
+|Recuperar todas las solicitudes|`EliminacionController`|`obtenerSolicitudes() : List<SolicitudEliminacion>`|
+|Acceder a datos de solicitudes|`SolicitudEliminacionRepository`|`obtenerTodos() : List<SolicitudEliminacion>`|
+|Navegar al detalle de una solicitud|`SolicitudesEliminacionView`|`abrirSolicitudEliminacionPerfil(id)`|
+|Volver a opciones de perfil del investigador|`SolicitudesEliminacionView`|`abrirOpcionesPerfilInvestigador(id)`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y acceso a datos
-- **Entidad**: Solo datos y reglas de negocio de la solicitud
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación del listado de solicitudes
+- **Entidad**: Solo datos y reglas de negocio de las solicitudes de eliminación
 
 ### agnóstico tecnológicamente
 

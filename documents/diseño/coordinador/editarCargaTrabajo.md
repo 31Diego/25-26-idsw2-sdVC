@@ -1,4 +1,4 @@
-# editarCargaTrabajo — Diseño · Coordinador
+# editarCargaTrabajo — Diseño
 
 ## Información del artefacto
 
@@ -14,7 +14,7 @@ Mostrar el formulario de edición de carga de trabajo de un investigador concret
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/editarCargaTrabajo-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/editarCargaTrabajo-coordinador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/editarCargaTrabajo.puml)
 
@@ -22,22 +22,23 @@ Mostrar el formulario de edición de carga de trabajo de un investigador concret
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EditarCargaTrabajoView (GET) | `CargaTrabajoController` `@Controller` | Recibe GET /investigadores/{id}/carga-trabajo/editar; carga el formulario con los valores actuales |
-| EditarCargaTrabajoView (POST) | `CargaTrabajoController` `@Controller` | Recibe POST con los tres campos; delega en el service y redirige a /carga-trabajo |
-| CargaTrabajoService | `CargaTrabajoService` `@Service` | `obtenerOCrearPorInvestigador` + `actualizar(id, horas…)` |
-| CargaTrabajoRepository | `CargaTrabajoRepository` JpaRepository | `findByInvestigadorId` para GET; `findById` + `save` para UPDATE |
-| CargaTrabajo | `CargaTrabajo` `@Entity` | Tabla cargas_trabajo |
+| Controlador de carga de trabajo (GET) | CargaTrabajoController @Controller GET /investigadores/{id}/carga-trabajo/editar | Carga los datos actuales y sirve el formulario |
+| Controlador de carga de trabajo (POST) | CargaTrabajoController @Controller POST /investigadores/{id}/carga-trabajo/editar | Recibe los tres campos y persiste los cambios |
+| Servicio de investigador | InvestigadorService @Service | `obtenerInvestigador(id)` para cargar el investigador |
+| Servicio de carga de trabajo | CargaTrabajoService @Service | `obtenerOCrearPorInvestigador(investigador)` y `actualizar(carga, horas...)` |
+| Repositorio de carga de trabajo | CargaTrabajoRepository JpaRepository | SELECT por investigador_id y UPDATE vía save(carga) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /investigadores/{id}/carga-trabajo/editar | Muestra el formulario de edición con datos actuales |
-| POST | /investigadores/{id}/carga-trabajo/editar | Persiste los cambios y redirige a /carga-trabajo |
+| GET | /investigadores/{id}/carga-trabajo/editar | Muestra el formulario con los datos actuales de la carga de trabajo |
+| POST | /investigadores/{id}/carga-trabajo/editar | Persiste horasDocencia, horasInvestigacion, horasActividades y redirige |
 
 ## Decisiones de diseño
 
-- Protegido con `@PreAuthorize("hasRole('COORDINADOR')")` en ambos métodos del controller.
-- El coordinador llega aquí desde el enlace "Editar" de la columna Acciones en la tabla global de `/carga-trabajo`.
-- `CargaTrabajoService.actualizar` recibe el `id` de la `CargaTrabajo` (no el del `Investigador`); el controller obtiene ese id llamando primero a `obtenerOCrearPorInvestigador`.
-- Tras guardar, redirige siempre a `/carga-trabajo` (vista global del coordinador).
+- Tanto en GET como en POST, se llama primero a `InvestigadorService.obtenerInvestigador(id)` para obtener el investigador.
+- `CargaTrabajoService.obtenerOCrearPorInvestigador(investigador)` usa `findByInvestigadorId(id)`; crea la entrada si no existe.
+- En el POST, `actualizar(carga, horasDocencia, horasInvestigacion, horasActividades)` aplica los setters y luego llama a `save(carga)` con UPDATE.
+- Tras guardar, redirige a `/coordinador/carga-trabajo` (302), volviendo a la tabla global.

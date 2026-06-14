@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirSolicitudEliminacionPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para revisar el detalle de una solicitud de eliminación de perfil y gestionar su resolución.
+Análisis de colaboración del caso de uso `abrirSolicitudEliminacionPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el detalle de una solicitud de eliminación de perfil y acceda a las opciones de perfil del investigador.
 
 ## diagrama de colaboración
 
@@ -30,35 +30,34 @@ Análisis de colaboración del caso de uso `abrirSolicitudEliminacionPerfil()` m
 #### SolicitudEliminacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el detalle completo de la solicitud de eliminación al Coordinador
-- Mostrar el perfil del investigador implicado
-- Ofrecer opciones de resolución: acceder al perfil o volver a la lista
-- Navegar entre solicitudes y perfiles de investigador
+- Recibir la solicitud `abrirSolicitudEliminacionPerfil(id)` desde `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS`
+- Solicitar al controlador los datos de la solicitud mediante `obtenerSolicitud(id) : SolicitudEliminacion`
+- Mostrar el detalle de la solicitud al coordinador
+- Ofrecer navegación: abrir opciones de perfil del investigador o volver al listado
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirSolicitudEliminacionPerfil(id)` desde `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS`
-- **Control**: Se comunica con `EliminacionController`
-- **Salida**: Navega a `:SOLICITUD_ELIMINACION_PERFIL_ABIERTA`, colaboración `AbrirOpcionesPerfil` y vuelve a la lista
+- **Entrada**: Desde `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS` con `abrirSolicitudEliminacionPerfil(id)`
+- **Control**: Se comunica con `EliminacionController` mediante `obtenerSolicitud(id) : SolicitudEliminacion`
+- **Salida**: Transita a `:SOLICITUD_ELIMINACION_PERFIL_ABIERTA` (`solicitudMostrada()`), a `:Collaboration AbrirOpcionesPerfil` (`abrirOpcionesPerfil(id)`) o a `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS` (`abrirSolicitudesEliminacionPerfil()`)
 
 ### clases de control
 
 #### EliminacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle de la solicitud de eliminación
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerSolicitud(id)` desde la vista
+- Delegar la recuperación de la solicitud al repositorio mediante `obtenerPorId(id)`
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `SolicitudEliminacionView`
-- **Repositorio**: Delega el acceso a datos a `SolicitudEliminacionRepository`
+- **Repositorio**: Delega el acceso a datos a `SolicitudEliminacionRepository` mediante `obtenerPorId(id) : SolicitudEliminacion`
 
 ### clases de entidad (entity)
 
 #### SolicitudEliminacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de solicitudes de eliminación
-- Proporcionar método para obtener una solicitud por identificador
+- Recuperar una solicitud de eliminación concreta por su identificador mediante `obtenerPorId(id) : SolicitudEliminacion`
 
 **Colaboraciones**:
 - **Control**: Responde a `EliminacionController`
@@ -67,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirSolicitudEliminacionPerfil()` m
 #### SolicitudEliminacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de una solicitud de eliminación de perfil
-- Encapsular atributos: investigador implicado, motivo, fecha de solicitud, estado actual
+- Representar los datos de una solicitud de eliminación de perfil
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `SolicitudEliminacionRepository`
@@ -77,28 +75,32 @@ Análisis de colaboración del caso de uso `abrirSolicitudEliminacionPerfil()` m
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS` → `SolicitudEliminacionView.abrirSolicitudEliminacionPerfil(id)`
-2. **Obtención**: `SolicitudEliminacionView` → `EliminacionController.obtenerSolicitud(id)` : `SolicitudEliminacion`
-3. **Acceso a datos**: `EliminacionController` → `SolicitudEliminacionRepository.obtenerPorId(id)` : `SolicitudEliminacion`
-4. **Presentación**: `SolicitudEliminacionView` → `:SOLICITUD_ELIMINACION_PERFIL_ABIERTA.solicitudMostrada()`
-5. **Navegación**: El Coordinador puede acceder al perfil del investigador para resolver la solicitud
+1. El sistema llega al estado `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS`
+2. El coordinador selecciona una solicitud: `SolicitudEliminacionView` recibe `abrirSolicitudEliminacionPerfil(id)`
+3. `SolicitudEliminacionView` invoca `obtenerSolicitud(id)` en `EliminacionController`
+4. `EliminacionController` delega en `SolicitudEliminacionRepository.obtenerPorId(id)` y obtiene un objeto `SolicitudEliminacion`
+5. `SolicitudEliminacionView` muestra el detalle → estado `:SOLICITUD_ELIMINACION_PERFIL_ABIERTA` con `solicitudMostrada()`
+6. Desde la vista el coordinador puede:
+   - Abrir opciones de perfil del investigador → `:Collaboration AbrirOpcionesPerfil` con `abrirOpcionesPerfil(id)`
+   - Volver al listado → `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS` con `abrirSolicitudesEliminacionPerfil()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar detalle de la solicitud|`SolicitudEliminacionView`|Coordina con `EliminacionController.obtenerSolicitud(id)`|
-|Datos de la solicitud|`SolicitudEliminacion`|Encapsula todos los atributos|
-|Acceder al perfil del investigador|`SolicitudEliminacionView`|→ Colaboración `AbrirOpcionesPerfil`|
-|Volver a la lista|`SolicitudEliminacionView`|→ `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS`|
+|Mostrar detalle de una solicitud de eliminación|`SolicitudEliminacionView`|`abrirSolicitudEliminacionPerfil(id)`|
+|Recuperar la solicitud por id|`EliminacionController`|`obtenerSolicitud(id) : SolicitudEliminacion`|
+|Acceder a datos de la solicitud|`SolicitudEliminacionRepository`|`obtenerPorId(id) : SolicitudEliminacion`|
+|Navegar a opciones de perfil del investigador|`SolicitudEliminacionView`|`abrirOpcionesPerfil(id)`|
+|Volver al listado de solicitudes|`SolicitudEliminacionView`|`abrirSolicitudesEliminacionPerfil()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y obtención del detalle
-- **Entidad**: Solo datos y reglas de negocio de la solicitud
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación del objeto `SolicitudEliminacion`
+- **Entidad**: Solo datos y reglas de negocio de las solicitudes de eliminación
 
 ### agnóstico tecnológicamente
 

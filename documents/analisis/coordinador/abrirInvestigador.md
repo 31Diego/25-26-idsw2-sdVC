@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el perfil completo de un investigador al Coordinador.
+Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el perfil de un investigador concreto.
 
 ## diagrama de colaboración
 
@@ -30,34 +30,34 @@ Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el pat
 #### InvestigadorView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el perfil completo del investigador al Coordinador
-- Ofrecer acceso a las opciones de gestión del perfil
-- Navegar de vuelta a la lista de investigadores
+- Recibir la solicitud `abrirInvestigador(id)` desde `:INVESTIGADORES_ABIERTOS` o `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO`
+- Solicitar al controlador los datos del investigador seleccionado mediante `obtenerInvestigador(id) : Investigador`
+- Mostrar el perfil del investigador al coordinador
+- Ofrecer navegación: abrir opciones de perfil del investigador, ver proyectos del investigador o volver al listado
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirInvestigador(id)` desde `:INVESTIGADORES_ABIERTOS`
-- **Control**: Se comunica con `InvestigadorController`
-- **Salida**: Navega a `:INVESTIGADOR_ABIERTO` y colaboración `AbrirOpcionesPerfil`
+- **Entrada**: Desde `:INVESTIGADORES_ABIERTOS` o `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO` con `abrirInvestigador(id)`
+- **Control**: Se comunica con `InvestigadorController` mediante `obtenerInvestigador(id) : Investigador`
+- **Salida**: Transita a `:INVESTIGADOR_ABIERTO` (`investigadorMostrado()`), a `:Collaboration AbrirOpcionesPerfilInvestigador` (`abrirOpcionesPerfilInvestigador(id)`), a `:Collaboration AbrirProyectosDeInvestigador` (`abrirProyectosDeInvestigador(id)`) o a `:INVESTIGADORES_ABIERTOS` (`abrirInvestigadores()`)
 
 ### clases de control
 
 #### InvestigadorController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del perfil completo del investigador
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerInvestigador(id)` desde la vista
+- Delegar la recuperación del investigador al repositorio mediante `obtenerPorId(id)`
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `InvestigadorView`
-- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository`
+- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository` mediante `obtenerPorId(id) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para obtener un investigador por identificador
+- Recuperar un investigador concreto por su identificador mediante `obtenerPorId(id) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `InvestigadorController`
@@ -66,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el pat
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa del perfil de un investigador
-- Encapsular atributos: nombre, apellidos, correo, área, institución, proyectos, publicaciones
+- Representar los datos de un investigador de la red FUNIBER
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -76,26 +75,34 @@ Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el pat
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:INVESTIGADORES_ABIERTOS` → `InvestigadorView.abrirInvestigador(id)`
-2. **Obtención**: `InvestigadorView` → `InvestigadorController.obtenerInvestigador(id)` : `Investigador`
-3. **Acceso a datos**: `InvestigadorController` → `InvestigadorRepository.obtenerPorId(id)` : `Investigador`
-4. **Presentación**: `InvestigadorView` → `:INVESTIGADOR_ABIERTO.investigadorMostrado()`
+1. El sistema está en `:INVESTIGADORES_ABIERTOS` o en `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO`
+2. El coordinador selecciona un investigador: `InvestigadorView` recibe `abrirInvestigador(id)`
+3. `InvestigadorView` invoca `obtenerInvestigador(id)` en `InvestigadorController`
+4. `InvestigadorController` delega en `InvestigadorRepository.obtenerPorId(id)` y obtiene un objeto `Investigador`
+5. `InvestigadorView` muestra el perfil → estado `:INVESTIGADOR_ABIERTO` con `investigadorMostrado()`
+6. Desde la vista el coordinador puede:
+   - Ver opciones de perfil → `:Collaboration AbrirOpcionesPerfilInvestigador` con `abrirOpcionesPerfilInvestigador(id)`
+   - Ver proyectos del investigador → `:Collaboration AbrirProyectosDeInvestigador` con `abrirProyectosDeInvestigador(id)`
+   - Volver al listado → `:INVESTIGADORES_ABIERTOS` con `abrirInvestigadores()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar perfil del investigador|`InvestigadorView`|Coordina con `InvestigadorController.obtenerInvestigador(id)`|
-|Datos del investigador|`Investigador`|Encapsula todos los atributos|
-|Gestionar perfil|`InvestigadorView`|→ Colaboración `AbrirOpcionesPerfil`|
+|Mostrar perfil de un investigador|`InvestigadorView`|`abrirInvestigador(id)`|
+|Recuperar el investigador por id|`InvestigadorController`|`obtenerInvestigador(id) : Investigador`|
+|Acceder a datos del investigador|`InvestigadorRepository`|`obtenerPorId(id) : Investigador`|
+|Navegar a opciones de perfil del investigador|`InvestigadorView`|`abrirOpcionesPerfilInvestigador(id)`|
+|Navegar a proyectos del investigador|`InvestigadorView`|`abrirProyectosDeInvestigador(id)`|
+|Volver al listado de investigadores|`InvestigadorView`|`abrirInvestigadores()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y obtención del detalle
-- **Entidad**: Solo datos y reglas de negocio del investigador
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación del objeto `Investigador`
+- **Entidad**: Solo datos y reglas de negocio de los investigadores
 
 ### agnóstico tecnológicamente
 

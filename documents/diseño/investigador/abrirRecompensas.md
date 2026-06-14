@@ -1,4 +1,4 @@
-# abrirRecompensas — Diseño · Investigador
+# abrirRecompensas — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Mostrar al investigador autenticado únicamente las recompensas que le han sido asignadas por el coordinador, ocultando las del resto de usuarios.
+Mostrar al investigador autenticado únicamente las recompensas que le han sido asignadas por el coordinador.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/abrirRecompensas-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/abrirRecompensas.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/abrirRecompensas.puml)
 
@@ -22,19 +22,19 @@ Mostrar al investigador autenticado únicamente las recompensas que le han sido 
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| RecompensasView | `RecompensaController` `@Controller` | GET /recompensas — detecta rol INVESTIGADOR y filtra por destinatario |
-| RecompensaController | `RecompensaService` `@Service` | `obtenerPorDestinatario(investigador)` |
-| RecompensaRepository | `RecompensaRepository` JpaRepository | SELECT … WHERE destinatario_id = ? |
-| Recompensa | `Recompensa` `@Entity` | Tabla recompensas |
+| Controlador de recompensas | RecompensaController @Controller | Atiende GET /recompensas; detecta rol INVESTIGADOR |
+| Servicio de recompensas | RecompensaService @Service | `obtenerParaUsuario(investigador)` → rol INVESTIGADOR → `obtenerPorDestinatario()` via findByDestinatario |
+| Repositorio de recompensas | RecompensaRepository JpaRepository | Ejecuta SELECT * FROM recompensas WHERE destinatario_id = ? |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /recompensas | Muestra las recompensas del investigador autenticado |
+| GET | /recompensas | Muestra las recompensas asignadas al investigador autenticado |
 
 ## Decisiones de diseño
 
-- Mismo endpoint `/recompensas` que el coordinador; la diferenciación ocurre en el controlador al comprobar el rol del usuario autenticado (`@AuthenticationPrincipal`).
-- El investigador no ve el campo "destinatario" en el listado (es siempre él mismo).
-- El investigador no tiene acceso a crear, editar ni eliminar recompensas.
+- El mismo endpoint `/recompensas` sirve a ambos roles; la nota en el servicio indica `rol == INVESTIGADOR → obtenerPorDestinatario()`.
+- El investigador solo ve sus propias recompensas; no tiene acceso a crear, editar ni eliminar.
+- La vista `recompensas.html` muestra solo las recompensas propias.

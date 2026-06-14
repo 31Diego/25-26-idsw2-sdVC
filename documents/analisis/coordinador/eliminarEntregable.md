@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para eliminar un entregable de un proyecto.
+Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador elimine un entregable de un proyecto.
 
 ## diagrama de colaboración
 
@@ -30,34 +30,36 @@ Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el pa
 #### EliminarEntregableView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Mostrar confirmación de eliminación del entregable al Coordinador
-- Invocar la eliminación en el controlador tras confirmación
-- Navegar a la lista de entregables tras la operación
+- Recibir la solicitud `eliminarEntregable()` desde `:ENTREGABLE_ABIERTO`
+- Solicitar al controlador los datos del entregable a eliminar mediante `cargarEntregableParaEliminacion(id) : Entregable`
+- Mostrar la pantalla de confirmación con los datos del entregable
+- Solicitar al controlador la eliminación definitiva mediante `eliminarEntregable(id) : void`
+- Navegar al listado de entregables tras la eliminación
 
 **Colaboraciones**:
-- **Entrada**: Recibe `eliminarEntregable()` desde `:ENTREGABLE_ABIERTO`
-- **Control**: Se comunica con `EntregableController`
-- **Salida**: Navega a `:ENTREGABLES_ABIERTOS`
+- **Entrada**: Desde `:ENTREGABLE_ABIERTO` con `eliminarEntregable()`
+- **Control**: Se comunica con `EntregableController` mediante `cargarEntregableParaEliminacion(id)` y `eliminarEntregable(id)`
+- **Salida**: Transita a `:ENTREGABLES_ABIERTOS` con `abrirEntregables()`
 
 ### clases de control
 
 #### EntregableController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de eliminación del entregable
-- Invocar la eliminación en el repositorio
+- Recibir `cargarEntregableParaEliminacion(id)` y delegar en el repositorio la obtención del entregable
+- Recibir `eliminarEntregable(id)` y delegar la eliminación al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EliminarEntregableView`
-- **Repositorio**: Delega la eliminación a `EntregableRepository`
+- **Repositorio**: Delega en `EntregableRepository` mediante `obtenerPorId(id) : Entregable` y `eliminarPorId(id) : void`
 
 ### clases de entidad (entity)
 
 #### EntregableRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de entregables
-- Proporcionar método para eliminar un entregable por identificador
+- Recuperar un entregable por id mediante `obtenerPorId(id) : Entregable`
+- Eliminar un entregable del sistema mediante `eliminarPorId(id) : void`
 
 **Colaboraciones**:
 - **Control**: Responde a `EntregableController`
@@ -66,8 +68,7 @@ Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el pa
 #### Entregable
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar el entregable a eliminar
-- Mantener la integridad con el proyecto al que pertenece
+- Representar los datos del entregable mostrados en la confirmación de eliminación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `EntregableRepository`
@@ -76,25 +77,30 @@ Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el pa
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:ENTREGABLE_ABIERTO` → `EliminarEntregableView.eliminarEntregable()`
-2. **Confirmación**: El Coordinador confirma la eliminación
-3. **Eliminación**: `EliminarEntregableView` → `EntregableController.eliminarEntregable(id)` : `void`
-4. **Persistencia**: `EntregableController` → `EntregableRepository.eliminarPorId(id)` : `void`
-5. **Finalización**: `EliminarEntregableView` → `:ENTREGABLES_ABIERTOS.abrirEntregables()`
+1. El sistema está en `:ENTREGABLE_ABIERTO`
+2. El coordinador solicita eliminar entregable: `EliminarEntregableView` recibe `eliminarEntregable()`
+3. `EliminarEntregableView` invoca `cargarEntregableParaEliminacion(id)` en `EntregableController`
+4. `EntregableController` delega en `EntregableRepository.obtenerPorId(id)` y obtiene un objeto `Entregable`
+5. La pantalla de confirmación se muestra con los datos del entregable
+6. El coordinador confirma: `EliminarEntregableView` invoca `eliminarEntregable(id) : void` en `EntregableController`
+7. `EntregableController` delega en `EntregableRepository.eliminarPorId(id)`
+8. La vista navega → `:ENTREGABLES_ABIERTOS` con `abrirEntregables()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Confirmar eliminación|`EliminarEntregableView`|Muestra diálogo de confirmación|
-|Eliminar del sistema|`EntregableController`|`eliminarEntregable(id)` → `EntregableRepository.eliminarPorId()`|
-|Volver a la lista|`EliminarEntregableView`|→ `:ENTREGABLES_ABIERTOS`|
+|Cargar datos para confirmación|`EntregableController`|`cargarEntregableParaEliminacion(id) : Entregable`|
+|Acceder al entregable por id|`EntregableRepository`|`obtenerPorId(id) : Entregable`|
+|Eliminar entregable del sistema|`EntregableController`|`eliminarEntregable(id) : void`|
+|Persistir la eliminación|`EntregableRepository`|`eliminarPorId(id) : void`|
+|Navegar al listado de entregables|`EliminarEntregableView`|`abrirEntregables()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación de la confirmación e interacción con el Coordinador
+- **Vista**: Solo presentación de la confirmación e interacción con el coordinador
 - **Control**: Solo coordinación del proceso de eliminación
 - **Entidad**: Solo datos y gestión de la persistencia
 

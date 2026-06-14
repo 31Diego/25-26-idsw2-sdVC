@@ -6,12 +6,12 @@
 - **Fase**: Análisis
 - **Disciplina**: Análisis y Diseño
 - **Versión**: 1.0
-- **Fecha**: 2026-05-25
+- **Fecha**: 2026-05-23
 - **Autor**: Diego Martínez
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirProyectosDeInvestigador(investigadorId)` mediante el patrón MVC. Este caso de uso surge del split de `abrirProyectos()`: cuando se invoca desde el perfil de un investigador concreto, el sistema debe listar únicamente los proyectos asociados a ese investigador, no todos los proyectos de la plataforma.
+Análisis de colaboración del caso de uso `abrirProyectosDeInvestigador(investigadorId)` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte los proyectos asociados a un investigador concreto.
 
 ## diagrama de colaboración
 
@@ -30,34 +30,34 @@ Análisis de colaboración del caso de uso `abrirProyectosDeInvestigador(investi
 #### ProyectosInvestigadorView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la lista de proyectos del investigador concreto al Coordinador
-- Ofrecer acceso a un proyecto concreto
-- Navegar de vuelta al perfil del investigador
+- Recibir la solicitud `abrirProyectosDeInvestigador(investigadorId)` desde `:INVESTIGADOR_ABIERTO`
+- Solicitar al controlador el listado de proyectos del investigador mediante `obtenerProyectosPorInvestigador(investigadorId) : List<Proyecto>`
+- Mostrar el listado al coordinador
+- Ofrecer navegación a un proyecto concreto o volver al perfil del investigador
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirProyectosDeInvestigador(investigadorId)` desde `:INVESTIGADOR_ABIERTO`
-- **Control**: Se comunica con `ProyectosController`
-- **Salida**: Navega a `:PROYECTOS_INVESTIGADOR_ABIERTOS` y colaboración `AbrirProyecto`
+- **Entrada**: Desde `:INVESTIGADOR_ABIERTO` con `abrirProyectosDeInvestigador(investigadorId)`
+- **Control**: Se comunica con `ProyectosController` mediante `obtenerProyectosPorInvestigador(investigadorId) : List<Proyecto>`
+- **Salida**: Transita a `:PROYECTOS_INVESTIGADOR_ABIERTOS` (`proyectosCargados()`), a `:Collaboration AbrirProyecto` (`abrirProyecto(id)`) o a `:INVESTIGADOR_ABIERTO` (`abrirInvestigador(investigadorId)`)
 
 ### clases de control
 
 #### ProyectosController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de los proyectos filtrados por investigador
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerProyectosPorInvestigador(investigadorId)` y devolver la lista filtrada
+- Delegar en el repositorio la búsqueda por investigador
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `ProyectosInvestigadorView`
-- **Repositorio**: Delega el acceso a datos a `ProyectoRepository`
+- **Repositorio**: Delega el acceso a datos a `ProyectoRepository` mediante `buscarPorInvestigador(investigadorId) : List<Proyecto>`
 
 ### clases de entidad (entity)
 
 #### ProyectoRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de proyectos
-- Proporcionar método para obtener proyectos filtrados por investigador
+- Recuperar proyectos filtrados por investigador mediante `buscarPorInvestigador(investigadorId) : List<Proyecto>`
 
 **Colaboraciones**:
 - **Control**: Responde a `ProyectosController`
@@ -66,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirProyectosDeInvestigador(investi
 #### Proyecto
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de un proyecto
-- Encapsular atributos: título, estado, coordinador, fechas, investigadores asociados
+- Representar los datos de un proyecto de investigación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ProyectoRepository`
@@ -76,32 +75,44 @@ Análisis de colaboración del caso de uso `abrirProyectosDeInvestigador(investi
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:INVESTIGADOR_ABIERTO` → `ProyectosInvestigadorView.abrirProyectosDeInvestigador(investigadorId)`
-2. **Listado filtrado**: `ProyectosInvestigadorView` → `ProyectosController.obtenerProyectosPorInvestigador(investigadorId)` : `List<Proyecto>`
-3. **Acceso a datos**: `ProyectosController` → `ProyectoRepository.buscarPorInvestigador(investigadorId)` : `List<Proyecto>`
-4. **Presentación**: `ProyectosInvestigadorView` → `:PROYECTOS_INVESTIGADOR_ABIERTOS.proyectosCargados()`
+1. El sistema está en `:INVESTIGADOR_ABIERTO`
+2. El coordinador solicita ver proyectos del investigador: `ProyectosInvestigadorView` recibe `abrirProyectosDeInvestigador(investigadorId)`
+3. `ProyectosInvestigadorView` invoca `obtenerProyectosPorInvestigador(investigadorId)` en `ProyectosController`
+4. `ProyectosController` delega en `ProyectoRepository.buscarPorInvestigador(investigadorId)` y obtiene `List<Proyecto>`
+5. El listado se muestra → estado `:PROYECTOS_INVESTIGADOR_ABIERTOS` con `proyectosCargados()`
+6. Desde la vista el coordinador puede:
+   - Abrir un proyecto → `:Collaboration AbrirProyecto` con `abrirProyecto(id)`
+   - Volver al perfil del investigador → `:INVESTIGADOR_ABIERTO` con `abrirInvestigador(investigadorId)`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Listar proyectos del investigador|`ProyectosInvestigadorView`|Coordina con `ProyectosController.obtenerProyectosPorInvestigador(investigadorId)`|
-|Abrir proyecto concreto|`ProyectosInvestigadorView`|→ Colaboración `AbrirProyecto`|
-|Volver al perfil del investigador|`ProyectosInvestigadorView`|→ `:INVESTIGADOR_ABIERTO`|
+|Mostrar proyectos de un investigador|`ProyectosInvestigadorView`|`obtenerProyectosPorInvestigador(investigadorId) : List<Proyecto>`|
+|Recuperar proyectos filtrados por investigador|`ProyectosController`|`obtenerProyectosPorInvestigador(investigadorId) : List<Proyecto>`|
+|Acceder a datos filtrados|`ProyectoRepository`|`buscarPorInvestigador(investigadorId) : List<Proyecto>`|
+|Navegar al detalle de un proyecto|`ProyectosInvestigadorView`|`abrirProyecto(id)`|
+|Volver al perfil del investigador|`ProyectosInvestigadorView`|`abrirInvestigador(investigadorId)`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y filtrado de proyectos por investigador
-- **Entidad**: Solo datos y reglas de negocio del proyecto
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación del listado filtrado por investigador
+- **Entidad**: Solo datos y reglas de negocio de los proyectos
 
-### distinción respecto a `abrirProyectos()`
+### agnóstico tecnológicamente
 
-Este caso de uso difiere de `abrirProyectos()` en el scope de los datos:
-- `abrirProyectos()` → lista todos los proyectos de la plataforma (desde el panel principal)
-- `abrirProyectosDeInvestigador(investigadorId)` → lista solo los proyectos del investigador indicado (desde su perfil)
+- No especifica tecnología de interfaz de usuario
+- No asume implementación específica de base de datos
+- Mantiene independencia de frameworks
+
+### trazabilidad completa
+
+- **Origen**: Caso de uso detallado `abrirProyectosDeInvestigador(investigadorId)`
+- **Destino**: Base para diseño arquitectónico
+- **Conexión**: Diagrama de estados → Análisis de colaboración
 
 ## patrones aplicados
 
@@ -113,5 +124,5 @@ Separación clara entre presentación (`ProyectosInvestigadorView`), lógica de 
 
 ## referencias
 
-- [Análisis: abrirProyectos()](abrirProyectos.md)
+- [Especificación detallada: abrirProyectosDeInvestigador()](../../../context/casosDeUso/detalle/coordinador/abrirProyectosDeInvestigador/abrirProyectosDeInvestigador.md)
 - [Modelo del dominio](../../../context/modeloDelDominio/modeloDominio.md)

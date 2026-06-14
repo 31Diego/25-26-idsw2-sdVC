@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Mostrar el panel principal del sistema, que actúa como hub de navegación hacia todas las secciones disponibles para el Coordinador.
+Muestra al coordinador el panel principal de la plataforma tras autenticarse o al navegar a /panel.
 
 ## Diagrama de secuencia
 
@@ -22,17 +22,16 @@ Mostrar el panel principal del sistema, que actúa como hub de navegación hacia
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| PanelPrincipalView | `PanelPrincipalController` `@Controller` | Recibe GET /panel y devuelve panel.html |
+| Panel principal | PanelPrincipalController @Controller | Atiende GET /panel y devuelve la vista panel.html |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /panel | Muestra el panel principal |
+| GET | /panel | Devuelve la vista panel.html con código 200 OK |
 
 ## Decisiones de diseño
 
-- El panel no carga datos del dominio; es una vista estática de navegación.
-- No requiere servicio ni repositorio: el controlador devuelve directamente el nombre de la plantilla.
+- El controlador no realiza llamadas a servicios ni a la base de datos; simplemente devuelve la vista `panel.html`.
+- La respuesta es un 200 OK directo, sin redirecciones.
 - Spring Security protege la ruta; cualquier acceso sin sesión activa redirige a /login.
-- Thymeleaf + Thymeleaf Security (`sec:authorize`) gestiona la visibilidad de opciones según el rol del usuario autenticado.

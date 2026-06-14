@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el detalle completo de un proyecto al Coordinador.
+Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el detalle de un proyecto concreto con todas sus opciones de gestión.
 
 ## diagrama de colaboración
 
@@ -30,35 +30,34 @@ Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón
 #### ProyectoView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el detalle completo del proyecto al Coordinador
-- Mostrar información del proyecto: título, descripción, estado, fechas, investigadores, entregables
-- Ofrecer opciones de gestión: editar, eliminar, gestionar entregables, agregar investigador
-- Navegar de vuelta a la lista de proyectos
+- Recibir la solicitud `abrirProyecto(id)` desde `:PROYECTOS_ABIERTOS` o `:ENTREGABLES_ABIERTOS`
+- Solicitar al controlador los datos del proyecto mediante `obtenerProyecto(id) : Proyecto`
+- Mostrar el detalle del proyecto al coordinador
+- Ofrecer las opciones: editar proyecto, eliminar proyecto, abrir entregables, agregar investigador, abrir investigadores del proyecto o volver al listado
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirProyecto(id)` desde `:PROYECTOS_ABIERTOS`
-- **Control**: Se comunica con `ProyectoController`
-- **Salida**: Navega a `:PROYECTO_ABIERTO` y a colaboraciones de gestión
+- **Entrada**: Desde `:PROYECTOS_ABIERTOS` o `:ENTREGABLES_ABIERTOS` con `abrirProyecto(id)`
+- **Control**: Se comunica con `ProyectoController` mediante `obtenerProyecto(id) : Proyecto`
+- **Salida**: Transita a `:PROYECTO_ABIERTO` (`proyectoMostrado()`), a `:Collaboration EditarProyecto` (`editarProyecto()`), a `:Collaboration EliminarProyecto` (`eliminarProyecto()`), a `:Collaboration AbrirEntregables` (`abrirEntregables()`), a `:Collaboration AgregarInvestigador` (`agregarInvestigador()`), a `:Collaboration AbrirInvestigadoresDeProyecto` (`abrirInvestigadoresDeProyecto(id)`) o a `:PROYECTOS_ABIERTOS` (`abrirProyectos()`)
 
 ### clases de control
 
 #### ProyectoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle completo del proyecto
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerProyecto(id)` desde la vista
+- Delegar la recuperación del proyecto al repositorio mediante `obtenerPorId(id)`
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `ProyectoView`
-- **Repositorio**: Delega el acceso a datos a `ProyectoRepository`
+- **Repositorio**: Delega el acceso a datos a `ProyectoRepository` mediante `obtenerPorId(id) : Proyecto`
 
 ### clases de entidad (entity)
 
 #### ProyectoRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de proyectos
-- Proporcionar método para obtener un proyecto por identificador
+- Recuperar un proyecto concreto por su identificador mediante `obtenerPorId(id) : Proyecto`
 
 **Colaboraciones**:
 - **Control**: Responde a `ProyectoController`
@@ -67,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón
 #### Proyecto
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de un proyecto de investigación
-- Encapsular atributos: título, descripción, estado, fechas de inicio y fin, investigadores, entregables
+- Representar los datos de un proyecto de investigación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ProyectoRepository`
@@ -77,31 +75,40 @@ Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PROYECTOS_ABIERTOS` → `ProyectoView.abrirProyecto(id)`
-2. **Obtención de datos**: `ProyectoView` → `ProyectoController.obtenerProyecto(id)` : `Proyecto`
-3. **Acceso a datos**: `ProyectoController` → `ProyectoRepository.obtenerPorId(id)` : `Proyecto`
-4. **Presentación**: `ProyectoView` → `:PROYECTO_ABIERTO.proyectoMostrado()`
-5. **Navegación**: El Coordinador puede editar, eliminar, gestionar entregables o agregar investigadores
+1. El sistema está en `:PROYECTOS_ABIERTOS` o `:ENTREGABLES_ABIERTOS`
+2. El coordinador selecciona un proyecto: `ProyectoView` recibe `abrirProyecto(id)`
+3. `ProyectoView` invoca `obtenerProyecto(id)` en `ProyectoController`
+4. `ProyectoController` delega en `ProyectoRepository.obtenerPorId(id)` y obtiene un objeto `Proyecto`
+5. `ProyectoView` muestra el detalle → estado `:PROYECTO_ABIERTO` con `proyectoMostrado()`
+6. Desde la vista el coordinador puede:
+   - Editar el proyecto → `:Collaboration EditarProyecto` con `editarProyecto()`
+   - Eliminar el proyecto → `:Collaboration EliminarProyecto` con `eliminarProyecto()`
+   - Abrir entregables → `:Collaboration AbrirEntregables` con `abrirEntregables()`
+   - Agregar investigador → `:Collaboration AgregarInvestigador` con `agregarInvestigador()`
+   - Ver investigadores del proyecto → `:Collaboration AbrirInvestigadoresDeProyecto` con `abrirInvestigadoresDeProyecto(id)`
+   - Volver al listado → `:PROYECTOS_ABIERTOS` con `abrirProyectos()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar detalle del proyecto|`ProyectoView`|Coordina con `ProyectoController.obtenerProyecto(id)`|
-|Datos completos del proyecto|`Proyecto`|Encapsula todos los atributos|
-|Acceso a datos|`ProyectoRepository`|`obtenerPorId(id)`|
-|Editar proyecto|`ProyectoView`|→ Colaboración `EditarProyecto`|
-|Eliminar proyecto|`ProyectoView`|→ Colaboración `EliminarProyecto`|
-|Gestionar entregables|`ProyectoView`|→ Colaboración `AbrirEntregables`|
-|Agregar investigador|`ProyectoView`|→ Colaboración `AgregarInvestigador`|
+|Mostrar detalle de un proyecto|`ProyectoView`|`abrirProyecto(id)`|
+|Recuperar el proyecto por id|`ProyectoController`|`obtenerProyecto(id) : Proyecto`|
+|Acceder a datos del proyecto|`ProyectoRepository`|`obtenerPorId(id) : Proyecto`|
+|Navegar a editar proyecto|`ProyectoView`|`editarProyecto()`|
+|Navegar a eliminar proyecto|`ProyectoView`|`eliminarProyecto()`|
+|Navegar a entregables|`ProyectoView`|`abrirEntregables()`|
+|Agregar investigador al proyecto|`ProyectoView`|`agregarInvestigador()`|
+|Ver investigadores del proyecto|`ProyectoView`|`abrirInvestigadoresDeProyecto(id)`|
+|Volver al listado de proyectos|`ProyectoView`|`abrirProyectos()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y obtención del detalle
-- **Entidad**: Solo datos y reglas de negocio del proyecto
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación del objeto `Proyecto`
+- **Entidad**: Solo datos y reglas de negocio de los proyectos
 
 ### agnóstico tecnológicamente
 

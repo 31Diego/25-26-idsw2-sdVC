@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `editarPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Investigador modifique el contenido de una publicación propia.
+Análisis de colaboración del caso de uso `editarPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador modifique el contenido de una publicación propia.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: editarPublicacion()](../../../images/analisis/investigador/editarPublicacion-analisis.svg)|
+|![Análisis: editarPublicacion()](../../../images/analisis/investigador/editarPublicacion-investigador-analisis.svg)|
 |-|
 |Código fuente: [editarPublicacion.puml](../../../modelosUML/analisis/investigador/editarPublicacion.puml)|
 
@@ -30,35 +30,38 @@ Análisis de colaboración del caso de uso `editarPublicacion()` mediante el pat
 #### EditarPublicacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de edición prellenado con los datos actuales de la publicación
-- Capturar los cambios introducidos por el Investigador
-- Invocar el guardado en el controlador
-- Navegar de vuelta al detalle de la publicación
+- Recibir la solicitud `editarPublicacion()` desde `:MI_PUBLICACION_ABIERTA`
+- Solicitar los datos actuales de la publicación mediante `obtenerPublicacion(id) : Publicacion`
+- Notificar los campos modificados mediante `modificarCampos(datos) : void`
+- Solicitar el guardado mediante `guardarPublicacion(datos) : Publicacion`
+- Mostrar el formulario de edición prellenado al investigador
+- Transitar a `:MI_PUBLICACION_ABIERTA` al finalizar
 
 **Colaboraciones**:
-- **Entrada**: Recibe `editarPublicacion()` desde `:MI_PUBLICACION_ABIERTA`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:MI_PUBLICACION_ABIERTA`
+- **Entrada**: Desde `:MI_PUBLICACION_ABIERTA` con `editarPublicacion()`
+- **Control**: Se comunica con `PublicacionController` mediante `obtenerPublicacion(id)`, `modificarCampos(datos)` y `guardarPublicacion(datos)`
+- **Salida**: Transita a `:MI_PUBLICACION_ABIERTA` con `edicionFinalizada()`
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la carga de la publicación actual para prellenar el formulario
-- Validar y persistir los cambios introducidos
+- Recibir `obtenerPublicacion(id)` y delegar en el repositorio la obtención de la publicación
+- Recibir `modificarCampos(datos)` y gestionar el estado de los campos modificados
+- Recibir `guardarPublicacion(datos)` y delegar la actualización en el repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EditarPublicacionView`
-- **Repositorio**: Delega el acceso a datos a `PublicacionRepository`
+- **Repositorio**: Delega en `PublicacionRepository` mediante `obtenerPorId(id) : Publicacion` y `actualizar(publicacion) : Publicacion`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar métodos para obtener y actualizar una publicación
+- Recuperar una publicación por id mediante `obtenerPorId(id) : Publicacion`
+- Actualizar la publicación modificada mediante `actualizar(publicacion) : Publicacion`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -67,8 +70,7 @@ Análisis de colaboración del caso de uso `editarPublicacion()` mediante el pat
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información editable de la publicación propia
-- Encapsular atributos: título, contenido
+- Representar los datos editables de la publicación propia
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -77,29 +79,33 @@ Análisis de colaboración del caso de uso `editarPublicacion()` mediante el pat
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:MI_PUBLICACION_ABIERTA` → `EditarPublicacionView.editarPublicacion()`
-2. **Carga de publicación**: `EditarPublicacionView` → `PublicacionController.obtenerPublicacion(id)` : `Publicacion`
-3. **Acceso a datos**: `PublicacionController` → `PublicacionRepository.obtenerPorId(id)` : `Publicacion`
-4. **Edición**: El Investigador modifica los campos
-5. **Guardado**: `EditarPublicacionView` → `PublicacionController.guardarPublicacion(datos)` : `Publicacion`
-6. **Persistencia**: `PublicacionController` → `PublicacionRepository.actualizar(publicacion)` : `Publicacion`
-7. **Finalización**: `EditarPublicacionView` → `:MI_PUBLICACION_ABIERTA.edicionFinalizada()`
+1. El sistema está en `:MI_PUBLICACION_ABIERTA`
+2. El investigador solicita editar: `EditarPublicacionView` recibe `editarPublicacion()`
+3. `EditarPublicacionView` invoca `obtenerPublicacion(id) : Publicacion` en `PublicacionController`
+4. `PublicacionController` delega en `PublicacionRepository.obtenerPorId(id)` y obtiene la `Publicacion`
+5. El investigador modifica los campos del formulario
+6. `EditarPublicacionView` invoca `modificarCampos(datos) : void` en `PublicacionController`
+7. `EditarPublicacionView` invoca `guardarPublicacion(datos) : Publicacion` en `PublicacionController`
+8. `PublicacionController` delega en `PublicacionRepository.actualizar(publicacion)` y obtiene la `Publicacion` actualizada
+9. La vista transita a `:MI_PUBLICACION_ABIERTA` con `edicionFinalizada()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Prellenar formulario|`PublicacionController`|`obtenerPublicacion(id)` → `PublicacionRepository.obtenerPorId(id)`|
-|Capturar cambios|`EditarPublicacionView`|Formulario prellenado|
-|Persistir cambios|`PublicacionController`|`guardarPublicacion(datos)` → `PublicacionRepository.actualizar()`|
-|Confirmar edición|`EditarPublicacionView`|→ `:MI_PUBLICACION_ABIERTA`|
+|Obtener datos actuales de la publicación|`PublicacionController`|`obtenerPublicacion(id) : Publicacion`|
+|Acceder a la publicación por id|`PublicacionRepository`|`obtenerPorId(id) : Publicacion`|
+|Registrar campos modificados|`PublicacionController`|`modificarCampos(datos) : void`|
+|Guardar publicación actualizada|`PublicacionController`|`guardarPublicacion(datos) : Publicacion`|
+|Persistir la actualización|`PublicacionRepository`|`actualizar(publicacion) : Publicacion`|
+|Confirmar edición|`EditarPublicacionView`|`edicionFinalizada()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Investigador
-- **Control**: Solo coordinación de la carga y persistencia
+- **Vista**: Solo presentación del formulario e interacción con el investigador
+- **Control**: Solo coordinación de la carga, modificación y persistencia
 - **Entidad**: Solo datos y reglas de negocio de la publicación
 
 ### agnóstico tecnológicamente

@@ -1,0 +1,91 @@
+REVISION FUNCIONAMIENTO CASOS DE USO
+
+MISCELANEA
+abrirPanelPrincipal
+
+
+PROYECTOS
+abrirProyectos 
+crearProyecto
+abrirProyecto
+editarProyecto -> bien pero al editar se borra las fechas, se vuelven a introducir y listo
+agregarInvestigador -> bien, no deja si supera la carga de trabajo establecida
+eliminarInvestigador
+abrirInvestigadores(proyecto)
+eliminarProyecto
+(filtarProyecto)
+
+ENTREGABLES
+abrirEntregables
+abrirEntregable
+crearEntregable
+editarEntregable -> el archivo bien
+eliminarEntregable
+
+
+PUBLICACIONES
+abrirPublicaciones
+abrirPublicacion
+editarPublicacion
+responderPublicacion
+eliminarPublicacion
+
+
+MIS_PUBLICACIONES
+abrirMisPublicaciones
+abrirMiPublicacion
+editarMiPublicacion
+eliminarMiPublicacion -> al borrarla te deja en publicaciones, no en mis_publicaciones
+
+
+INVESTIGADORES/ OPCIONES_PERFIL -> falta abrirProyectos desde investigador_abierto igual no lo hago; redundante
+abrirInvestigadores
+abrirInvestigador -> no muestra contraseña ni usuario por seguridad
+crearInvestigador
+abrirOpcionesPerfil(investigador)
+editarPerfil(investigador) -> en principio deja cambiar rol bien
+solicitarEliminacionPerfil(investigador) -> deja spamearlas
+abrirSolicitudesEliminacionPerfil -> bien pero solo te deja volver al panel, no a opciones perfil
+abrirSolicitudEliminacionPerfil
+eliminarPerfil -> si hay muchas borra todas las del investigador concreto
+
+CARGA_TRABAJO
+abrirOpcionesCargaTrabajo
+editarCargaTrabajo
+
+
+RECOMPENSAS
+abrirRecompensas
+abrirRecompensa
+editarRecompensa -> falta ver si se refleja realmente en el investigador
+crearRecompensa
+eliminarRecompensa 
+
+
+CONVOCATORIAS -> no se puede editarConvocatoria por razones de seguridad, o se borra (caso extremo) o nada
+abrirConvocatorias
+abrirConvocatoria -> es crear realmente, importar es por respetar el d. contexto
+importarConvocatoria -> deberia poder hacerse desde convocatorias
+eliminarConvocatoria -> falta en d. contexto
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

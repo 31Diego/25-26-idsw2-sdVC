@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el detalle de una publicación al Investigador y permitirle responderla.
+Análisis de colaboración del caso de uso `abrirPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador consulte el detalle de una publicación y pueda responderla.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirPublicacion()](../../../images/analisis/investigador/abrirPublicacion-analisis.svg)|
+|![Análisis: abrirPublicacion()](../../../images/analisis/investigador/abrirPublicacion-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirPublicacion.puml](../../../modelosUML/analisis/investigador/abrirPublicacion.puml)|
 
@@ -30,34 +30,33 @@ Análisis de colaboración del caso de uso `abrirPublicacion()` mediante el patr
 #### PublicacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el detalle de la publicación al Investigador (título, contenido, respuestas)
-- Ofrecer la opción de responder a la publicación
-- Navegar de vuelta al listado de publicaciones
+- Recibir la solicitud `abrirPublicacion(id)` desde `:PUBLICACIONES_ABIERTAS`
+- Solicitar al controlador los datos de la publicación mediante `obtenerPublicacion(id) : Publicacion`
+- Mostrar el detalle de la publicación al investigador
+- Ofrecer la opción de responder la publicación y vuelta al listado
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirPublicacion(id)` desde `:PUBLICACIONES_ABIERTAS`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:PUBLICACION_ABIERTA` y colaboración `ResponderPublicacion`
+- **Entrada**: Desde `:PUBLICACIONES_ABIERTAS` con `abrirPublicacion(id)`
+- **Control**: Se comunica con `PublicacionController` mediante `obtenerPublicacion(id) : Publicacion`
+- **Salida**: Transita a `:PUBLICACION_ABIERTA` (`publicacionMostrada()`), `:Collaboration ResponderPublicacion` (`responderPublicacion()`), `:PUBLICACIONES_ABIERTAS` (`abrirPublicaciones()`)
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle de la publicación
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerPublicacion(id)` y delegar en el repositorio la obtención de la publicación
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `PublicacionView`
-- **Repositorio**: Delega el acceso a datos a `PublicacionRepository`
+- **Repositorio**: Delega en `PublicacionRepository` mediante `obtenerPorId(id) : Publicacion`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar método para obtener una publicación por identificador
+- Recuperar una publicación por id mediante `obtenerPorId(id) : Publicacion`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -66,8 +65,7 @@ Análisis de colaboración del caso de uso `abrirPublicacion()` mediante el patr
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de una publicación
-- Encapsular atributos: título, contenido, autor, fecha, respuestas
+- Representar los datos completos de la publicación a mostrar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -76,27 +74,29 @@ Análisis de colaboración del caso de uso `abrirPublicacion()` mediante el patr
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PUBLICACIONES_ABIERTAS` → `PublicacionView.abrirPublicacion(id)`
-2. **Obtención de datos**: `PublicacionView` → `PublicacionController.obtenerPublicacion(id)` : `Publicacion`
-3. **Acceso a datos**: `PublicacionController` → `PublicacionRepository.obtenerPorId(id)` : `Publicacion`
-4. **Presentación**: `PublicacionView` → `:PUBLICACION_ABIERTA.publicacionMostrada()`
-5. **Navegación**: El Investigador puede responder la publicación o volver al listado
+1. El sistema está en `:PUBLICACIONES_ABIERTAS`
+2. El investigador selecciona una publicación: `PublicacionView` recibe `abrirPublicacion(id)`
+3. `PublicacionView` invoca `obtenerPublicacion(id)` en `PublicacionController`
+4. `PublicacionController` delega en `PublicacionRepository.obtenerPorId(id)` y obtiene un objeto `Publicacion`
+5. La vista muestra el detalle → transita a `:PUBLICACION_ABIERTA` con `publicacionMostrada()`
+6. Desde `:PUBLICACION_ABIERTA` el investigador puede navegar a `responderPublicacion()` o `abrirPublicaciones()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar detalle de la publicación|`PublicacionView`|Coordina con `PublicacionController.obtenerPublicacion(id)`|
-|Datos completos de la publicación|`Publicacion`|Encapsula todos los atributos|
-|Acceso a datos|`PublicacionRepository`|`obtenerPorId(id)`|
-|Responder publicación|`PublicacionView`|→ Colaboración `ResponderPublicacion`|
+|Obtener datos de la publicación|`PublicacionController`|`obtenerPublicacion(id) : Publicacion`|
+|Acceder a la publicación por id|`PublicacionRepository`|`obtenerPorId(id) : Publicacion`|
+|Mostrar detalle de la publicación|`PublicacionView`|`publicacionMostrada()`|
+|Responder publicación|`PublicacionView`|`responderPublicacion()`|
+|Volver al listado|`PublicacionView`|`abrirPublicaciones()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Investigador
-- **Control**: Solo coordinación y obtención del detalle
+- **Vista**: Solo presentación e interacción con el investigador
+- **Control**: Solo coordinación y obtención de la publicación
 - **Entidad**: Solo datos y reglas de negocio de la publicación
 
 ### agnóstico tecnológicamente

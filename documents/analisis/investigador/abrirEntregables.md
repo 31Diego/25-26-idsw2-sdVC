@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirEntregables()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para listar los entregables de un proyecto y permitir al Investigador gestionarlos.
+Análisis de colaboración del caso de uso `abrirEntregables()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador liste los entregables de un proyecto.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirEntregables()](../../../images/analisis/investigador/abrirEntregables-analisis.svg)|
+|![Análisis: abrirEntregables()](../../../images/analisis/investigador/abrirEntregables-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirEntregables.puml](../../../modelosUML/analisis/investigador/abrirEntregables.puml)|
 
@@ -30,34 +30,33 @@ Análisis de colaboración del caso de uso `abrirEntregables()` mediante el patr
 #### EntregablesView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la lista de entregables del proyecto al Investigador
-- Ofrecer acceso a un entregable concreto y a la creación de nuevos entregables
-- Navegar de vuelta al proyecto
+- Recibir la solicitud `abrirEntregables()` desde `:PROYECTO_ABIERTO` o desde `:ENTREGABLE_ABIERTO`
+- Solicitar al controlador la lista de entregables del proyecto mediante `obtenerEntregables(idProyecto) : List<Entregable>`
+- Mostrar la lista de entregables al investigador
+- Ofrecer acceso a entregables individuales, a la creación y vuelta al proyecto
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirEntregables()` desde `:PROYECTO_ABIERTO` o `:ENTREGABLE_ABIERTO`
-- **Control**: Se comunica con `EntregableController`
-- **Salida**: Navega a `:ENTREGABLES_ABIERTOS` y colaboraciones `AbrirEntregable`, `CrearEntregable`
+- **Entrada**: Desde `:PROYECTO_ABIERTO` o `:ENTREGABLE_ABIERTO` con `abrirEntregables()`
+- **Control**: Se comunica con `EntregableController` mediante `obtenerEntregables(idProyecto) : List<Entregable>`
+- **Salida**: Transita a `:ENTREGABLES_ABIERTOS` (`entregablesCargados()`), `:Collaboration AbrirEntregable` (`abrirEntregable(id)`), `:Collaboration CrearEntregable` (`crearEntregable()`), `:PROYECTO_ABIERTO` (`abrirProyecto(id)`)
 
 ### clases de control
 
 #### EntregableController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de entregables del proyecto indicado
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerEntregables(idProyecto)` y delegar en el repositorio la obtención de los entregables
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EntregablesView`
-- **Repositorio**: Delega el acceso a datos a `EntregableRepository`
+- **Repositorio**: Delega en `EntregableRepository` mediante `obtenerPorProyecto(idProyecto) : List<Entregable>`
 
 ### clases de entidad (entity)
 
 #### EntregableRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de entregables
-- Proporcionar método para obtener entregables por proyecto
+- Recuperar los entregables de un proyecto mediante `obtenerPorProyecto(idProyecto) : List<Entregable>`
 
 **Colaboraciones**:
 - **Control**: Responde a `EntregableController`
@@ -66,8 +65,7 @@ Análisis de colaboración del caso de uso `abrirEntregables()` mediante el patr
 #### Entregable
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de un entregable del proyecto
-- Encapsular atributos: título, descripción, fecha límite, estado, archivo adjunto
+- Representar los datos de un entregable en el listado
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `EntregableRepository`
@@ -76,25 +74,29 @@ Análisis de colaboración del caso de uso `abrirEntregables()` mediante el patr
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PROYECTO_ABIERTO` → `EntregablesView.abrirEntregables()`
-2. **Listado**: `EntregablesView` → `EntregableController.obtenerEntregables(idProyecto)` : `List<Entregable>`
-3. **Acceso a datos**: `EntregableController` → `EntregableRepository.obtenerPorProyecto(idProyecto)` : `List<Entregable>`
-4. **Presentación**: `EntregablesView` → `:ENTREGABLES_ABIERTOS.entregablesCargados()`
-5. **Navegación**: El Investigador puede abrir un entregable, crear uno nuevo o volver al proyecto
+1. El sistema está en `:PROYECTO_ABIERTO` o `:ENTREGABLE_ABIERTO`
+2. El investigador solicita ver entregables: `EntregablesView` recibe `abrirEntregables()`
+3. `EntregablesView` invoca `obtenerEntregables(idProyecto)` en `EntregableController`
+4. `EntregableController` delega en `EntregableRepository.obtenerPorProyecto(idProyecto)` y obtiene `List<Entregable>`
+5. La vista muestra la lista → transita a `:ENTREGABLES_ABIERTOS` con `entregablesCargados()`
+6. Desde `:ENTREGABLES_ABIERTOS` el investigador puede navegar a `abrirEntregable(id)`, `crearEntregable()` o `abrirProyecto(id)`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar lista de entregables|`EntregablesView`|Coordina con `EntregableController.obtenerEntregables(idProyecto)`|
-|Abrir entregable concreto|`EntregablesView`|→ Colaboración `AbrirEntregable`|
-|Crear nuevo entregable|`EntregablesView`|→ Colaboración `CrearEntregable`|
+|Obtener entregables del proyecto|`EntregableController`|`obtenerEntregables(idProyecto) : List<Entregable>`|
+|Acceder a entregables en repositorio|`EntregableRepository`|`obtenerPorProyecto(idProyecto) : List<Entregable>`|
+|Mostrar lista de entregables|`EntregablesView`|`entregablesCargados()`|
+|Abrir entregable concreto|`EntregablesView`|`abrirEntregable(id)`|
+|Crear nuevo entregable|`EntregablesView`|`crearEntregable()`|
+|Volver al proyecto|`EntregablesView`|`abrirProyecto(id)`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Investigador
+- **Vista**: Solo presentación e interacción con el investigador
 - **Control**: Solo coordinación y obtención de entregables
 - **Entidad**: Solo datos y reglas de negocio del entregable
 

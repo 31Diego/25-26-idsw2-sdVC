@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para listar las publicaciones propias del Coordinador.
+Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el listado de sus propias publicaciones.
 
 ## diagrama de colaboración
 
@@ -30,35 +30,34 @@ Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el
 #### MisPublicacionesView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la lista de publicaciones del Coordinador
-- Ofrecer acceso a una publicación propia concreta y a la creación de nuevas
-- Navegar de vuelta al panel principal
+- Recibir la solicitud `abrirMisPublicaciones()` desde `:PANEL_PRINCIPAL_ABIERTO` o `:MI_PUBLICACION_ABIERTA`
+- Solicitar al controlador el listado de publicaciones propias mediante `obtenerMisPublicaciones() : List<Publicacion>`
+- Mostrar el listado al coordinador
+- Ofrecer navegación a una publicación concreta, crear nueva publicación o volver al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirMisPublicaciones()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:MIS_PUBLICACIONES_ABIERTAS` y colaboraciones `AbrirMiPublicacion`, `CrearPublicacion`
+- **Entrada**: Desde `:PANEL_PRINCIPAL_ABIERTO` o `:MI_PUBLICACION_ABIERTA` con `abrirMisPublicaciones()`
+- **Control**: Se comunica con `PublicacionController` mediante `obtenerMisPublicaciones() : List<Publicacion>`
+- **Salida**: Transita a `:MIS_PUBLICACIONES_ABIERTAS` (`publicacionesCargadas()`), a `:Collaboration AbrirMiPublicacion` (`abrirMiPublicacion(id)`), a `:Collaboration CrearPublicacion` (`crearPublicacion()`) o a `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de las publicaciones del Coordinador
-- Filtrar por autor las publicaciones del repositorio
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerMisPublicaciones()` y devolver las publicaciones del autor
+- Delegar en el repositorio la búsqueda por autor
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `MisPublicacionesView`
-- **Repositorio**: Delega el acceso a datos a `PublicacionRepository`
+- **Repositorio**: Delega el acceso a datos a `PublicacionRepository` mediante `obtenerPorAutor(id) : List<Publicacion>`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar método para obtener publicaciones por autor
+- Recuperar las publicaciones de un autor concreto mediante `obtenerPorAutor(id) : List<Publicacion>`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -67,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de una publicación propia
-- Encapsular atributos: título, resumen, autores, fecha, área temática
+- Representar los datos de una publicación del coordinador
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -77,26 +75,34 @@ Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `MisPublicacionesView.abrirMisPublicaciones()`
-2. **Listado**: `MisPublicacionesView` → `PublicacionController.obtenerMisPublicaciones()` : `List<Publicacion>`
-3. **Acceso a datos**: `PublicacionController` → `PublicacionRepository.obtenerPorAutor(id)` : `List<Publicacion>`
-4. **Presentación**: `MisPublicacionesView` → `:MIS_PUBLICACIONES_ABIERTAS.publicacionesCargadas()`
+1. El sistema está en `:PANEL_PRINCIPAL_ABIERTO` o en `:MI_PUBLICACION_ABIERTA`
+2. El coordinador solicita ver sus publicaciones: `MisPublicacionesView` recibe `abrirMisPublicaciones()`
+3. `MisPublicacionesView` invoca `obtenerMisPublicaciones()` en `PublicacionController`
+4. `PublicacionController` delega en `PublicacionRepository.obtenerPorAutor(id)` y obtiene `List<Publicacion>`
+5. El listado se muestra → estado `:MIS_PUBLICACIONES_ABIERTAS` con `publicacionesCargadas()`
+6. Desde la vista el coordinador puede:
+   - Abrir una publicación → `:Collaboration AbrirMiPublicacion` con `abrirMiPublicacion(id)`
+   - Crear nueva publicación → `:Collaboration CrearPublicacion` con `crearPublicacion()`
+   - Volver al panel principal → `:PANEL_PRINCIPAL_ABIERTO` con `abrirPanelPrincipal()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Listar publicaciones propias|`MisPublicacionesView`|Coordina con `PublicacionController.obtenerMisPublicaciones()`|
-|Abrir publicación propia|`MisPublicacionesView`|→ Colaboración `AbrirMiPublicacion`|
-|Crear nueva publicación|`MisPublicacionesView`|→ Colaboración `CrearPublicacion`|
+|Mostrar listado de publicaciones propias|`MisPublicacionesView`|`obtenerMisPublicaciones() : List<Publicacion>`|
+|Recuperar publicaciones por autor|`PublicacionController`|`obtenerMisPublicaciones() : List<Publicacion>`|
+|Acceder a publicaciones del autor|`PublicacionRepository`|`obtenerPorAutor(id) : List<Publicacion>`|
+|Navegar al detalle de una publicación|`MisPublicacionesView`|`abrirMiPublicacion(id)`|
+|Navegar a crear publicación|`MisPublicacionesView`|`crearPublicacion()`|
+|Volver al panel principal|`MisPublicacionesView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y filtrado por autor
-- **Entidad**: Solo datos y reglas de negocio de la publicación
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación de publicaciones del autor
+- **Entidad**: Solo datos y reglas de negocio de las publicaciones
 
 ### agnóstico tecnológicamente
 

@@ -5,19 +5,19 @@
 - **Proyecto**: FUNIBER GIPF - Plataforma Interna de Investigación
 - **Fase**: Análisis
 - **Disciplina**: Análisis y Diseño
-- **Versión**: 1.1
-- **Fecha**: 2026-05-31
+- **Versión**: 1.0
+- **Fecha**: 2026-05-23
 - **Autor**: Diego Martínez
 
 ## propósito
 
-Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para finalizar la sesión activa del Coordinador.
+Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador finalice su sesión activa en el sistema.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: cerrarSesion()](../../../images/analisis/cerrarSesion-analisis.svg)|
+|![Análisis: cerrarSesion()](../../../images/analisis/coordinador/cerrarSesion-analisis.svg)|
 |-|
 |Código fuente: [cerrarSesion.puml](../../../modelosUML/analisis/coordinador/cerrarSesion.puml)|
 
@@ -30,34 +30,37 @@ Análisis de colaboración del caso de uso `cerrarSesion()` mediante el patrón 
 #### SesionController
 **Estereotipo**: Control  
 **Responsabilidades**:
+- Recibir la solicitud `cerrarSesion()` desde `:PANEL_PRINCIPAL_ABIERTO`
 - Coordinar el proceso de cierre de sesión
-- Invalidar la sesión activa del Coordinador
-- Redirigir al estado de sesión cerrada
+- Transitar al estado `:SESION_CERRADA`
 
 **Colaboraciones**:
-- **Entrada**: Recibe `cerrarSesion()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Salida**: Navega a `:SESION_CERRADA`
+- **Entrada**: Desde `:PANEL_PRINCIPAL_ABIERTO` con `cerrarSesion()`
+- **Salida**: Transita a `:SESION_CERRADA` con `sesionCerrada()`
 
 ## flujo de colaboración
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `SesionController.cerrarSesion()`
-2. **Cierre**: `SesionController` invalida la sesión activa
-3. **Redirección**: `SesionController` → `:SESION_CERRADA.sesionCerrada()`
+1. El sistema está en `:PANEL_PRINCIPAL_ABIERTO`
+2. El coordinador solicita cerrar sesión: `SesionController` recibe `cerrarSesion()`
+3. `SesionController` coordina el cierre de la sesión activa
+4. El sistema transita a `:SESION_CERRADA` con `sesionCerrada()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Cerrar la sesión activa|`SesionController`|`cerrarSesion()`|
-|Redirigir al estado cerrado|`SesionController`|→ `:SESION_CERRADA`|
+|Cerrar la sesión activa del coordinador|`SesionController`|`cerrarSesion()`|
+|Transitar al estado de sesión cerrada|`SesionController`|`sesionCerrada()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Control**: Coordina el cierre de sesión sin necesidad de vista propia — la acción se dispara directamente desde el panel principal
+- **Vista**: No aplica — la acción se dispara directamente desde el panel principal sin vista propia
+- **Control**: Coordina el cierre de sesión sin acceso a datos del dominio
+- **Entidad**: No aplica — no se accede a datos persistentes
 
 ### agnóstico tecnológicamente
 

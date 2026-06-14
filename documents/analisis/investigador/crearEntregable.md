@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `crearEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Investigador registre un nuevo entregable en un proyecto.
+Análisis de colaboración del caso de uso `crearEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador registre un nuevo entregable en un proyecto.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: crearEntregable()](../../../images/analisis/investigador/crearEntregable-analisis.svg)|
+|![Análisis: crearEntregable()](../../../images/analisis/investigador/crearEntregable-investigador-analisis.svg)|
 |-|
 |Código fuente: [crearEntregable.puml](../../../modelosUML/analisis/investigador/crearEntregable.puml)|
 
@@ -30,36 +30,35 @@ Análisis de colaboración del caso de uso `crearEntregable()` mediante el patr�
 #### CrearEntregableView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de creación de entregable al Investigador
-- Capturar los datos del nuevo entregable (título, descripción, fecha límite, archivo)
-- Invocar el guardado en el controlador
-- Navegar a la lista de entregables tras la creación
+- Recibir la solicitud `crearEntregable()` desde `:ENTREGABLES_ABIERTOS`
+- Solicitar la validación de datos mediante `validarDatos(datos) : boolean`
+- Solicitar el guardado del entregable mediante `guardarEntregable(datos) : Entregable`
+- Mostrar el formulario de creación al investigador
+- Transitar a `:ENTREGABLES_ABIERTOS` al finalizar
 
 **Colaboraciones**:
-- **Entrada**: Recibe `crearEntregable()` desde `:ENTREGABLES_ABIERTOS`
-- **Control**: Se comunica con `EntregableController`
-- **Salida**: Navega a `:ENTREGABLES_ABIERTOS`
+- **Entrada**: Desde `:ENTREGABLES_ABIERTOS` con `crearEntregable()`
+- **Control**: Se comunica con `EntregableController` mediante `validarDatos(datos) : boolean` y `guardarEntregable(datos) : Entregable`
+- **Salida**: Transita a `:ENTREGABLES_ABIERTOS` con `abrirEntregables()`
 
 ### clases de control
 
 #### EntregableController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de creación del nuevo entregable
-- Validar los datos recibidos del formulario
-- Persistir el nuevo entregable a través del repositorio
+- Recibir `validarDatos(datos)` y verificar la corrección de los datos del formulario
+- Recibir `guardarEntregable(datos)` y delegar la persistencia en el repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `CrearEntregableView`
-- **Repositorio**: Delega la persistencia a `EntregableRepository`
+- **Repositorio**: Delega en `EntregableRepository` mediante `crear(entregable) : Entregable`
 
 ### clases de entidad (entity)
 
 #### EntregableRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de entregables
-- Proporcionar método para crear un nuevo entregable
+- Persistir un nuevo entregable mediante `crear(entregable) : Entregable`
 
 **Colaboraciones**:
 - **Control**: Responde a `EntregableController`
@@ -68,8 +67,7 @@ Análisis de colaboración del caso de uso `crearEntregable()` mediante el patr�
 #### Entregable
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información del nuevo entregable
-- Encapsular atributos: título, descripción, fecha límite, estado inicial, archivo adjunto
+- Representar los datos del nuevo entregable a persistir
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `EntregableRepository`
@@ -78,27 +76,28 @@ Análisis de colaboración del caso de uso `crearEntregable()` mediante el patr�
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:ENTREGABLES_ABIERTOS` → `CrearEntregableView.crearEntregable()`
-2. **Captura de datos**: El Investigador rellena el formulario
-3. **Validación**: `CrearEntregableView` → `EntregableController.validarDatos(datos)` : `boolean`
-4. **Guardado**: `CrearEntregableView` → `EntregableController.guardarEntregable(datos)` : `Entregable`
-5. **Persistencia**: `EntregableController` → `EntregableRepository.crear(entregable)` : `Entregable`
-6. **Finalización**: `CrearEntregableView` → `:ENTREGABLES_ABIERTOS.abrirEntregables()`
+1. El sistema está en `:ENTREGABLES_ABIERTOS`
+2. El investigador solicita crear un entregable: `CrearEntregableView` recibe `crearEntregable()`
+3. El investigador rellena el formulario y confirma
+4. `CrearEntregableView` invoca `validarDatos(datos) : boolean` en `EntregableController`
+5. `CrearEntregableView` invoca `guardarEntregable(datos) : Entregable` en `EntregableController`
+6. `EntregableController` delega en `EntregableRepository.crear(entregable)` y obtiene el `Entregable` persistido
+7. La vista transita a `:ENTREGABLES_ABIERTOS` con `abrirEntregables()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario|`CrearEntregableView`|Captura datos del nuevo entregable|
-|Validar datos|`EntregableController`|`validarDatos(datos)`|
-|Persistir nuevo entregable|`EntregableController`|`guardarEntregable(datos)` → `EntregableRepository.crear()`|
-|Confirmar creación|`CrearEntregableView`|→ `:ENTREGABLES_ABIERTOS`|
+|Validar datos del formulario|`EntregableController`|`validarDatos(datos) : boolean`|
+|Guardar el entregable|`EntregableController`|`guardarEntregable(datos) : Entregable`|
+|Persistir nuevo entregable|`EntregableRepository`|`crear(entregable) : Entregable`|
+|Volver al listado de entregables|`CrearEntregableView`|`abrirEntregables()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Investigador
+- **Vista**: Solo presentación del formulario e interacción con el investigador
 - **Control**: Solo coordinación de la validación y persistencia
 - **Entidad**: Solo datos y reglas de negocio del entregable
 

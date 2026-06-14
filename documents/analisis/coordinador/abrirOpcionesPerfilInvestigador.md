@@ -6,12 +6,12 @@
 - **Fase**: Análisis
 - **Disciplina**: Análisis y Diseño
 - **Versión**: 1.0
-- **Fecha**: 2026-05-25
+- **Fecha**: 2026-05-23
 - **Autor**: Diego Martínez
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirOpcionesPerfilInvestigador(investigadorId)` mediante el patrón MVC. Este caso de uso surge del split de `abrirOpcionesPerfil()`: cuando el Coordinador accede a las opciones de perfil desde el perfil de un investigador concreto o desde una solicitud de eliminación, las opciones disponibles (editar perfil del investigador, gestionar solicitudes de eliminación) son distintas a las del perfil propio del Coordinador.
+Análisis de colaboración del caso de uso `abrirOpcionesPerfilInvestigador(investigadorId)` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el perfil de un investigador concreto y acceda a las opciones de edición de ese perfil.
 
 ## diagrama de colaboración
 
@@ -30,34 +30,34 @@ Análisis de colaboración del caso de uso `abrirOpcionesPerfilInvestigador(inve
 #### OpcionesPerfilInvestigadorView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el resumen del perfil del investigador concreto al Coordinador
-- Ofrecer opciones: editar perfil del investigador, gestionar solicitudes de eliminación, volver
-- Recuperar los datos del perfil a través del controlador
+- Recibir la solicitud `abrirOpcionesPerfilInvestigador(investigadorId)` desde `:INVESTIGADOR_ABIERTO`
+- Solicitar al controlador los datos del perfil del investigador mediante `obtenerPerfil(investigadorId) : Investigador`
+- Mostrar el perfil del investigador al coordinador
+- Ofrecer las opciones de editar el perfil del investigador o volver al perfil del investigador
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirOpcionesPerfilInvestigador(investigadorId)` desde `:INVESTIGADOR_ABIERTO` o `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS`
-- **Control**: Se comunica con `PerfilController`
-- **Salida**: Navega a `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO` o a colaboraciones de edición y gestión
+- **Entrada**: Desde `:INVESTIGADOR_ABIERTO` con `abrirOpcionesPerfilInvestigador(investigadorId)`
+- **Control**: Se comunica con `PerfilController` mediante `obtenerPerfil(investigadorId) : Investigador`
+- **Salida**: Transita a `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO` (`perfilMostrado()`), a `:Collaboration EditarPerfil` (`editarPerfil(investigadorId)`) o a `:INVESTIGADOR_ABIERTO` (`abrirInvestigador(investigadorId)`)
 
 ### clases de control
 
 #### PerfilController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de los datos del perfil del investigador indicado
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerPerfil(investigadorId)` desde la vista
+- Delegar la recuperación del investigador al repositorio mediante `obtenerPorId(investigadorId)`
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `OpcionesPerfilInvestigadorView`
-- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository`
+- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository` mediante `obtenerPorId(investigadorId) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para obtener un investigador por identificador
+- Recuperar un investigador concreto por su identificador mediante `obtenerPorId(investigadorId) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `PerfilController`
@@ -66,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirOpcionesPerfilInvestigador(inve
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de un investigador
-- Encapsular atributos de perfil: nombre, apellidos, correo, área de investigación, institución
+- Representar los datos de perfil de un investigador
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -76,35 +75,44 @@ Análisis de colaboración del caso de uso `abrirOpcionesPerfilInvestigador(inve
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:INVESTIGADOR_ABIERTO` o `:SOLICITUDES_ELIMINACION_PERFIL_ABIERTAS` → `OpcionesPerfilInvestigadorView.abrirOpcionesPerfilInvestigador(investigadorId)`
-2. **Obtención de perfil**: `OpcionesPerfilInvestigadorView` → `PerfilController.obtenerPerfil(investigadorId)` : `Investigador`
-3. **Acceso a datos**: `PerfilController` → `InvestigadorRepository.obtenerPorId(investigadorId)` : `Investigador`
-4. **Presentación**: `OpcionesPerfilInvestigadorView` → `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO.perfilMostrado()`
-5. **Navegación**: El Coordinador puede editar el perfil del investigador, gestionar solicitudes de eliminación o volver
+1. El sistema está en `:INVESTIGADOR_ABIERTO`
+2. El coordinador solicita ver opciones de perfil del investigador: `OpcionesPerfilInvestigadorView` recibe `abrirOpcionesPerfilInvestigador(investigadorId)`
+3. `OpcionesPerfilInvestigadorView` invoca `obtenerPerfil(investigadorId)` en `PerfilController`
+4. `PerfilController` delega en `InvestigadorRepository.obtenerPorId(investigadorId)` y obtiene un objeto `Investigador`
+5. `OpcionesPerfilInvestigadorView` muestra el perfil → estado `:OPCIONES_PERFIL_INVESTIGADOR_ABIERTO` con `perfilMostrado()`
+6. Desde la vista el coordinador puede:
+   - Editar el perfil del investigador → `:Collaboration EditarPerfil` con `editarPerfil(investigadorId)`
+   - Volver al perfil del investigador → `:INVESTIGADOR_ABIERTO` con `abrirInvestigador(investigadorId)`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar datos del perfil del investigador|`OpcionesPerfilInvestigadorView`|Coordina con `PerfilController.obtenerPerfil(investigadorId)`|
-|Datos del investigador|`Investigador`|Encapsula todos los atributos|
-|Editar perfil del investigador|`OpcionesPerfilInvestigadorView`|→ Colaboración `EditarPerfil`|
-|Gestionar solicitudes de eliminación|`OpcionesPerfilInvestigadorView`|→ Colaboración `AbrirSolicitudesEliminacionPerfil`|
-|Volver al perfil del investigador|`OpcionesPerfilInvestigadorView`|→ `:INVESTIGADOR_ABIERTO`|
+|Mostrar perfil del investigador|`OpcionesPerfilInvestigadorView`|`obtenerPerfil(investigadorId) : Investigador`|
+|Recuperar datos del perfil del investigador|`PerfilController`|`obtenerPerfil(investigadorId) : Investigador`|
+|Acceder a datos del investigador|`InvestigadorRepository`|`obtenerPorId(investigadorId) : Investigador`|
+|Navegar a editar perfil del investigador|`OpcionesPerfilInvestigadorView`|`editarPerfil(investigadorId)`|
+|Volver al perfil del investigador|`OpcionesPerfilInvestigadorView`|`abrirInvestigador(investigadorId)`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y obtención del perfil del investigador
-- **Entidad**: Solo datos y reglas de negocio del investigador
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación del perfil del investigador
+- **Entidad**: Solo datos y reglas de negocio de los investigadores
 
-### distinción respecto a `abrirOpcionesPerfil()`
+### agnóstico tecnológicamente
 
-Este caso de uso difiere de `abrirOpcionesPerfil()` en el sujeto del perfil:
-- `abrirOpcionesPerfil()` → opciones sobre el perfil propio del Coordinador (desde el panel principal)
-- `abrirOpcionesPerfilInvestigador(investigadorId)` → opciones sobre el perfil de un investigador concreto (desde su perfil o desde solicitudes de eliminación)
+- No especifica tecnología de interfaz de usuario
+- No asume implementación específica de base de datos
+- Mantiene independencia de frameworks
+
+### trazabilidad completa
+
+- **Origen**: Caso de uso detallado `abrirOpcionesPerfilInvestigador(investigadorId)`
+- **Destino**: Base para diseño arquitectónico
+- **Conexión**: Diagrama de estados → Análisis de colaboración
 
 ## patrones aplicados
 
@@ -116,5 +124,5 @@ Separación clara entre presentación (`OpcionesPerfilInvestigadorView`), lógic
 
 ## referencias
 
-- [Análisis: abrirOpcionesPerfil()](abrirOpcionesPerfil.md)
+- [Especificación detallada: abrirOpcionesPerfilInvestigador()](../../../context/casosDeUso/detalle/coordinador/abrirOpcionesPerfilInvestigador/abrirOpcionesPerfilInvestigador.md)
 - [Modelo del dominio](../../../context/modeloDelDominio/modeloDominio.md)

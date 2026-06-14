@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el panel principal del Investigador y ofrecer acceso a sus funcionalidades.
+Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el panel principal del investigador y ofrecer acceso a sus funcionalidades.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirPanelPrincipal()](../../../images/analisis/investigador/abrirPanelPrincipal-analisis.svg)|
+|![Análisis: abrirPanelPrincipal()](../../../images/analisis/investigador/abrirPanelPrincipal-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirPanelPrincipal.puml](../../../modelosUML/analisis/investigador/abrirPanelPrincipal.puml)|
 
@@ -30,23 +30,22 @@ Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el p
 #### PanelPrincipalView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Mostrar el panel principal del Investigador
-- Ofrecer acceso a las secciones disponibles: proyectos, publicaciones, mis publicaciones, recompensas, investigadores, perfil, carga de trabajo
-- Permitir la navegación entre todas las funcionalidades
-- Gestionar el cierre de sesión
+- Recibir la solicitud `abrirPanelPrincipal()` desde múltiples estados del sistema
+- Solicitar al controlador la carga del panel mediante `cargarPanel() : void`
+- Mostrar el panel principal con todas las opciones de navegación disponibles para el investigador
+- Ofrecer acceso a proyectos, publicaciones, mis publicaciones, recompensas, investigadores, perfil, carga de trabajo y cierre de sesión
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirPanelPrincipal()` desde múltiples estados (proyectos, publicaciones, mis publicaciones, recompensas, investigadores, opciones de perfil, carga de trabajo)
-- **Control**: Se comunica con `PanelController`
-- **Salida**: Navega a todas las colaboraciones del sistema disponibles para el Investigador
+- **Entrada**: Desde `:PROYECTOS_ABIERTOS`, `:PUBLICACIONES_ABIERTAS`, `:MIS_PUBLICACIONES_ABIERTAS`, `:RECOMPENSAS_ABIERTAS`, `:INVESTIGADORES_ABIERTOS`, `:OPCIONES_CARGA_TRABAJO_ABIERTAS`, `:OPCIONES_PERFIL_ABIERTO`
+- **Control**: Se comunica con `PanelController` mediante `cargarPanel() : void`
+- **Salida**: Transita a `:PANEL_PRINCIPAL_ABIERTO` (`panelMostrado()`); ofrece colaboraciones `abrirProyectos()`, `abrirPublicaciones()`, `abrirMisPublicaciones()`, `abrirRecompensas()`, `abrirInvestigadores()`, `abrirOpcionesPerfil()`, `abrirOpcionesCargaTrabajo()`, `cerrarSesion()`
 
 ### clases de control
 
 #### PanelController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la carga del panel principal
-- Inicializar el estado de la sesión del Investigador
+- Recibir `cargarPanel()` y preparar el estado del panel principal
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `PanelPrincipalView`
@@ -55,29 +54,31 @@ Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el p
 
 ### secuencia de operaciones
 
-1. **Inicio**: Desde cualquier estado → `PanelPrincipalView.abrirPanelPrincipal()`
-2. **Carga**: `PanelPrincipalView` → `PanelController.cargarPanel()` : `void`
-3. **Presentación**: `PanelPrincipalView` → `:PANEL_PRINCIPAL_ABIERTO.panelMostrado()`
-4. **Navegación**: `PanelPrincipalView` ofrece acceso a proyectos, publicaciones, mis publicaciones, recompensas, investigadores, perfil, carga de trabajo y cierre de sesión
+1. El sistema recibe `abrirPanelPrincipal()` desde cualquiera de los 7 estados de entrada
+2. `PanelPrincipalView` invoca `cargarPanel() : void` en `PanelController`
+3. La vista muestra el panel → transita a `:PANEL_PRINCIPAL_ABIERTO` con `panelMostrado()`
+4. Desde `:PANEL_PRINCIPAL_ABIERTO` el investigador puede navegar a cualquiera de las 8 colaboraciones disponibles
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar panel principal|`PanelPrincipalView`|Coordina con `PanelController.cargarPanel()`|
-|Acceder a proyectos|`PanelPrincipalView`|→ Colaboración `AbrirProyectos`|
-|Acceder a publicaciones|`PanelPrincipalView`|→ Colaboraciones `AbrirPublicaciones` / `AbrirMisPublicaciones`|
-|Acceder a recompensas|`PanelPrincipalView`|→ Colaboración `AbrirRecompensas`|
-|Acceder a investigadores|`PanelPrincipalView`|→ Colaboración `AbrirInvestigadores`|
-|Acceder a perfil|`PanelPrincipalView`|→ Colaboración `AbrirOpcionesPerfil`|
-|Acceder a carga de trabajo|`PanelPrincipalView`|→ Colaboración `AbrirOpcionesCargaTrabajo`|
-|Cerrar sesión|`PanelPrincipalView`|→ Colaboración `CerrarSesion`|
+|Cargar el panel principal|`PanelController`|`cargarPanel() : void`|
+|Mostrar panel principal|`PanelPrincipalView`|`panelMostrado()`|
+|Acceder a proyectos|`PanelPrincipalView`|`abrirProyectos()`|
+|Acceder a publicaciones|`PanelPrincipalView`|`abrirPublicaciones()`|
+|Acceder a mis publicaciones|`PanelPrincipalView`|`abrirMisPublicaciones()`|
+|Acceder a recompensas|`PanelPrincipalView`|`abrirRecompensas()`|
+|Acceder a investigadores|`PanelPrincipalView`|`abrirInvestigadores()`|
+|Acceder a opciones de perfil|`PanelPrincipalView`|`abrirOpcionesPerfil()`|
+|Acceder a carga de trabajo|`PanelPrincipalView`|`abrirOpcionesCargaTrabajo()`|
+|Cerrar sesión|`PanelPrincipalView`|`cerrarSesion()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del panel e interacción con el Investigador
+- **Vista**: Solo presentación del panel e interacción con el investigador
 - **Control**: Solo coordinación de la carga del panel
 
 ### agnóstico tecnológicamente
@@ -94,7 +95,7 @@ Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el p
 ## patrones aplicados
 
 ### mvc pattern
-Separación clara entre presentación (`PanelPrincipalView`) y lógica de aplicación (`PanelController`). El panel actúa como hub de navegación hacia el resto del sistema. El Investigador no tiene acceso a convocatorias.
+Separación clara entre presentación (`PanelPrincipalView`) y lógica de aplicación (`PanelController`). El panel actúa como hub de navegación hacia el resto del sistema. El investigador no tiene acceso a convocatorias.
 
 ## referencias
 

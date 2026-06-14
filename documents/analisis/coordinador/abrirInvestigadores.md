@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirInvestigadores()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para listar y filtrar los investigadores de la plataforma.
+Análisis de colaboración del caso de uso `abrirInvestigadores()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el listado de investigadores de la plataforma, con opción de filtrado por criterio.
 
 ## diagrama de colaboración
 
@@ -30,36 +30,36 @@ Análisis de colaboración del caso de uso `abrirInvestigadores()` mediante el p
 #### InvestigadoresView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la lista de investigadores al Coordinador
-- Permitir filtrar por criterios de búsqueda
-- Ofrecer acceso a un investigador concreto y a la creación de nuevos
-- Navegar de vuelta al panel principal
+- Recibir la solicitud `abrirInvestigadores()` desde `:PANEL_PRINCIPAL_ABIERTO`
+- Solicitar al controlador el listado completo de investigadores mediante `obtenerInvestigadores()`
+- Solicitar al controlador la lista filtrada mediante `filtrarInvestigadores(criterio)`
+- Mostrar el listado resultante al coordinador
+- Ofrecer navegación al perfil de un investigador, crear investigador o volver al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirInvestigadores()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Control**: Se comunica con `InvestigadorController`
-- **Salida**: Navega a `:INVESTIGADORES_ABIERTOS` y colaboraciones de gestión
+- **Entrada**: Desde `:PANEL_PRINCIPAL_ABIERTO` con `abrirInvestigadores()`
+- **Control**: Se comunica con `InvestigadorController` mediante `obtenerInvestigadores() : List<Investigador>` y `filtrarInvestigadores(criterio) : List<Investigador>`
+- **Salida**: Transita a `:INVESTIGADORES_ABIERTOS` (`investigadoresCargados()`), a `:Collaboration AbrirInvestigador` (`abrirInvestigador(id)`), a `:Collaboration CrearInvestigador` (`crearInvestigador()`) o a `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### InvestigadorController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de todos los investigadores
-- Gestionar la lógica de filtrado
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerInvestigadores()` y devolver la lista completa
+- Recibir `filtrarInvestigadores(criterio)` y devolver la lista filtrada
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `InvestigadoresView`
-- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository`
+- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository` mediante `obtenerTodos()` y `buscarPorCriterio(criterio)`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para obtener todos los investigadores e implementar búsqueda por criterios
+- Recuperar todos los investigadores mediante `obtenerTodos() : List<Investigador>`
+- Recuperar investigadores filtrados mediante `buscarPorCriterio(criterio) : List<Investigador>`
 
 **Colaboraciones**:
 - **Control**: Responde a `InvestigadorController`
@@ -68,8 +68,7 @@ Análisis de colaboración del caso de uso `abrirInvestigadores()` mediante el p
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de un investigador
-- Encapsular atributos: nombre, apellidos, área, institución, proyectos activos
+- Representar los datos de un investigador de la red FUNIBER
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -78,28 +77,36 @@ Análisis de colaboración del caso de uso `abrirInvestigadores()` mediante el p
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `InvestigadoresView.abrirInvestigadores()`
-2. **Listado**: `InvestigadoresView` → `InvestigadorController.obtenerInvestigadores()` : `List<Investigador>`
-3. **Acceso a datos**: `InvestigadorController` → `InvestigadorRepository.obtenerTodos()` : `List<Investigador>`
-4. **Filtrado (opcional)**: `InvestigadoresView` → `InvestigadorController.filtrarInvestigadores(criterio)` : `List<Investigador>`
-5. **Presentación**: `InvestigadoresView` → `:INVESTIGADORES_ABIERTOS.investigadoresCargados()`
+1. El sistema está en `:PANEL_PRINCIPAL_ABIERTO`
+2. El coordinador solicita ver investigadores: `InvestigadoresView` recibe `abrirInvestigadores()`
+3. `InvestigadoresView` invoca `obtenerInvestigadores()` en `InvestigadorController`
+4. `InvestigadorController` delega en `InvestigadorRepository.obtenerTodos()` y obtiene `List<Investigador>`
+5. El listado se muestra → estado `:INVESTIGADORES_ABIERTOS` con `investigadoresCargados()`
+6. El coordinador puede filtrar: `InvestigadoresView` invoca `filtrarInvestigadores(criterio)` en `InvestigadorController`, que delega en `InvestigadorRepository.buscarPorCriterio(criterio)`
+7. Desde la vista el coordinador puede:
+   - Abrir un investigador → `:Collaboration AbrirInvestigador` con `abrirInvestigador(id)`
+   - Crear un investigador → `:Collaboration CrearInvestigador` con `crearInvestigador()`
+   - Volver al panel principal → `:PANEL_PRINCIPAL_ABIERTO` con `abrirPanelPrincipal()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Listar investigadores|`InvestigadoresView`|Coordina con `InvestigadorController.obtenerInvestigadores()`|
-|Filtrar investigadores|`InvestigadoresView`|Invoca `InvestigadorController.filtrarInvestigadores(criterio)`|
-|Abrir investigador concreto|`InvestigadoresView`|→ Colaboración `AbrirInvestigador`|
-|Crear nuevo investigador|`InvestigadoresView`|→ Colaboración `CrearInvestigador`|
+|Mostrar listado de investigadores|`InvestigadoresView`|`obtenerInvestigadores() : List<Investigador>`|
+|Filtrar investigadores por criterio|`InvestigadorController`|`filtrarInvestigadores(criterio) : List<Investigador>`|
+|Acceder a todos los investigadores|`InvestigadorRepository`|`obtenerTodos() : List<Investigador>`|
+|Buscar investigadores por criterio|`InvestigadorRepository`|`buscarPorCriterio(criterio) : List<Investigador>`|
+|Navegar al perfil de un investigador|`InvestigadoresView`|`abrirInvestigador(id)`|
+|Navegar a crear investigador|`InvestigadoresView`|`crearInvestigador()`|
+|Volver al panel principal|`InvestigadoresView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y lógica de filtrado
-- **Entidad**: Solo datos y reglas de negocio del investigador
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación, obtención y filtrado del listado de investigadores
+- **Entidad**: Solo datos y reglas de negocio de los investigadores
 
 ### agnóstico tecnológicamente
 

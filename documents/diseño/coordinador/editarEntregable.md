@@ -22,32 +22,23 @@ Mostrar el formulario pre-relleno con los datos del entregable y persistir los c
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EditarEntregableView (azul) | `EditarEntregableController` `@Controller` | GET carga el formulario pre-relleno; POST actualiza |
-| EntregableController (amarillo) | `EntregableService` `@Service` | findById para cargar, actualiza campos y gestiona archivo |
-| EntregableRepository (naranja) | `EntregableRepository` JpaRepository | SELECT (GET) y UPDATE (POST) |
-| Sistema de ficheros | `./archivos/` | Reemplaza el archivo adjunto si se sube uno nuevo |
+| Controlador de entregables (GET) | EntregableController @Controller GET /proyectos/{proyectoId}/entregables/{id}/editar | Carga el entregable y sirve el formulario pre-relleno |
+| Controlador de entregables (POST) | EntregableController @Controller POST /proyectos/{proyectoId}/entregables/{id}/editar | Actualiza los datos y opcionalmente el archivo |
+| Servicio de entregables | EntregableService @Service | `obtenerEntregable(id)` y `actualizarEntregable(id, datos, archivo)` |
+| Servicio de archivos | ArchivoService @Service | `guardarArchivo(archivo)` si se adjunta uno nuevo |
+| Repositorio de entregables | EntregableRepository JpaRepository | SELECT por id (GET) y UPDATE vía save(entregable) (POST) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
 | GET | /proyectos/{proyectoId}/entregables/{id}/editar | Muestra el formulario pre-relleno |
-| POST | /proyectos/{proyectoId}/entregables/{id}/editar | Guarda los cambios |
-
-## Campos del formulario
-
-| Campo | Tipo | Requerido |
-|---|---|---|
-| titulo | String | Sí |
-| tipo | String (selector) | Sí |
-| fechaLimite | LocalDate | No |
-| estado | String (selector) | Sí |
-| descripcion | Texto largo | No |
-| archivo | MultipartFile | No |
+| POST | /proyectos/{proyectoId}/entregables/{id}/editar | Guarda titulo, tipo, fechaLimite, estado, descripcion y archivo opcional |
 
 ## Decisiones de diseño
 
-- El GET carga el entregable existente con `findById` y lo pone en el modelo para pre-rellenar el formulario.
-- Si se sube un nuevo archivo en el POST, reemplaza el anterior (sobrescribe con `REPLACE_EXISTING`).
-- Si no se sube archivo, `rutaArchivo` se mantiene sin cambios.
-- Tras guardar, redirige a `/proyectos/{proyectoId}/entregables/{id}` (PRG).
+- En el GET, se añaden al modelo `"entregable"` y `"proyectoId"` para el formulario y la navegación.
+- En el POST, `actualizarEntregable(id, datos, archivo)` hace `findById`, actualiza los campos y:
+  - Flujo alternativo `alt`: si hay archivo nuevo adjunto → `ArchivoSvc.guardarArchivo(archivo)` y `entregable.setRutaArchivo(nombre)`; si no, `rutaArchivo` se mantiene sin cambios.
+- Tras guardar, redirige a `/proyectos/{proyectoId}/entregables/{id}` (302 redirect).

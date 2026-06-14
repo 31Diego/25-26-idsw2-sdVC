@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Mostrar el formulario de acceso y autenticar al usuario mediante Spring Security, redirigiendo al panel principal si las credenciales son correctas.
+Permite al coordinador autenticarse en la plataforma introduciendo sus credenciales; Spring Security valida el usuario y redirige al panel principal o muestra un error.
 
 ## Diagrama de secuencia
 
@@ -22,22 +22,23 @@ Mostrar el formulario de acceso y autenticar al usuario mediante Spring Security
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| IniciarSesionView | `LoginController` `@Controller` | Recibe GET /login y devuelve login.html |
-| AutenticacionController | Spring Security `UsernamePasswordAuthenticationFilter` | Intercepta POST /login; orquesta la validación de credenciales |
-| AutenticacionController | `AutenticacionService` `@Service` `UserDetailsService` | Carga el usuario por username para que Spring Security verifique la contraseña |
-| InvestigadorRepository | `InvestigadorRepository` JpaRepository | Busca el investigador por username en H2 |
-| Investigador | `Investigador` `@Entity` | Tabla investigadores en H2 |
+| Interfaz de login | LoginController @Controller | Sirve el formulario en GET /login |
+| Sistema de seguridad | Spring Security POST /login | Intercepta el envío de credenciales y gestiona la autenticación |
+| Servicio de autenticación | AutenticacionService @Service | Implementa UserDetailsService; carga el usuario por username |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | Consulta la base de datos por username |
+| Base de datos | H2 | Almacén persistente de investigadores |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
 | GET | /login | Muestra el formulario de inicio de sesión |
-| POST | /login | Spring Security procesa las credenciales; redirige a /panel o /login?error |
+| POST | /login | Spring Security valida credenciales (username, password) |
 
 ## Decisiones de diseño
 
-- `LoginController` solo gestiona el GET; Spring Security maneja el POST /login directamente mediante `formLogin`.
-- `AutenticacionService` implementa `UserDetailsService`; Spring Security compara la contraseña con BCrypt internamente.
-- Redireccionamiento exitoso a `/panel` configurado con `defaultSuccessUrl("/panel", true)` en `SecurityConfig`.
-- Credenciales incorrectas redirigen a `/login?error` sin exponer motivo concreto.
+- Spring Security intercepta el POST /login directamente, sin pasar por un controlador de aplicación.
+- `AutenticacionService` implementa `UserDetailsService.loadUserByUsername(username)`.
+- La contraseña se verifica con `BCrypt.matches(password, hash)`.
+- Flujo alternativo `alt`: si las credenciales son correctas → redirect /panel; si son incorrectas → redirect /login?error con mensaje de error en el formulario.
+- El repositorio utiliza `findByUsername(username)` para localizar al investigador.

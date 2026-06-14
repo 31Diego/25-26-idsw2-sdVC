@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `solicitarEliminacionPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Coordinador solicite la eliminación del perfil de un investigador.
+Análisis de colaboración del caso de uso `solicitarEliminacionPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador registre una solicitud de eliminación de perfil.
 
 ## diagrama de colaboración
 
@@ -30,36 +30,32 @@ Análisis de colaboración del caso de uso `solicitarEliminacionPerfil()` median
 #### SolicitarEliminacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de solicitud de eliminación de perfil al Coordinador
-- Capturar los datos necesarios para la solicitud (motivo, identificación del perfil)
-- Invocar el envío de la solicitud en el controlador
+- Recibir la solicitud `solicitarEliminacionPerfil()` desde `:OPCIONES_PERFIL_ABIERTO`
+- Solicitar al controlador el envío de la solicitud mediante `enviarSolicitud(datos) : SolicitudEliminacion`
 - Navegar de vuelta a las opciones de perfil
 
 **Colaboraciones**:
-- **Entrada**: Recibe `solicitarEliminacionPerfil()` desde `:OPCIONES_PERFIL_ABIERTO`
-- **Control**: Se comunica con `EliminacionController`
-- **Salida**: Navega a `:OPCIONES_PERFIL_ABIERTO`
+- **Entrada**: Desde `:OPCIONES_PERFIL_ABIERTO` con `solicitarEliminacionPerfil()`
+- **Control**: Se comunica con `EliminacionController` mediante `enviarSolicitud(datos) : SolicitudEliminacion`
+- **Salida**: Transita a `:OPCIONES_PERFIL_ABIERTO` con `abrirOpcionesPerfil()`
 
 ### clases de control
 
 #### EliminacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de creación de la solicitud de eliminación
-- Validar los datos de la solicitud
-- Persistir la solicitud a través del repositorio
+- Recibir `enviarSolicitud(datos)` y delegar la creación de la solicitud al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `SolicitarEliminacionView`
-- **Repositorio**: Delega la persistencia a `SolicitudEliminacionRepository`
+- **Repositorio**: Delega en `SolicitudEliminacionRepository` mediante `crear(solicitud) : SolicitudEliminacion`
 
 ### clases de entidad (entity)
 
 #### SolicitudEliminacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de solicitudes de eliminación
-- Proporcionar método para crear una nueva solicitud
+- Persistir una nueva solicitud de eliminación mediante `crear(solicitud) : SolicitudEliminacion`
 
 **Colaboraciones**:
 - **Control**: Responde a `EliminacionController`
@@ -68,8 +64,7 @@ Análisis de colaboración del caso de uso `solicitarEliminacionPerfil()` median
 #### SolicitudEliminacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la solicitud de eliminación de perfil
-- Encapsular atributos: investigador solicitado, motivo, fecha, estado
+- Representar los datos de la solicitud de eliminación de perfil a registrar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `SolicitudEliminacionRepository`
@@ -78,27 +73,28 @@ Análisis de colaboración del caso de uso `solicitarEliminacionPerfil()` median
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:OPCIONES_PERFIL_ABIERTO` → `SolicitarEliminacionView.solicitarEliminacionPerfil()`
-2. **Captura**: El Coordinador rellena el formulario de solicitud
-3. **Envío**: `SolicitarEliminacionView` → `EliminacionController.enviarSolicitud(datos)` : `SolicitudEliminacion`
-4. **Persistencia**: `EliminacionController` → `SolicitudEliminacionRepository.crear(solicitud)` : `SolicitudEliminacion`
-5. **Finalización**: `SolicitarEliminacionView` → `:OPCIONES_PERFIL_ABIERTO.abrirOpcionesPerfil()`
+1. El sistema está en `:OPCIONES_PERFIL_ABIERTO`
+2. El coordinador solicita eliminar el perfil: `SolicitarEliminacionView` recibe `solicitarEliminacionPerfil()`
+3. El coordinador rellena el formulario con los datos de la solicitud
+4. `SolicitarEliminacionView` invoca `enviarSolicitud(datos)` en `EliminacionController` → devuelve `SolicitudEliminacion`
+5. `EliminacionController` delega en `SolicitudEliminacionRepository.crear(solicitud)` y obtiene el objeto `SolicitudEliminacion` creado
+6. La vista navega de vuelta → `:OPCIONES_PERFIL_ABIERTO` con `abrirOpcionesPerfil()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario de solicitud|`SolicitarEliminacionView`|Captura datos de la solicitud|
-|Registrar solicitud|`EliminacionController`|`enviarSolicitud(datos)` → `SolicitudEliminacionRepository.crear()`|
-|Confirmar solicitud|`SolicitarEliminacionView`|→ `:OPCIONES_PERFIL_ABIERTO`|
+|Registrar solicitud de eliminación|`EliminacionController`|`enviarSolicitud(datos) : SolicitudEliminacion`|
+|Persistir la solicitud|`SolicitudEliminacionRepository`|`crear(solicitud) : SolicitudEliminacion`|
+|Volver a opciones de perfil|`SolicitarEliminacionView`|`abrirOpcionesPerfil()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Coordinador
-- **Control**: Solo coordinación de la validación y registro de la solicitud
-- **Entidad**: Solo datos y reglas de negocio de la solicitud
+- **Vista**: Solo presentación del formulario e interacción con el coordinador
+- **Control**: Solo coordinación del registro de la solicitud
+- **Entidad**: Solo datos y reglas de negocio de la solicitud de eliminación
 
 ### agnóstico tecnológicamente
 

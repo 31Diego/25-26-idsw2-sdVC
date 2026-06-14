@@ -1,0 +1,19 @@
+@startuml cerrarSesion-diseño
+skinparam linetype ortho
+
+actor "Investigador" as Inv
+participant "Navegador" as Nav
+participant "Spring Security\nPOST /logout" as SS
+
+Inv -> Nav : clic en "Cerrar sesión"
+activate Nav
+Nav -> SS : POST /logout
+activate SS
+SS -> SS : invalida HttpSession
+SS -> SS : limpia SecurityContext
+SS --> Nav : redirect /login?logout
+deactivate SS
+Nav --> Inv : muestra login.html con mensaje de cierre
+deactivate Nav
+
+@enduml

@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el detalle de un entregable al Investigador y ofrecer opciones de gestión.
+Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador consulte el detalle de un entregable y acceda a las opciones de gestión.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirEntregable()](../../../images/analisis/investigador/abrirEntregable-analisis.svg)|
+|![Análisis: abrirEntregable()](../../../images/analisis/investigador/abrirEntregable-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirEntregable.puml](../../../modelosUML/analisis/investigador/abrirEntregable.puml)|
 
@@ -30,35 +30,34 @@ Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patr�
 #### EntregableView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el detalle del entregable al Investigador
-- Mostrar información: título, descripción, fecha límite, estado, archivo adjunto
-- Ofrecer opciones de gestión: editar y eliminar
-- Navegar de vuelta a la lista de entregables
+- Recibir la solicitud `abrirEntregable(id)` desde `:ENTREGABLES_ABIERTOS`
+- Solicitar al controlador los datos del entregable mediante `obtenerEntregable(id) : Entregable`
+- Mostrar el detalle del entregable al investigador
+- Ofrecer acceso a las colaboraciones de edición y eliminación
+- Navegar de vuelta al listado de entregables
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirEntregable(id)` desde `:ENTREGABLES_ABIERTOS`
-- **Control**: Se comunica con `EntregableController`
-- **Salida**: Navega a `:ENTREGABLE_ABIERTO` y colaboraciones de gestión
+- **Entrada**: Desde `:ENTREGABLES_ABIERTOS` con `abrirEntregable(id)`
+- **Control**: Se comunica con `EntregableController` mediante `obtenerEntregable(id) : Entregable`
+- **Salida**: Transita a `:ENTREGABLE_ABIERTO` (`entregableMostrado()`), `:Collaboration EditarEntregable` (`editarEntregable()`), `:Collaboration EliminarEntregable` (`eliminarEntregable()`), `:ENTREGABLES_ABIERTOS` (`abrirEntregables()`)
 
 ### clases de control
 
 #### EntregableController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle del entregable
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerEntregable(id)` y delegar en el repositorio la obtención del entregable
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EntregableView`
-- **Repositorio**: Delega el acceso a datos a `EntregableRepository`
+- **Repositorio**: Delega en `EntregableRepository` mediante `obtenerPorId(id) : Entregable`
 
 ### clases de entidad (entity)
 
 #### EntregableRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de entregables
-- Proporcionar método para obtener un entregable por identificador
+- Recuperar un entregable por id mediante `obtenerPorId(id) : Entregable`
 
 **Colaboraciones**:
 - **Control**: Responde a `EntregableController`
@@ -67,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patr�
 #### Entregable
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de un entregable
-- Encapsular atributos: título, descripción, fecha límite, estado, archivo adjunto
+- Representar los datos completos del entregable a mostrar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `EntregableRepository`
@@ -77,28 +75,30 @@ Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patr�
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:ENTREGABLES_ABIERTOS` → `EntregableView.abrirEntregable(id)`
-2. **Obtención de datos**: `EntregableView` → `EntregableController.obtenerEntregable(id)` : `Entregable`
-3. **Acceso a datos**: `EntregableController` → `EntregableRepository.obtenerPorId(id)` : `Entregable`
-4. **Presentación**: `EntregableView` → `:ENTREGABLE_ABIERTO.entregableMostrado()`
-5. **Navegación**: El Investigador puede editar, eliminar o volver a entregables
+1. El sistema está en `:ENTREGABLES_ABIERTOS`
+2. El investigador selecciona un entregable: `EntregableView` recibe `abrirEntregable(id)`
+3. `EntregableView` invoca `obtenerEntregable(id)` en `EntregableController`
+4. `EntregableController` delega en `EntregableRepository.obtenerPorId(id)` y obtiene un objeto `Entregable`
+5. La vista muestra el detalle → transita a `:ENTREGABLE_ABIERTO` con `entregableMostrado()`
+6. Desde `:ENTREGABLE_ABIERTO` el investigador puede navegar a `editarEntregable()`, `eliminarEntregable()` o `abrirEntregables()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar detalle del entregable|`EntregableView`|Coordina con `EntregableController.obtenerEntregable(id)`|
-|Datos completos del entregable|`Entregable`|Encapsula todos los atributos|
-|Acceso a datos|`EntregableRepository`|`obtenerPorId(id)`|
-|Editar entregable|`EntregableView`|→ Colaboración `EditarEntregable`|
-|Eliminar entregable|`EntregableView`|→ Colaboración `EliminarEntregable`|
+|Obtener datos del entregable|`EntregableController`|`obtenerEntregable(id) : Entregable`|
+|Acceder al entregable por id|`EntregableRepository`|`obtenerPorId(id) : Entregable`|
+|Mostrar detalle del entregable|`EntregableView`|`entregableMostrado()`|
+|Editar entregable|`EntregableView`|`editarEntregable()`|
+|Eliminar entregable|`EntregableView`|`eliminarEntregable()`|
+|Volver al listado|`EntregableView`|`abrirEntregables()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Investigador
-- **Control**: Solo coordinación y obtención del detalle
+- **Vista**: Solo presentación e interacción con el investigador
+- **Control**: Solo coordinación y obtención del entregable
 - **Entidad**: Solo datos y reglas de negocio del entregable
 
 ### agnóstico tecnológicamente

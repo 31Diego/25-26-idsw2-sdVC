@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `crearInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para registrar un nuevo investigador en la plataforma.
+Análisis de colaboración del caso de uso `crearInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador registre un nuevo investigador en la plataforma.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: crearInvestigador()](../../../images/analisis/crearInvestigador-analisis.svg)|
+|![Análisis: crearInvestigador()](../../../images/analisis/coordinador/crearInvestigador-analisis.svg)|
 |-|
 |Código fuente: [crearInvestigador.puml](../../../modelosUML/analisis/coordinador/crearInvestigador.puml)|
 
@@ -30,36 +30,35 @@ Análisis de colaboración del caso de uso `crearInvestigador()` mediante el pat
 #### CrearInvestigadorView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de creación de investigador al Coordinador
-- Capturar los datos del nuevo investigador
-- Invocar el guardado en el controlador
-- Navegar a la lista de investigadores o al panel principal
+- Recibir la solicitud `crearInvestigador()` desde `:INVESTIGADORES_ABIERTOS`
+- Solicitar al controlador la validación de datos mediante `validarDatos(datos) : boolean`
+- Solicitar al controlador el guardado del nuevo investigador mediante `guardarInvestigador(datos) : Investigador`
+- Navegar al listado de investigadores o al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `crearInvestigador()` desde `:INVESTIGADORES_ABIERTOS`
-- **Control**: Se comunica con `InvestigadorController`
-- **Salida**: Navega a `:INVESTIGADORES_ABIERTOS` o `:PANEL_PRINCIPAL_ABIERTO`
+- **Entrada**: Desde `:INVESTIGADORES_ABIERTOS` con `crearInvestigador()`
+- **Control**: Se comunica con `InvestigadorController` mediante `validarDatos(datos) : boolean` y `guardarInvestigador(datos) : Investigador`
+- **Salida**: Transita a `:INVESTIGADORES_ABIERTOS` (`abrirInvestigadores()`) o a `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### InvestigadorController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de creación del nuevo investigador
-- Validar los datos recibidos del formulario
-- Persistir el nuevo investigador a través del repositorio
+- Recibir y ejecutar `validarDatos(datos) : boolean`, delegando la verificación de unicidad del username
+- Recibir `guardarInvestigador(datos)` y delegar la creación al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `CrearInvestigadorView`
-- **Repositorio**: Delega la persistencia a `InvestigadorRepository`
+- **Repositorio**: Delega en `InvestigadorRepository` mediante `verificarUnicidad(username) : boolean` y `crear(investigador) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para crear un nuevo investigador
+- Verificar la unicidad del username mediante `verificarUnicidad(username) : boolean`
+- Persistir un nuevo investigador mediante `crear(investigador) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `InvestigadorController`
@@ -68,8 +67,7 @@ Análisis de colaboración del caso de uso `crearInvestigador()` mediante el pat
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información del nuevo investigador
-- Encapsular atributos: nombre, apellidos, correo, área, institución
+- Representar los datos del nuevo investigador a crear
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -78,27 +76,34 @@ Análisis de colaboración del caso de uso `crearInvestigador()` mediante el pat
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:INVESTIGADORES_ABIERTOS` → `CrearInvestigadorView.crearInvestigador()`
-2. **Captura**: El Coordinador rellena el formulario con los datos del investigador
-3. **Guardado**: `CrearInvestigadorView` → `InvestigadorController.guardarInvestigador(datos)` : `Investigador`
-4. **Persistencia**: `InvestigadorController` → `InvestigadorRepository.crear(investigador)` : `Investigador`
-5. **Finalización**: `CrearInvestigadorView` → `:INVESTIGADORES_ABIERTOS.abrirInvestigadores()`
+1. El sistema está en `:INVESTIGADORES_ABIERTOS`
+2. El coordinador solicita crear investigador: `CrearInvestigadorView` recibe `crearInvestigador()`
+3. El coordinador rellena el formulario con los datos del investigador
+4. `CrearInvestigadorView` invoca `validarDatos(datos)` en `InvestigadorController` → devuelve `boolean`
+5. `InvestigadorController` delega en `InvestigadorRepository.verificarUnicidad(username)` para comprobar que no existe duplicado
+6. Si la validación es correcta, `CrearInvestigadorView` invoca `guardarInvestigador(datos)` en `InvestigadorController`
+7. `InvestigadorController` delega en `InvestigadorRepository.crear(investigador)` y obtiene el objeto `Investigador` creado
+8. La vista navega → `:INVESTIGADORES_ABIERTOS` (`abrirInvestigadores()`) o `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario de creación|`CrearInvestigadorView`|Captura datos del nuevo investigador|
-|Persistir nuevo investigador|`InvestigadorController`|`guardarInvestigador(datos)` → `InvestigadorRepository.crear()`|
-|Confirmar creación|`CrearInvestigadorView`|→ `:INVESTIGADORES_ABIERTOS`|
+|Presentar formulario de creación|`CrearInvestigadorView`|`crearInvestigador()`|
+|Validar datos del formulario|`InvestigadorController`|`validarDatos(datos) : boolean`|
+|Verificar unicidad del username|`InvestigadorRepository`|`verificarUnicidad(username) : boolean`|
+|Persistir nuevo investigador|`InvestigadorController`|`guardarInvestigador(datos) : Investigador`|
+|Crear investigador en repositorio|`InvestigadorRepository`|`crear(investigador) : Investigador`|
+|Volver al listado de investigadores|`CrearInvestigadorView`|`abrirInvestigadores()`|
+|Volver al panel principal|`CrearInvestigadorView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Coordinador
+- **Vista**: Solo presentación del formulario e interacción con el coordinador
 - **Control**: Solo coordinación de la validación y persistencia
-- **Entidad**: Solo datos y reglas de negocio del investigador
+- **Entidad**: Solo datos y reglas de negocio de los investigadores
 
 ### agnóstico tecnológicamente
 

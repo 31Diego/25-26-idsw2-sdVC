@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `importarConvocatoria()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para importar una convocatoria externa al sistema de proyectos de FUNIBER GIPF.
+Análisis de colaboración del caso de uso `importarConvocatoria()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador importe una convocatoria al sistema.
 
 ## diagrama de colaboración
 
@@ -30,36 +30,32 @@ Análisis de colaboración del caso de uso `importarConvocatoria()` mediante el 
 #### ImportarConvocatoriaView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de importación de convocatoria al Coordinador
-- Capturar los datos de la convocatoria a importar
-- Invocar el proceso de importación en el controlador
-- Navegar de vuelta a la convocatoria o al panel principal tras la importación
+- Recibir la solicitud `importarConvocatoria()` desde `:CONVOCATORIA_ABIERTA`
+- Solicitar al controlador la importación con los datos proporcionados mediante `importarConvocatoria(datos) : Convocatoria`
+- Navegar de vuelta a la convocatoria importada o al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `importarConvocatoria()` desde `:CONVOCATORIA_ABIERTA`
-- **Control**: Se comunica con `ConvocatoriaController`
-- **Salida**: Navega a `:CONVOCATORIA_ABIERTA` o `:PANEL_PRINCIPAL_ABIERTO`
+- **Entrada**: Desde `:CONVOCATORIA_ABIERTA` con `importarConvocatoria()`
+- **Control**: Se comunica con `ConvocatoriaController` mediante `importarConvocatoria(datos) : Convocatoria`
+- **Salida**: Transita a `:CONVOCATORIA_ABIERTA` (`convocatoriaImportada()`) o a `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### ConvocatoriaController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de importación de la convocatoria
-- Transformar los datos externos al formato interno del sistema
-- Persistir la convocatoria importada a través del repositorio
+- Recibir `importarConvocatoria(datos)` y delegar la creación al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `ImportarConvocatoriaView`
-- **Repositorio**: Delega la persistencia a `ConvocatoriaRepository`
+- **Repositorio**: Delega la persistencia a `ConvocatoriaRepository` mediante `crear(convocatoria) : Convocatoria`
 
 ### clases de entidad (entity)
 
 #### ConvocatoriaRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de convocatorias
-- Proporcionar método para crear una nueva convocatoria importada
+- Persistir la convocatoria importada mediante `crear(convocatoria) : Convocatoria`
 
 **Colaboraciones**:
 - **Control**: Responde a `ConvocatoriaController`
@@ -68,8 +64,7 @@ Análisis de colaboración del caso de uso `importarConvocatoria()` mediante el 
 #### Convocatoria
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de la convocatoria importada
-- Encapsular atributos: título, área, estado, fechas, descripción, requisitos, criterios, documentación, contacto
+- Representar los datos de la convocatoria importada
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ConvocatoriaRepository`
@@ -78,25 +73,27 @@ Análisis de colaboración del caso de uso `importarConvocatoria()` mediante el 
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:CONVOCATORIA_ABIERTA` → `ImportarConvocatoriaView.importarConvocatoria()`
-2. **Captura**: El Coordinador introduce o confirma los datos de importación
-3. **Importación**: `ImportarConvocatoriaView` → `ConvocatoriaController.importarConvocatoria(datos)` : `Convocatoria`
-4. **Persistencia**: `ConvocatoriaController` → `ConvocatoriaRepository.crear(convocatoria)` : `Convocatoria`
-5. **Finalización**: `ImportarConvocatoriaView` → `:CONVOCATORIA_ABIERTA.convocatoriaImportada()`
+1. El sistema está en `:CONVOCATORIA_ABIERTA`
+2. El coordinador solicita importar convocatoria: `ImportarConvocatoriaView` recibe `importarConvocatoria()`
+3. El coordinador introduce o confirma los datos de la convocatoria
+4. `ImportarConvocatoriaView` invoca `importarConvocatoria(datos)` en `ConvocatoriaController` → devuelve `Convocatoria`
+5. `ConvocatoriaController` delega en `ConvocatoriaRepository.crear(convocatoria)` y obtiene el objeto `Convocatoria` creado
+6. La vista navega → `:CONVOCATORIA_ABIERTA` (`convocatoriaImportada()`) o `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario de importación|`ImportarConvocatoriaView`|Captura datos de la convocatoria|
-|Procesar importación|`ConvocatoriaController`|`importarConvocatoria(datos)` → `ConvocatoriaRepository.crear()`|
-|Confirmar importación|`ImportarConvocatoriaView`|→ `:CONVOCATORIA_ABIERTA`|
+|Importar convocatoria al sistema|`ConvocatoriaController`|`importarConvocatoria(datos) : Convocatoria`|
+|Crear convocatoria en repositorio|`ConvocatoriaRepository`|`crear(convocatoria) : Convocatoria`|
+|Navegar a la convocatoria importada|`ImportarConvocatoriaView`|`convocatoriaImportada()`|
+|Navegar al panel principal|`ImportarConvocatoriaView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Coordinador
+- **Vista**: Solo presentación del formulario e interacción con el coordinador
 - **Control**: Solo coordinación de la lógica de importación
 - **Entidad**: Solo datos y reglas de negocio de la convocatoria
 

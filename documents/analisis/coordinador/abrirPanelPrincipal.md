@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el panel principal del Coordinador y ofrecer acceso a todas las funcionalidades del sistema.
+Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador acceda al panel principal y navegue a todas las funcionalidades del sistema.
 
 ## diagrama de colaboración
 
@@ -30,23 +30,23 @@ Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el p
 #### PanelPrincipalView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Mostrar el panel principal del Coordinador
-- Ofrecer acceso a las diferentes secciones del sistema: proyectos, investigadores, convocatorias, recompensas, publicaciones, perfil, carga de trabajo
-- Permitir la navegación entre todas las funcionalidades principales
-- Gestionar el cierre de sesión
+- Recibir la solicitud `abrirPanelPrincipal()` desde múltiples estados del sistema
+- Solicitar al controlador la carga del panel mediante `cargarPanel() : void`
+- Mostrar el panel principal al coordinador
+- Ofrecer navegación a proyectos, investigadores, convocatorias, recompensas, mis publicaciones, publicaciones, perfil propio, carga de trabajo y cierre de sesión
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirPanelPrincipal()` desde múltiples estados (investigadores, carga de trabajo, perfil, publicaciones, convocatorias, recompensas, proyectos)
-- **Control**: Se comunica con `PanelController`
-- **Salida**: Navega a todas las colaboraciones principales del sistema
+- **Entrada**: Desde `:INVESTIGADORES_ABIERTOS`, `:OPCIONES_CARGA_TRABAJO_ABIERTAS`, `:OPCIONES_PERFIL_ABIERTO`, `:MIS_PUBLICACIONES_ABIERTAS`, `:PUBLICACIONES_ABIERTAS`, `:CONVOCATORIAS_ABIERTAS`, `:RECOMPENSAS_ABIERTAS`, `:PROYECTOS_ABIERTOS` con `abrirPanelPrincipal()`
+- **Control**: Se comunica con `PanelController` mediante `cargarPanel() : void`
+- **Salida**: Transita a `:PANEL_PRINCIPAL_ABIERTO` (`panelMostrado()`) y ofrece las colaboraciones: `AbrirProyectos`, `AbrirInvestigadores`, `AbrirConvocatorias`, `AbrirRecompensas`, `AbrirMisPublicaciones`, `AbrirPublicaciones`, `AbrirOpcionesPerfilPropio`, `AbrirOpcionesCargaTrabajo`, `CerrarSesion`
 
 ### clases de control
 
 #### PanelController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la carga del panel principal
-- Inicializar el estado de la sesión del Coordinador
+- Recibir la petición `cargarPanel()` desde la vista
+- Coordinar la inicialización del estado del panel principal
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `PanelPrincipalView`
@@ -55,31 +55,43 @@ Análisis de colaboración del caso de uso `abrirPanelPrincipal()` mediante el p
 
 ### secuencia de operaciones
 
-1. **Inicio**: Desde cualquier estado → `PanelPrincipalView.abrirPanelPrincipal()`
-2. **Carga**: `PanelPrincipalView` → `PanelController.cargarPanel()` : `void`
-3. **Presentación**: `PanelPrincipalView` → `:PANEL_PRINCIPAL_ABIERTO.panelMostrado()`
-4. **Navegación**: `PanelPrincipalView` ofrece acceso a proyectos, investigadores, convocatorias, recompensas, publicaciones, perfil, carga de trabajo y cierre de sesión
+1. El sistema está en cualquiera de los estados que permiten volver al panel: `:INVESTIGADORES_ABIERTOS`, `:OPCIONES_CARGA_TRABAJO_ABIERTAS`, `:OPCIONES_PERFIL_ABIERTO`, `:MIS_PUBLICACIONES_ABIERTAS`, `:PUBLICACIONES_ABIERTAS`, `:CONVOCATORIAS_ABIERTAS`, `:RECOMPENSAS_ABIERTAS` o `:PROYECTOS_ABIERTOS`
+2. El coordinador solicita volver al panel: `PanelPrincipalView` recibe `abrirPanelPrincipal()`
+3. `PanelPrincipalView` invoca `cargarPanel()` en `PanelController`
+4. `PanelPrincipalView` muestra el panel → estado `:PANEL_PRINCIPAL_ABIERTO` con `panelMostrado()`
+5. Desde el panel el coordinador puede acceder a:
+   - Proyectos → `:Collaboration AbrirProyectos` con `abrirProyectos()`
+   - Investigadores → `:Collaboration AbrirInvestigadores` con `abrirInvestigadores()`
+   - Convocatorias → `:Collaboration AbrirConvocatorias` con `abrirConvocatorias()`
+   - Recompensas → `:Collaboration AbrirRecompensas` con `abrirRecompensas()`
+   - Mis publicaciones → `:Collaboration AbrirMisPublicaciones` con `abrirMisPublicaciones()`
+   - Publicaciones → `:Collaboration AbrirPublicaciones` con `abrirPublicaciones()`
+   - Opciones de perfil propio → `:Collaboration AbrirOpcionesPerfilPropio` con `abrirOpcionesPerfil()`
+   - Carga de trabajo → `:Collaboration AbrirOpcionesCargaTrabajo` con `abrirOpcionesCargaTrabajo()`
+   - Cerrar sesión → `:Collaboration CerrarSesion` con `cerrarSesion()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar panel principal|`PanelPrincipalView`|Coordina con `PanelController.cargarPanel()`|
-|Acceder a proyectos|`PanelPrincipalView`|→ Colaboración `AbrirProyectos`|
-|Acceder a investigadores|`PanelPrincipalView`|→ Colaboración `AbrirInvestigadores`|
-|Acceder a convocatorias|`PanelPrincipalView`|→ Colaboración `AbrirConvocatorias`|
-|Acceder a recompensas|`PanelPrincipalView`|→ Colaboración `AbrirRecompensas`|
-|Acceder a publicaciones|`PanelPrincipalView`|→ Colaboraciones `AbrirPublicaciones` / `AbrirMisPublicaciones`|
-|Acceder a perfil|`PanelPrincipalView`|→ Colaboración `AbrirOpcionesPerfil`|
-|Acceder a carga de trabajo|`PanelPrincipalView`|→ Colaboración `AbrirOpcionesCargaTrabajo`|
-|Cerrar sesión|`PanelPrincipalView`|→ Colaboración `CerrarSesion`|
+|Mostrar panel principal|`PanelPrincipalView`|`cargarPanel() : void`|
+|Navegar a proyectos|`PanelPrincipalView`|`abrirProyectos()`|
+|Navegar a investigadores|`PanelPrincipalView`|`abrirInvestigadores()`|
+|Navegar a convocatorias|`PanelPrincipalView`|`abrirConvocatorias()`|
+|Navegar a recompensas|`PanelPrincipalView`|`abrirRecompensas()`|
+|Navegar a mis publicaciones|`PanelPrincipalView`|`abrirMisPublicaciones()`|
+|Navegar a publicaciones|`PanelPrincipalView`|`abrirPublicaciones()`|
+|Navegar a opciones de perfil|`PanelPrincipalView`|`abrirOpcionesPerfil()`|
+|Navegar a carga de trabajo|`PanelPrincipalView`|`abrirOpcionesCargaTrabajo()`|
+|Cerrar sesión|`PanelPrincipalView`|`cerrarSesion()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del panel e interacción con el Coordinador
-- **Control**: Solo coordinación de la carga del panel
+- **Vista**: Solo presentación del panel e interacción con el coordinador
+- **Control**: Solo coordinación de la carga del panel principal
+- **Entidad**: No aplica en este caso de uso (el panel no accede a datos del dominio)
 
 ### agnóstico tecnológicamente
 

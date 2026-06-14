@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `eliminarProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para eliminar un proyecto de investigación del sistema.
+Análisis de colaboración del caso de uso `eliminarProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador elimine un proyecto de investigación del sistema.
 
 ## diagrama de colaboración
 
@@ -30,35 +30,36 @@ Análisis de colaboración del caso de uso `eliminarProyecto()` mediante el patr
 #### EliminarProyectoView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Mostrar confirmación de eliminación del proyecto al Coordinador
-- Invocar la eliminación en el controlador tras confirmación
-- Navegar a la lista de proyectos tras la eliminación
+- Recibir la solicitud `eliminarProyecto()` desde `:PROYECTO_ABIERTO`
+- Solicitar al controlador los datos del proyecto a eliminar mediante `cargarProyectoParaEliminacion(id) : Proyecto`
+- Mostrar la pantalla de confirmación con los datos del proyecto
+- Solicitar al controlador la eliminación definitiva mediante `eliminarProyecto(id) : void`
+- Navegar al listado de proyectos tras la eliminación
 
 **Colaboraciones**:
-- **Entrada**: Recibe `eliminarProyecto()` desde `:PROYECTO_ABIERTO`
-- **Control**: Se comunica con `ProyectoController`
-- **Salida**: Navega a `:PROYECTOS_ABIERTOS`
+- **Entrada**: Desde `:PROYECTO_ABIERTO` con `eliminarProyecto()`
+- **Control**: Se comunica con `ProyectoController` mediante `cargarProyectoParaEliminacion(id)` y `eliminarProyecto(id)`
+- **Salida**: Transita a `:PROYECTOS_ABIERTOS` con `abrirProyectos()`
 
 ### clases de control
 
 #### ProyectoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de eliminación del proyecto
-- Validar que la eliminación es posible
-- Invocar la eliminación en el repositorio
+- Recibir `cargarProyectoParaEliminacion(id)` y delegar en el repositorio la obtención del proyecto
+- Recibir `eliminarProyecto(id)` y delegar la eliminación al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EliminarProyectoView`
-- **Repositorio**: Delega la eliminación a `ProyectoRepository`
+- **Repositorio**: Delega en `ProyectoRepository` mediante `obtenerPorId(id) : Proyecto` y `eliminarPorId(id) : void`
 
 ### clases de entidad (entity)
 
 #### ProyectoRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de proyectos
-- Proporcionar método para eliminar un proyecto por identificador
+- Recuperar un proyecto por id mediante `obtenerPorId(id) : Proyecto`
+- Eliminar un proyecto del sistema mediante `eliminarPorId(id) : void`
 
 **Colaboraciones**:
 - **Control**: Responde a `ProyectoController`
@@ -67,8 +68,7 @@ Análisis de colaboración del caso de uso `eliminarProyecto()` mediante el patr
 #### Proyecto
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información del proyecto a eliminar
-- Mantener la integridad referencial con entidades relacionadas
+- Representar los datos del proyecto mostrados en la confirmación de eliminación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ProyectoRepository`
@@ -77,25 +77,30 @@ Análisis de colaboración del caso de uso `eliminarProyecto()` mediante el patr
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PROYECTO_ABIERTO` → `EliminarProyectoView.eliminarProyecto()`
-2. **Confirmación**: El Coordinador confirma la eliminación
-3. **Eliminación**: `EliminarProyectoView` → `ProyectoController.eliminarProyecto(id)` : `void`
-4. **Persistencia**: `ProyectoController` → `ProyectoRepository.eliminarPorId(id)` : `void`
-5. **Finalización**: `EliminarProyectoView` → `:PROYECTOS_ABIERTOS.abrirProyectos()`
+1. El sistema está en `:PROYECTO_ABIERTO`
+2. El coordinador solicita eliminar proyecto: `EliminarProyectoView` recibe `eliminarProyecto()`
+3. `EliminarProyectoView` invoca `cargarProyectoParaEliminacion(id)` en `ProyectoController`
+4. `ProyectoController` delega en `ProyectoRepository.obtenerPorId(id)` y obtiene un objeto `Proyecto`
+5. La pantalla de confirmación se muestra con los datos del proyecto
+6. El coordinador confirma: `EliminarProyectoView` invoca `eliminarProyecto(id) : void` en `ProyectoController`
+7. `ProyectoController` delega en `ProyectoRepository.eliminarPorId(id)`
+8. La vista navega → `:PROYECTOS_ABIERTOS` con `abrirProyectos()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Solicitar confirmación|`EliminarProyectoView`|Muestra diálogo de confirmación|
-|Eliminar proyecto del sistema|`ProyectoController`|`eliminarProyecto(id)` → `ProyectoRepository.eliminarPorId()`|
-|Navegar a lista de proyectos|`EliminarProyectoView`|→ `:PROYECTOS_ABIERTOS`|
+|Cargar datos para confirmación|`ProyectoController`|`cargarProyectoParaEliminacion(id) : Proyecto`|
+|Acceder al proyecto por id|`ProyectoRepository`|`obtenerPorId(id) : Proyecto`|
+|Eliminar proyecto del sistema|`ProyectoController`|`eliminarProyecto(id) : void`|
+|Persistir la eliminación|`ProyectoRepository`|`eliminarPorId(id) : void`|
+|Navegar al listado de proyectos|`EliminarProyectoView`|`abrirProyectos()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación de la confirmación e interacción con el Coordinador
+- **Vista**: Solo presentación de la confirmación e interacción con el coordinador
 - **Control**: Solo coordinación del proceso de eliminación
 - **Entidad**: Solo datos y gestión de la persistencia
 

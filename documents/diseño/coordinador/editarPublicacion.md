@@ -1,4 +1,4 @@
-# editarPublicacion — Diseño · Coordinador
+# editarPublicacion — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Cargar una publicación existente en un formulario pre-rellenado, aplicar las modificaciones del coordinador y persistir el resultado. Solo el coordinador puede editar publicaciones generales.
+Cargar una publicación existente en un formulario pre-rellenado, aplicar las modificaciones del coordinador y persistir el resultado.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/editarPublicacion-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/editarPublicacion.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/editarPublicacion.puml)
 
@@ -22,22 +22,21 @@ Cargar una publicación existente en un formulario pre-rellenado, aplicar las mo
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EditarPublicacionView | `PublicacionController` `@Controller` | GET carga el formulario pre-rellenado; POST aplica los cambios y persiste |
-| PublicacionService | `PublicacionService` `@Service` | `obtenerPorId(id)` para la carga; `actualizar(id, titulo, contenido)` para el guardado |
-| PublicacionRepository | `PublicacionRepository` JpaRepository | SELECT (carga) + UPDATE (guardado) |
-| Publicacion | `Publicacion` `@Entity` | Tabla publicaciones en H2 |
+| Controlador de publicaciones (GET) | PublicacionController @Controller GET /publicaciones/{id}/editar | Verifica permisos y sirve el formulario pre-relleno |
+| Controlador de publicaciones (POST) | PublicacionController @Controller POST /publicaciones/{id}/editar | Verifica permisos, aplica cambios y redirige |
+| Servicio de publicaciones | PublicacionService @Service | `obtenerPorId(id)`, `puedeEditarOEliminar(usuario, publicacion)` y `actualizar(id, titulo, contenido)` |
+| Repositorio de publicaciones | PublicacionRepository JpaRepository | SELECT por id y UPDATE vía save(publicacion) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /publicaciones/{id}/editar | Muestra el formulario pre-rellenado |
-| POST | /publicaciones/{id}/editar | Aplica los cambios y persiste |
+| GET | /publicaciones/{id}/editar | Muestra el formulario pre-rellenado (titulo, contenido) |
+| POST | /publicaciones/{id}/editar | Aplica los cambios y redirige al detalle |
 
 ## Decisiones de diseño
 
-- Ambos endpoints protegidos con `@PreAuthorize("hasRole('COORDINADOR')")` — el investigador recibe 403 si intenta acceder directamente por URL.
-- El GET hace `findById(id)` y pasa la publicación al template con `th:object`.
-- El `actualizar()` del servicio carga el objeto de BD y copia campo a campo desde el formulario, evitando que el POST sobrescriba campos no editables (autor, fecha, id).
-- Tras guardar, redirige a `/publicaciones/{id}` (PRG pattern).
-- Los enlaces Editar/Eliminar en los templates se envuelven con `sec:authorize="hasRole('COORDINADOR')"` para no mostrarlos al investigador.
+- Tanto en GET como en POST, el controlador llama a `puedeEditarOEliminar(usuario, publicacion)` antes de actuar; si devuelve `false`, se redirige o devuelve 403.
+- `actualizar(id, titulo, contenido)` hace `findById`, aplica `publicacion.setTitulo(titulo)` y `publicacion.setContenido(contenido)`, y luego `save(publicacion)`.
+- Tras guardar, redirige a `redirect:/publicaciones/{id}` (302).

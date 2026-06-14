@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el detalle de un entregable al Coordinador.
+Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el detalle de un entregable concreto de un proyecto.
 
 ## diagrama de colaboración
 
@@ -30,34 +30,34 @@ Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patr�
 #### EntregableView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el detalle completo del entregable al Coordinador
-- Ofrecer opciones de edición y eliminación
-- Navegar de vuelta a la lista de entregables
+- Recibir la solicitud `abrirEntregable(id)` desde el estado `:ENTREGABLES_ABIERTOS`
+- Solicitar al controlador los datos del entregable seleccionado mediante `obtenerEntregable(id) : Entregable`
+- Mostrar el detalle del entregable al coordinador
+- Ofrecer las opciones de editar entregable, eliminar entregable o volver al listado
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirEntregable(id)` desde `:ENTREGABLES_ABIERTOS`
-- **Control**: Se comunica con `EntregableController`
-- **Salida**: Navega a `:ENTREGABLE_ABIERTO` y a colaboraciones de gestión
+- **Entrada**: Desde el estado `:ENTREGABLES_ABIERTOS` con `abrirEntregable(id)`
+- **Control**: Se comunica con `EntregableController` mediante `obtenerEntregable(id) : Entregable`
+- **Salida**: Transita a `:ENTREGABLE_ABIERTO` (`entregableMostrado()`), a `:Collaboration EditarEntregable` (`editarEntregable()`), a `:Collaboration EliminarEntregable` (`eliminarEntregable()`) o a `:ENTREGABLES_ABIERTOS` (`abrirEntregables()`)
 
 ### clases de control
 
 #### EntregableController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle del entregable
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerEntregable(id)` desde la vista
+- Delegar la recuperación del entregable al repositorio mediante `obtenerPorId(id)`
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EntregableView`
-- **Repositorio**: Delega el acceso a datos a `EntregableRepository`
+- **Repositorio**: Delega el acceso a datos a `EntregableRepository` mediante `obtenerPorId(id) : Entregable`
 
 ### clases de entidad (entity)
 
 #### EntregableRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de entregables
-- Proporcionar método para obtener un entregable por identificador
+- Recuperar un entregable concreto por su identificador mediante `obtenerPorId(id) : Entregable`
 
 **Colaboraciones**:
 - **Control**: Responde a `EntregableController`
@@ -66,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patr�
 #### Entregable
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de un entregable
-- Encapsular atributos: título, descripción, fecha límite, estado, documentos
+- Representar los datos de un entregable asociado a un proyecto
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `EntregableRepository`
@@ -76,27 +75,34 @@ Análisis de colaboración del caso de uso `abrirEntregable()` mediante el patr�
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:ENTREGABLES_ABIERTOS` → `EntregableView.abrirEntregable(id)`
-2. **Obtención**: `EntregableView` → `EntregableController.obtenerEntregable(id)` : `Entregable`
-3. **Acceso a datos**: `EntregableController` → `EntregableRepository.obtenerPorId(id)` : `Entregable`
-4. **Presentación**: `EntregableView` → `:ENTREGABLE_ABIERTO.entregableMostrado()`
+1. El sistema llega al estado `:ENTREGABLES_ABIERTOS` (listado visible)
+2. El coordinador selecciona un entregable: `EntregableView` recibe `abrirEntregable(id)`
+3. `EntregableView` invoca `obtenerEntregable(id)` en `EntregableController`
+4. `EntregableController` delega en `EntregableRepository.obtenerPorId(id)` y obtiene un objeto `Entregable`
+5. `EntregableView` muestra el detalle → estado `:ENTREGABLE_ABIERTO` con `entregableMostrado()`
+6. Desde la vista el coordinador puede:
+   - Editar el entregable → `:Collaboration EditarEntregable` con `editarEntregable()`
+   - Eliminar el entregable → `:Collaboration EliminarEntregable` con `eliminarEntregable()`
+   - Volver al listado → `:ENTREGABLES_ABIERTOS` con `abrirEntregables()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar detalle del entregable|`EntregableView`|Coordina con `EntregableController.obtenerEntregable(id)`|
-|Datos del entregable|`Entregable`|Encapsula todos los atributos|
-|Editar entregable|`EntregableView`|→ Colaboración `EditarEntregable`|
-|Eliminar entregable|`EntregableView`|→ Colaboración `EliminarEntregable`|
+|Mostrar detalle de un entregable|`EntregableView`|`abrirEntregable(id)`|
+|Recuperar el entregable por id|`EntregableController`|`obtenerEntregable(id) : Entregable`|
+|Acceder a datos del entregable|`EntregableRepository`|`obtenerPorId(id) : Entregable`|
+|Navegar a editar entregable|`EntregableView`|`editarEntregable()`|
+|Navegar a eliminar entregable|`EntregableView`|`eliminarEntregable()`|
+|Volver al listado de entregables|`EntregableView`|`abrirEntregables()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y obtención del detalle
-- **Entidad**: Solo datos y reglas de negocio del entregable
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación del objeto `Entregable`
+- **Entidad**: Solo datos y reglas de negocio de los entregables
 
 ### agnóstico tecnológicamente
 

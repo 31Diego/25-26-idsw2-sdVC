@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Invalidar la sesión activa del usuario y redirigirle al formulario de inicio de sesión.
+Permite al coordinador cerrar su sesión activa; Spring Security invalida la sesión HTTP y limpia el contexto de seguridad, redirigiendo al formulario de login.
 
 ## Diagrama de secuencia
 
@@ -22,16 +22,16 @@ Invalidar la sesión activa del usuario y redirigirle al formulario de inicio de
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| SesionController | Spring Security `LogoutFilter` | Intercepta POST /logout; invalida la sesión y limpia el SecurityContext |
+| Sistema de seguridad | Spring Security POST /logout | Gestiona el cierre de sesión invalidando la HttpSession y limpiando el SecurityContext |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| POST | /logout | Spring Security invalida la sesión; redirige a /login?logout |
+| POST | /logout | Spring Security invalida la sesión y redirige a /login?logout |
 
 ## Decisiones de diseño
 
-- No existe un controlador propio; Spring Security gestiona el logout íntegramente mediante `LogoutFilter`.
-- Se usa POST (no GET) para evitar que peticiones de terceros puedan cerrar la sesión del usuario (protección CSRF).
-- Tras el logout redirige a `/login?logout`, configurado con `logoutSuccessUrl` en `SecurityConfig`.
+- El cierre de sesión se gestiona íntegramente por Spring Security, sin controlador de aplicación.
+- Se ejecutan dos pasos internos: `invalida HttpSession` y `limpia SecurityContext`.
+- Tras el logout, Spring Security redirige a `/login?logout`, donde el formulario puede mostrar un mensaje de confirmación de cierre.

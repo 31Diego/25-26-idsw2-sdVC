@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `crearPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Investigador publique un nuevo mensaje en el sistema.
+Análisis de colaboración del caso de uso `crearPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador publique un nuevo mensaje en el sistema.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: crearPublicacion()](../../../images/analisis/investigador/crearPublicacion-analisis.svg)|
+|![Análisis: crearPublicacion()](../../../images/analisis/investigador/crearPublicacion-investigador-analisis.svg)|
 |-|
 |Código fuente: [crearPublicacion.puml](../../../modelosUML/analisis/investigador/crearPublicacion.puml)|
 
@@ -30,36 +30,35 @@ Análisis de colaboración del caso de uso `crearPublicacion()` mediante el patr
 #### CrearPublicacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de creación de publicación al Investigador
-- Capturar los datos de la nueva publicación (título, contenido)
-- Invocar el guardado en el controlador
-- Navegar al listado de mis publicaciones tras la creación
+- Recibir la solicitud `crearPublicacion()` desde `:MIS_PUBLICACIONES_ABIERTAS`
+- Solicitar la validación de datos mediante `validarDatos(datos) : boolean`
+- Solicitar el guardado de la publicación mediante `guardarPublicacion(datos) : Publicacion`
+- Mostrar el formulario de creación al investigador
+- Transitar a `:MIS_PUBLICACIONES_ABIERTAS` o `:PANEL_PRINCIPAL_ABIERTO` al finalizar
 
 **Colaboraciones**:
-- **Entrada**: Recibe `crearPublicacion()` desde `:MIS_PUBLICACIONES_ABIERTAS`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:MIS_PUBLICACIONES_ABIERTAS` o `:PANEL_PRINCIPAL_ABIERTO`
+- **Entrada**: Desde `:MIS_PUBLICACIONES_ABIERTAS` con `crearPublicacion()`
+- **Control**: Se comunica con `PublicacionController` mediante `validarDatos(datos) : boolean` y `guardarPublicacion(datos) : Publicacion`
+- **Salida**: Transita a `:MIS_PUBLICACIONES_ABIERTAS` (`abrirMisPublicaciones()`) o `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de creación de la nueva publicación
-- Validar los datos del formulario
-- Persistir la nueva publicación con el autor autenticado
+- Recibir `validarDatos(datos)` y verificar la corrección de los datos del formulario
+- Recibir `guardarPublicacion(datos)` y delegar la persistencia en el repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `CrearPublicacionView`
-- **Repositorio**: Delega la persistencia a `PublicacionRepository`
+- **Repositorio**: Delega en `PublicacionRepository` mediante `crear(publicacion) : Publicacion`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar método para crear una nueva publicación
+- Persistir una nueva publicación mediante `crear(publicacion) : Publicacion`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -68,8 +67,7 @@ Análisis de colaboración del caso de uso `crearPublicacion()` mediante el patr
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de la nueva publicación
-- Encapsular atributos: título, contenido, autor, fecha de creación
+- Representar los datos de la nueva publicación a persistir
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -78,27 +76,29 @@ Análisis de colaboración del caso de uso `crearPublicacion()` mediante el patr
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:MIS_PUBLICACIONES_ABIERTAS` → `CrearPublicacionView.crearPublicacion()`
-2. **Captura de datos**: El Investigador rellena el formulario
-3. **Validación**: `CrearPublicacionView` → `PublicacionController.validarDatos(datos)` : `boolean`
-4. **Guardado**: `CrearPublicacionView` → `PublicacionController.guardarPublicacion(datos)` : `Publicacion`
-5. **Persistencia**: `PublicacionController` → `PublicacionRepository.crear(publicacion)` : `Publicacion`
-6. **Finalización**: `CrearPublicacionView` → `:MIS_PUBLICACIONES_ABIERTAS.abrirMisPublicaciones()`
+1. El sistema está en `:MIS_PUBLICACIONES_ABIERTAS`
+2. El investigador solicita crear una publicación: `CrearPublicacionView` recibe `crearPublicacion()`
+3. El investigador rellena el formulario y confirma
+4. `CrearPublicacionView` invoca `validarDatos(datos) : boolean` en `PublicacionController`
+5. `CrearPublicacionView` invoca `guardarPublicacion(datos) : Publicacion` en `PublicacionController`
+6. `PublicacionController` delega en `PublicacionRepository.crear(publicacion)` y obtiene la `Publicacion` persistida
+7. La vista transita con `abrirMisPublicaciones()` o `abrirPanelPrincipal()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario|`CrearPublicacionView`|Captura título y contenido|
-|Validar datos|`PublicacionController`|`validarDatos(datos)`|
-|Persistir nueva publicación|`PublicacionController`|`guardarPublicacion(datos)` → `PublicacionRepository.crear()`|
-|Confirmar creación|`CrearPublicacionView`|→ `:MIS_PUBLICACIONES_ABIERTAS`|
+|Validar datos del formulario|`PublicacionController`|`validarDatos(datos) : boolean`|
+|Guardar la publicación|`PublicacionController`|`guardarPublicacion(datos) : Publicacion`|
+|Persistir nueva publicación|`PublicacionRepository`|`crear(publicacion) : Publicacion`|
+|Volver a mis publicaciones|`CrearPublicacionView`|`abrirMisPublicaciones()`|
+|Volver al panel principal|`CrearPublicacionView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Investigador
+- **Vista**: Solo presentación del formulario e interacción con el investigador
 - **Control**: Solo coordinación de la validación y persistencia
 - **Entidad**: Solo datos y reglas de negocio de la publicación
 

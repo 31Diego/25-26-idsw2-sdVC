@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `crearProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para registrar un nuevo proyecto de investigación en el sistema.
+Análisis de colaboración del caso de uso `crearProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador registre un nuevo proyecto de investigación en el sistema.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: crearProyecto()](../../../images/analisis/crearProyecto-analisis.svg)|
+|![Análisis: crearProyecto()](../../../images/analisis/coordinador/crearProyecto-analisis.svg)|
 |-|
 |Código fuente: [crearProyecto.puml](../../../modelosUML/analisis/coordinador/crearProyecto.puml)|
 
@@ -30,36 +30,34 @@ Análisis de colaboración del caso de uso `crearProyecto()` mediante el patrón
 #### CrearProyectoView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de creación de proyecto al Coordinador
-- Capturar los datos del nuevo proyecto
-- Invocar el guardado en el controlador
-- Navegar a la lista de proyectos o al panel principal tras la creación
+- Recibir la solicitud `crearProyecto()` desde `:PROYECTOS_ABIERTOS`
+- Solicitar al controlador la validación de datos mediante `validarDatos(datos) : boolean`
+- Solicitar al controlador el guardado del nuevo proyecto mediante `guardarProyecto(datos) : Proyecto`
+- Navegar al listado de proyectos o al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `crearProyecto()` desde `:PROYECTOS_ABIERTOS`
-- **Control**: Se comunica con `ProyectoController`
-- **Salida**: Navega a `:PROYECTOS_ABIERTOS` o `:PANEL_PRINCIPAL_ABIERTO`
+- **Entrada**: Desde `:PROYECTOS_ABIERTOS` con `crearProyecto()`
+- **Control**: Se comunica con `ProyectoController` mediante `validarDatos(datos) : boolean` y `guardarProyecto(datos) : Proyecto`
+- **Salida**: Transita a `:PROYECTOS_ABIERTOS` (`abrirProyectos()`) o a `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### ProyectoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de creación del nuevo proyecto
-- Validar los datos recibidos del formulario
-- Persistir el nuevo proyecto a través del repositorio
+- Recibir y ejecutar `validarDatos(datos) : boolean`
+- Recibir `guardarProyecto(datos)` y delegar la creación al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `CrearProyectoView`
-- **Repositorio**: Delega la persistencia a `ProyectoRepository`
+- **Repositorio**: Delega la persistencia a `ProyectoRepository` mediante `crear(proyecto) : Proyecto`
 
 ### clases de entidad (entity)
 
 #### ProyectoRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de proyectos
-- Proporcionar método para crear un nuevo proyecto
+- Persistir un nuevo proyecto mediante `crear(proyecto) : Proyecto`
 
 **Colaboraciones**:
 - **Control**: Responde a `ProyectoController`
@@ -68,8 +66,7 @@ Análisis de colaboración del caso de uso `crearProyecto()` mediante el patrón
 #### Proyecto
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de un nuevo proyecto de investigación
-- Encapsular atributos: título, descripción, estado inicial, fechas previstas
+- Representar los datos del nuevo proyecto de investigación a crear
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ProyectoRepository`
@@ -78,27 +75,32 @@ Análisis de colaboración del caso de uso `crearProyecto()` mediante el patrón
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PROYECTOS_ABIERTOS` → `CrearProyectoView.crearProyecto()`
-2. **Captura de datos**: El Coordinador rellena el formulario con los datos del nuevo proyecto
-3. **Guardado**: `CrearProyectoView` → `ProyectoController.guardarProyecto(datos)` : `Proyecto`
-4. **Persistencia**: `ProyectoController` → `ProyectoRepository.crear(proyecto)` : `Proyecto`
-5. **Finalización**: `CrearProyectoView` → `:PROYECTOS_ABIERTOS.abrirProyectos()`
+1. El sistema está en `:PROYECTOS_ABIERTOS`
+2. El coordinador solicita crear proyecto: `CrearProyectoView` recibe `crearProyecto()`
+3. El coordinador rellena el formulario con los datos del proyecto
+4. `CrearProyectoView` invoca `validarDatos(datos)` en `ProyectoController` → devuelve `boolean`
+5. Si la validación es correcta, `CrearProyectoView` invoca `guardarProyecto(datos)` en `ProyectoController`
+6. `ProyectoController` delega en `ProyectoRepository.crear(proyecto)` y obtiene el objeto `Proyecto` creado
+7. La vista navega → `:PROYECTOS_ABIERTOS` (`abrirProyectos()`) o `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario de creación|`CrearProyectoView`|Captura datos del nuevo proyecto|
-|Persistir nuevo proyecto|`ProyectoController`|`guardarProyecto(datos)` → `ProyectoRepository.crear()`|
-|Confirmar creación|`CrearProyectoView`|→ `:PROYECTOS_ABIERTOS`|
+|Presentar formulario de creación|`CrearProyectoView`|`crearProyecto()`|
+|Validar datos del formulario|`ProyectoController`|`validarDatos(datos) : boolean`|
+|Persistir nuevo proyecto|`ProyectoController`|`guardarProyecto(datos) : Proyecto`|
+|Crear proyecto en repositorio|`ProyectoRepository`|`crear(proyecto) : Proyecto`|
+|Volver al listado de proyectos|`CrearProyectoView`|`abrirProyectos()`|
+|Volver al panel principal|`CrearProyectoView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Coordinador
+- **Vista**: Solo presentación del formulario e interacción con el coordinador
 - **Control**: Solo coordinación de la validación y persistencia
-- **Entidad**: Solo datos y reglas de negocio del proyecto
+- **Entidad**: Solo datos y reglas de negocio de los proyectos
 
 ### agnóstico tecnológicamente
 

@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirRecompensas()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para listar y filtrar las recompensas disponibles en el sistema.
+Análisis de colaboración del caso de uso `abrirRecompensas()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el listado de recompensas del sistema, con opción de filtrado por criterio.
 
 ## diagrama de colaboración
 
@@ -30,36 +30,36 @@ Análisis de colaboración del caso de uso `abrirRecompensas()` mediante el patr
 #### RecompensasView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la lista de recompensas al Coordinador
-- Permitir filtrar recompensas por criterios
-- Ofrecer acceso a una recompensa concreta y a la creación de nuevas
-- Navegar de vuelta al panel principal
+- Recibir la solicitud `abrirRecompensas()` desde `:PANEL_PRINCIPAL_ABIERTO` o `:RECOMPENSA_ABIERTA`
+- Solicitar al controlador el listado completo mediante `obtenerRecompensas() : List<Recompensa>`
+- Solicitar al controlador el listado filtrado mediante `filtrarRecompensas(criterio) : List<Recompensa>`
+- Mostrar el listado al coordinador
+- Ofrecer navegación a una recompensa concreta, crear recompensa o volver al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirRecompensas()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Control**: Se comunica con `RecompensaController`
-- **Salida**: Navega a `:RECOMPENSAS_ABIERTAS` y colaboraciones de gestión
+- **Entrada**: Desde `:PANEL_PRINCIPAL_ABIERTO` o `:RECOMPENSA_ABIERTA` con `abrirRecompensas()`
+- **Control**: Se comunica con `RecompensaController` mediante `obtenerRecompensas() : List<Recompensa>` y `filtrarRecompensas(criterio) : List<Recompensa>`
+- **Salida**: Transita a `:RECOMPENSAS_ABIERTAS` (`recompensasCargadas()`), a `:Collaboration AbrirRecompensa` (`abrirRecompensa(id)`), a `:Collaboration CrearRecompensa` (`crearRecompensa()`) o a `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### RecompensaController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de todas las recompensas
-- Gestionar la lógica de filtrado
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerRecompensas()` y devolver todas las recompensas
+- Recibir `filtrarRecompensas(criterio)` y devolver la lista filtrada
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `RecompensasView`
-- **Repositorio**: Delega el acceso a datos a `RecompensaRepository`
+- **Repositorio**: Delega en `RecompensaRepository` mediante `obtenerTodos()` y `buscarPorCriterio(criterio)`
 
 ### clases de entidad (entity)
 
 #### RecompensaRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de recompensas
-- Proporcionar método para obtener todas las recompensas e implementar búsqueda por criterios
+- Recuperar todas las recompensas mediante `obtenerTodos() : List<Recompensa>`
+- Recuperar recompensas filtradas mediante `buscarPorCriterio(criterio) : List<Recompensa>`
 
 **Colaboraciones**:
 - **Control**: Responde a `RecompensaController`
@@ -68,8 +68,7 @@ Análisis de colaboración del caso de uso `abrirRecompensas()` mediante el patr
 #### Recompensa
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de una recompensa
-- Encapsular atributos: título, descripción, tipo, valor, condiciones
+- Representar los datos de una recompensa del sistema
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `RecompensaRepository`
@@ -78,28 +77,36 @@ Análisis de colaboración del caso de uso `abrirRecompensas()` mediante el patr
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `RecompensasView.abrirRecompensas()`
-2. **Listado**: `RecompensasView` → `RecompensaController.obtenerRecompensas()` : `List<Recompensa>`
-3. **Acceso a datos**: `RecompensaController` → `RecompensaRepository.obtenerTodos()` : `List<Recompensa>`
-4. **Filtrado (opcional)**: `RecompensasView` → `RecompensaController.filtrarRecompensas(criterio)` : `List<Recompensa>`
-5. **Presentación**: `RecompensasView` → `:RECOMPENSAS_ABIERTAS.recompensasCargadas()`
+1. El sistema está en `:PANEL_PRINCIPAL_ABIERTO` o en `:RECOMPENSA_ABIERTA`
+2. El coordinador solicita ver recompensas: `RecompensasView` recibe `abrirRecompensas()`
+3. `RecompensasView` invoca `obtenerRecompensas()` en `RecompensaController`
+4. `RecompensaController` delega en `RecompensaRepository.obtenerTodos()` y obtiene `List<Recompensa>`
+5. El listado se muestra → estado `:RECOMPENSAS_ABIERTAS` con `recompensasCargadas()`
+6. El coordinador puede filtrar: `RecompensasView` invoca `filtrarRecompensas(criterio)` en `RecompensaController`, que delega en `RecompensaRepository.buscarPorCriterio(criterio)`
+7. Desde la vista el coordinador puede:
+   - Abrir una recompensa → `:Collaboration AbrirRecompensa` con `abrirRecompensa(id)`
+   - Crear nueva recompensa → `:Collaboration CrearRecompensa` con `crearRecompensa()`
+   - Volver al panel principal → `:PANEL_PRINCIPAL_ABIERTO` con `abrirPanelPrincipal()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Listar recompensas|`RecompensasView`|Coordina con `RecompensaController.obtenerRecompensas()`|
-|Filtrar recompensas|`RecompensasView`|Invoca `RecompensaController.filtrarRecompensas(criterio)`|
-|Abrir recompensa concreta|`RecompensasView`|→ Colaboración `AbrirRecompensa`|
-|Crear nueva recompensa|`RecompensasView`|→ Colaboración `CrearRecompensa`|
+|Mostrar listado de recompensas|`RecompensasView`|`obtenerRecompensas() : List<Recompensa>`|
+|Filtrar recompensas por criterio|`RecompensaController`|`filtrarRecompensas(criterio) : List<Recompensa>`|
+|Acceder a todas las recompensas|`RecompensaRepository`|`obtenerTodos() : List<Recompensa>`|
+|Buscar recompensas por criterio|`RecompensaRepository`|`buscarPorCriterio(criterio) : List<Recompensa>`|
+|Navegar al detalle de una recompensa|`RecompensasView`|`abrirRecompensa(id)`|
+|Navegar a crear recompensa|`RecompensasView`|`crearRecompensa()`|
+|Volver al panel principal|`RecompensasView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y lógica de filtrado
-- **Entidad**: Solo datos y reglas de negocio de la recompensa
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación, obtención y filtrado del listado de recompensas
+- **Entidad**: Solo datos y reglas de negocio de las recompensas
 
 ### agnóstico tecnológicamente
 

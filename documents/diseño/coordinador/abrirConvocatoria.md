@@ -1,4 +1,4 @@
-# abrirConvocatoria — Diseño · Coordinador
+# abrirConvocatoria — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Recuperar y mostrar el detalle completo de una convocatoria concreta: título, área, estado, fechas, descripción, requisitos y condiciones, criterios de evaluación, dotación, documentación asociada e información de contacto.
+Recuperar y mostrar el detalle completo de una convocatoria concreta.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/abrirConvocatoria-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/abrirConvocatoria.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/abrirConvocatoria.puml)
 
@@ -22,19 +22,19 @@ Recuperar y mostrar el detalle completo de una convocatoria concreta: título, �
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| ConvocatoriaView | `ConvocatoriaController` `@Controller` | Recibe GET /convocatorias/{id}; añade la entidad al Model y devuelve convocatoria.html |
-| ConvocatoriaController | `ConvocatoriaService` `@Service` | `obtenerPorId(id)` — lanza excepción si no existe |
-| ConvocatoriaRepository | `ConvocatoriaRepository` JpaRepository | SELECT * FROM convocatorias WHERE id = ? |
-| Convocatoria | `Convocatoria` `@Entity` | Tabla convocatorias con todos los campos del detalle |
+| Controlador de convocatorias | ConvocatoriaController @Controller | Atiende GET /convocatorias/{id} y devuelve convocatoria.html |
+| Servicio de convocatorias | ConvocatoriaService @Service | `obtenerPorId(id)` recupera la convocatoria |
+| Repositorio de convocatorias | ConvocatoriaRepository JpaRepository | Ejecuta SELECT * FROM convocatorias WHERE id = ? vía findById(id) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /convocatorias/{id} | Muestra el detalle de la convocatoria |
+| GET | /convocatorias/{id} | Muestra el detalle completo de la convocatoria |
 
 ## Decisiones de diseño
 
-- Si la convocatoria no existe, el servicio lanza excepción y el controlador redirige a `/convocatorias`.
-- El template `convocatoria.html` incluye el botón "Importar convocatoria" que navega a `/convocatorias/importar`.
-- Los campos de texto extenso (descripcion, requisitos, criteriosEvaluacion) se declaran como `@Lob` en la entidad para soportar contenido amplio.
+- El id llega como `@PathVariable`.
+- `obtenerPorId(id)` usa `findById(id)` y resuelve el Optional con `orElseThrow()`.
+- La vista `convocatoria.html` (detalle) incluye todos los campos de la entidad.

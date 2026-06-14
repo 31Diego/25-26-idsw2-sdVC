@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `eliminarPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Investigador elimine una publicación propia tras confirmar la acción.
+Análisis de colaboración del caso de uso `eliminarPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador elimine una publicación propia tras confirmar la acción.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: eliminarPublicacion()](../../../images/analisis/investigador/eliminarPublicacion-analisis.svg)|
+|![Análisis: eliminarPublicacion()](../../../images/analisis/investigador/eliminarPublicacion-investigador-analisis.svg)|
 |-|
 |Código fuente: [eliminarPublicacion.puml](../../../modelosUML/analisis/investigador/eliminarPublicacion.puml)|
 
@@ -30,35 +30,36 @@ Análisis de colaboración del caso de uso `eliminarPublicacion()` mediante el p
 #### EliminarPublicacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la pantalla de confirmación de eliminación con los datos de la publicación
-- Capturar la confirmación del Investigador
-- Invocar la eliminación en el controlador
-- Navegar al listado de mis publicaciones tras la eliminación
+- Recibir la solicitud `eliminarPublicacion()` desde `:MI_PUBLICACION_ABIERTA`
+- Solicitar los datos de la publicación para la confirmación mediante `cargarPublicacionParaEliminacion(id) : Publicacion`
+- Solicitar la eliminación definitiva mediante `eliminarPublicacion(id) : void`
+- Mostrar la pantalla de confirmación al investigador
+- Transitar a `:MIS_PUBLICACIONES_ABIERTAS` al finalizar
 
 **Colaboraciones**:
-- **Entrada**: Recibe `eliminarPublicacion()` desde `:MI_PUBLICACION_ABIERTA`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:MIS_PUBLICACIONES_ABIERTAS`
+- **Entrada**: Desde `:MI_PUBLICACION_ABIERTA` con `eliminarPublicacion()`
+- **Control**: Se comunica con `PublicacionController` mediante `cargarPublicacionParaEliminacion(id)` y `eliminarPublicacion(id)`
+- **Salida**: Transita a `:MIS_PUBLICACIONES_ABIERTAS` con `abrirMisPublicaciones()`
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la carga de la publicación para mostrar en la confirmación
-- Ejecutar la eliminación del repositorio
+- Recibir `cargarPublicacionParaEliminacion(id)` y delegar en el repositorio la obtención de la publicación
+- Recibir `eliminarPublicacion(id)` y delegar la eliminación en el repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EliminarPublicacionView`
-- **Repositorio**: Delega la operación de datos a `PublicacionRepository`
+- **Repositorio**: Delega en `PublicacionRepository` mediante `obtenerPorId(id) : Publicacion` y `eliminarPorId(id) : void`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar métodos para obtener y eliminar una publicación por identificador
+- Recuperar una publicación por id para la confirmación mediante `obtenerPorId(id) : Publicacion`
+- Eliminar definitivamente la publicación mediante `eliminarPorId(id) : void`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -67,8 +68,7 @@ Análisis de colaboración del caso de uso `eliminarPublicacion()` mediante el p
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de la publicación a eliminar
-- Encapsular atributos para mostrar en la pantalla de confirmación
+- Representar los datos de la publicación a mostrar en la confirmación de eliminación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -77,28 +77,32 @@ Análisis de colaboración del caso de uso `eliminarPublicacion()` mediante el p
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:MI_PUBLICACION_ABIERTA` → `EliminarPublicacionView.eliminarPublicacion()`
-2. **Carga para confirmación**: `EliminarPublicacionView` → `PublicacionController.cargarPublicacionParaEliminacion(id)` : `Publicacion`
-3. **Acceso a datos**: `PublicacionController` → `PublicacionRepository.obtenerPorId(id)` : `Publicacion`
-4. **Confirmación**: El Investigador confirma la eliminación
-5. **Eliminación**: `EliminarPublicacionView` → `PublicacionController.eliminarPublicacion(id)` : `void`
-6. **Persistencia**: `PublicacionController` → `PublicacionRepository.eliminarPorId(id)` : `void`
-7. **Finalización**: `EliminarPublicacionView` → `:MIS_PUBLICACIONES_ABIERTAS.abrirMisPublicaciones()`
+1. El sistema está en `:MI_PUBLICACION_ABIERTA`
+2. El investigador solicita eliminar: `EliminarPublicacionView` recibe `eliminarPublicacion()`
+3. `EliminarPublicacionView` invoca `cargarPublicacionParaEliminacion(id) : Publicacion` en `PublicacionController`
+4. `PublicacionController` delega en `PublicacionRepository.obtenerPorId(id)` y obtiene la `Publicacion`
+5. La vista muestra la pantalla de confirmación con los datos de la publicación
+6. El investigador confirma la eliminación
+7. `EliminarPublicacionView` invoca `eliminarPublicacion(id) : void` en `PublicacionController`
+8. `PublicacionController` delega en `PublicacionRepository.eliminarPorId(id)`
+9. La vista transita a `:MIS_PUBLICACIONES_ABIERTAS` con `abrirMisPublicaciones()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar confirmación con datos|`PublicacionController`|`cargarPublicacionParaEliminacion(id)`|
-|Ejecutar eliminación|`PublicacionController`|`eliminarPublicacion(id)` → `PublicacionRepository.eliminarPorId(id)`|
-|Redirigir tras eliminación|`EliminarPublicacionView`|→ `:MIS_PUBLICACIONES_ABIERTAS`|
+|Cargar publicación para confirmación|`PublicacionController`|`cargarPublicacionParaEliminacion(id) : Publicacion`|
+|Acceder a la publicación por id|`PublicacionRepository`|`obtenerPorId(id) : Publicacion`|
+|Eliminar la publicación|`PublicacionController`|`eliminarPublicacion(id) : void`|
+|Ejecutar eliminación en base de datos|`PublicacionRepository`|`eliminarPorId(id) : void`|
+|Volver a mis publicaciones|`EliminarPublicacionView`|`abrirMisPublicaciones()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación de confirmación e interacción con el Investigador
-- **Control**: Solo coordinación de la carga y eliminación
+- **Vista**: Solo presentación de la confirmación e interacción con el investigador
+- **Control**: Solo coordinación de la carga para confirmación y la eliminación
 - **Entidad**: Solo datos y reglas de negocio de la publicación
 
 ### agnóstico tecnológicamente

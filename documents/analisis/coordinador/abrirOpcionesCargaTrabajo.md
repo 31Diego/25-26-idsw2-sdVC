@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirOpcionesCargaTrabajo()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el resumen de carga de trabajo de los investigadores al Coordinador.
+Análisis de colaboración del caso de uso `abrirOpcionesCargaTrabajo()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el resumen de carga de trabajo de un investigador y acceda a las opciones de edición.
 
 ## diagrama de colaboración
 
@@ -30,37 +30,34 @@ Análisis de colaboración del caso de uso `abrirOpcionesCargaTrabajo()` mediant
 #### CargaTrabajoView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el resumen de carga de trabajo de todos los investigadores
-- Permitir filtrar por criterios de búsqueda
-- Ofrecer acceso a la edición de la carga de trabajo de un investigador concreto
-- Navegar de vuelta al panel principal
+- Recibir la solicitud `abrirOpcionesCargaTrabajo()` desde `:PANEL_PRINCIPAL_ABIERTO`
+- Solicitar al controlador el resumen de carga de trabajo mediante `obtenerResumenCargaTrabajo() : Investigador`
+- Mostrar el resumen al coordinador
+- Ofrecer la opción de editar la carga de trabajo o volver al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirOpcionesCargaTrabajo()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Control**: Se comunica con `CargaTrabajoController`
-- **Salida**: Navega a `:OPCIONES_CARGA_TRABAJO_ABIERTAS`, a colaboración `EditarCargaTrabajo` o de vuelta al panel
+- **Entrada**: Desde `:PANEL_PRINCIPAL_ABIERTO` con `abrirOpcionesCargaTrabajo()`
+- **Control**: Se comunica con `CargaTrabajoController` mediante `obtenerResumenCargaTrabajo() : Investigador`
+- **Salida**: Transita a `:OPCIONES_CARGA_TRABAJO_ABIERTAS` (`cargaTrabajoCargada()`), a `:Collaboration EditarCargaTrabajo` (`editarCargaTrabajo()`) o a `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### CargaTrabajoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del resumen de carga de trabajo de todos los investigadores
-- Manejar la lógica de filtrado por criterios
-- Servir como intermediario entre la vista y el repositorio
+- Recibir la petición `obtenerResumenCargaTrabajo()` desde la vista
+- Delegar la recuperación del investigador al repositorio mediante `obtenerPorId(id)`
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `CargaTrabajoView`
-- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository`
+- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository` mediante `obtenerPorId(id) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para obtener todos los investigadores
-- Implementar búsqueda por criterios de filtrado
+- Recuperar un investigador concreto por su identificador mediante `obtenerPorId(id) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `CargaTrabajoController`
@@ -69,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirOpcionesCargaTrabajo()` mediant
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de un investigador incluyendo su carga de trabajo
-- Encapsular atributos: nombre, área, proyectos activos, dedicación
+- Representar los datos del investigador incluyendo su información de carga de trabajo
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -79,29 +75,32 @@ Análisis de colaboración del caso de uso `abrirOpcionesCargaTrabajo()` mediant
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `CargaTrabajoView.abrirOpcionesCargaTrabajo()`
-2. **Obtención de datos**: `CargaTrabajoView` → `CargaTrabajoController.obtenerResumenCargaTrabajo()` : `List<Investigador>`
-3. **Acceso a datos**: `CargaTrabajoController` → `InvestigadorRepository.obtenerTodos()` : `List<Investigador>`
-4. **Filtrado (opcional)**: `CargaTrabajoView` → `CargaTrabajoController.filtrarCargaTrabajo(criterio)` : `List<Investigador>`
-5. **Búsqueda**: `CargaTrabajoController` → `InvestigadorRepository.buscarPorCriterio(criterio)` : `List<Investigador>`
-6. **Presentación**: `CargaTrabajoView` → `:OPCIONES_CARGA_TRABAJO_ABIERTAS.cargaTrabajoCargada()`
+1. El sistema está en `:PANEL_PRINCIPAL_ABIERTO`
+2. El coordinador solicita ver opciones de carga de trabajo: `CargaTrabajoView` recibe `abrirOpcionesCargaTrabajo()`
+3. `CargaTrabajoView` invoca `obtenerResumenCargaTrabajo()` en `CargaTrabajoController`
+4. `CargaTrabajoController` delega en `InvestigadorRepository.obtenerPorId(id)` y obtiene un objeto `Investigador`
+5. `CargaTrabajoView` muestra el resumen → estado `:OPCIONES_CARGA_TRABAJO_ABIERTAS` con `cargaTrabajoCargada()`
+6. Desde la vista el coordinador puede:
+   - Editar la carga de trabajo → `:Collaboration EditarCargaTrabajo` con `editarCargaTrabajo()`
+   - Volver al panel principal → `:PANEL_PRINCIPAL_ABIERTO` con `abrirPanelPrincipal()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar resumen de carga de trabajo|`CargaTrabajoView`|Coordina con `CargaTrabajoController.obtenerResumenCargaTrabajo()`|
-|Filtrar por criterio|`CargaTrabajoView`|Invoca `CargaTrabajoController.filtrarCargaTrabajo(criterio)`|
-|Acceder a edición de carga|`CargaTrabajoView`|→ Colaboración `EditarCargaTrabajo`|
-|Datos de los investigadores|`Investigador`|Encapsula atributos de carga de trabajo|
+|Mostrar resumen de carga de trabajo|`CargaTrabajoView`|`obtenerResumenCargaTrabajo() : Investigador`|
+|Recuperar datos del investigador|`CargaTrabajoController`|`obtenerResumenCargaTrabajo() : Investigador`|
+|Acceder a datos del investigador|`InvestigadorRepository`|`obtenerPorId(id) : Investigador`|
+|Navegar a editar carga de trabajo|`CargaTrabajoView`|`editarCargaTrabajo()`|
+|Volver al panel principal|`CargaTrabajoView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y lógica de filtrado
-- **Entidad**: Solo datos y reglas de negocio del investigador
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación y recuperación del resumen de carga de trabajo
+- **Entidad**: Solo datos y reglas de negocio de los investigadores
 
 ### agnóstico tecnológicamente
 

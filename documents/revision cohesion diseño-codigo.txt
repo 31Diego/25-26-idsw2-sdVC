@@ -1,0 +1,74 @@
+REVISION COHERENCIA DISEÑO-IMPLEMENTACIÓN
+
+
+COORDINADOR{
+
+
+CONVOCATORIAS
+abrirConvocatoria -> correcto, todos los metodos existen en sus respectivas clases
+abrirConvocatorias -> bien, pero en el metodo de buscarPorCriterios, no se que es "q"
+importarConvocatorias -> en principio todo bien, save creo que es uno de los metodos gratis de JPA
+eliminarConvocatoria -> bien, todos los metodos correctos
+
+
+ENTREGABLES/ ARCHIVO
+abrirEntregable -> bien todo correcto
+abrirEntregables -> correcto
+editarEntregable -> bien
+eliminarEntregable -> bien
+crearEntregable -> bien
+
+
+INVESTIGADOR/ PERFIL
+abrirInvestigador -> bien
+abrirInvestigadores -> bien, el svg estaba desactualizado || corregido
+crearInvestigador -> bien
+abrirOpcionesPerfil -> bien
+editarPerfil -> bien
+abrirSolicitudesEliminacionPerfil -> bien
+abrirSolicitudEliminacionPerfil -> bien
+solicitarEliminacionPerfil -> bien
+eliminarPerfil -> bien
+
+PROYECTOS
+abrirProyectos -> bien
+abrirProyecto -> bien
+abrirInvestigadores(proyecto) -> bien
+crearProyecto -> bien
+editarProyecto -> bien
+agregarInvestigador -> bien
+eliminarProyecto -> bien
+eliminarInvestigador -> bien, pero me parece que falta el .remove primero del proyecto service antes del .save; claude me dice que como no toca la bd ese metodo se puede omitir
+
+}
+
+
+INVESTIGADOR {
+
+
+PROYECTOS / ENTREGABLES
+abrirProyectos -> bien, toca varias clases y contiene un fragmento combinado en el que todo se cumple
+abrirProyecto -> el diagrama tenia un error, un metodo que no estaba en el get, corregido
+abrirEntregables -> el diagrama llama a los metodos del service al reves, corregido
+abrirEntregable -> bien
+crearEntregable -> bien
+editarEntregable -> bien
+eliminarEntregable -> bien
+
+
+MIS_PUBLICACIONES
+abrirMisPublicaciones -> bien
+abrirMiPublicacion -> bien
+crearPublicacion -> bien
+editarPublicacion-> bien
+eliminarPublicacion -> bien
+
+
+}
+
+
+
+
+
+
+}

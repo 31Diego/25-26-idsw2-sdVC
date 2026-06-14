@@ -1,4 +1,4 @@
-# abrirProyecto — Diseño (Investigador)
+# abrirProyecto — Diseño
 
 ## Información del artefacto
 
@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Mostrar el detalle de un proyecto al Investigador autenticado. El controller verifica que el investigador es miembro del proyecto antes de mostrarlo; si no lo es, redirige a la lista. El template oculta las acciones de gestión que solo corresponden al Coordinador.
+Mostrar el detalle de un proyecto al investigador autenticado, verificando que pertenece al proyecto antes de mostrarlo.
 
 ## Diagrama de secuencia
 
@@ -22,21 +22,19 @@ Mostrar el detalle de un proyecto al Investigador autenticado. El controller ver
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| ProyectoView (azul) | `ProyectoController` `@Controller` | Recibe GET /proyectos/{id}; verifica membresía si el usuario es INVESTIGADOR |
-| ProyectoController (amarillo) | `ProyectoService` `@Service` | Obtiene el proyecto por id |
-| ProyectoRepository (naranja) | `ProyectoRepository` JpaRepository | Ejecuta SELECT por id |
-| Proyecto (naranja) | `Proyecto` `@Entity` | Incluye la lista `investigadores` cargada por la relación ManyToMany |
+| Controlador de proyectos | ProyectoController @Controller | Atiende GET /proyectos/{id} con @AuthenticationPrincipal investigador |
+| Servicio de proyectos | ProyectoService @Service | `obtenerProyecto(id)` recupera el proyecto |
+| Repositorio de proyectos | ProyectoRepository JpaRepository | Ejecuta SELECT * FROM proyectos WHERE id = ? |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /proyectos/{id} | Muestra el detalle del proyecto |
+| GET | /proyectos/{id} | Muestra el detalle del proyecto si el investigador es miembro |
 
 ## Decisiones de diseño
 
-- El controller recibe `@AuthenticationPrincipal Investigador` y comprueba `proyecto.getInvestigadores().contains(investigador)`.
-- Si el investigador no es miembro → `redirect:/proyectos` (no puede ver ese proyecto).
-- Si es miembro → muestra `proyecto.html` con el mismo modelo que el Coordinador.
-- El template usa `sec:authorize="hasRole('COORDINADOR')"` para ocultar los enlaces Editar, Eliminar y Agregar investigador al Investigador.
-- La lista de miembros del equipo se renderiza directamente desde `proyecto.investigadores` (lazy loading resuelto por Open Session in View de Spring Boot).
+- Tras cargar el proyecto, el controlador evalúa `sinAcceso(proyecto, investigador)`.
+- Flujo alternativo `alt`: si `sinAcceso` → 302 redirect a `/proyectos`; si `!sinAcceso` → `model.addAttribute("proyecto", proyecto)` y vista `proyecto.html` sin botones de gestión (Editar, Eliminar, Agregar investigador).
+- La vista usa `sec:authorize="hasRole('COORDINADOR')"` para ocultar las acciones de gestión al investigador.

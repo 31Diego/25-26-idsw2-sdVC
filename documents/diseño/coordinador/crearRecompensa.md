@@ -1,4 +1,4 @@
-# crearRecompensa — Diseño · Coordinador
+# crearRecompensa — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Presentar un formulario para que el coordinador registre una nueva recompensa asignada a un investigador concreto. El investigador destinatario seleccionado verá esta recompensa en su listado.
+Presentar un formulario para que el coordinador registre una nueva recompensa asignada a un investigador concreto.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/crearRecompensa-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/crearRecompensa.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/crearRecompensa.puml)
 
@@ -22,23 +22,23 @@ Presentar un formulario para que el coordinador registre una nueva recompensa as
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| CrearRecompensaView | `RecompensaController` `@Controller` | GET muestra el formulario; POST persiste y redirige |
-| RecompensaController | `RecompensaService` `@Service` | `crear(datos, destinatario)` — instancia y persiste la entidad |
-| RecompensaRepository | `RecompensaRepository` JpaRepository | INSERT INTO recompensas |
-| InvestigadorRepository | `InvestigadorRepository` JpaRepository | SELECT para poblar el selector de destinatario |
-| Recompensa | `Recompensa` `@Entity` | Tabla recompensas |
+| Controlador de recompensas (GET) | RecompensaController @Controller GET /recompensas/crear | Carga la lista de investigadores y sirve el formulario |
+| Controlador de recompensas (POST) | RecompensaController @Controller POST /recompensas/crear | Persiste la nueva recompensa |
+| Servicio de recompensas | RecompensaService @Service | `crear(titulo, tipo, valor, descripcion, condiciones, destinatarioId)` |
+| Servicio de investigador | InvestigadorService @Service | `obtenerTodos()` en GET; `obtenerInvestigador(destinatarioId)` en el servicio POST |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | findAll() para poblar el selector; findById para el destinatario |
+| Repositorio de recompensas | RecompensaRepository JpaRepository | Ejecuta INSERT INTO recompensas vía save(recompensa) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
 | GET | /recompensas/crear | Muestra el formulario vacío con el selector de investigadores |
-| POST | /recompensas/crear | Persiste la nueva recompensa y redirige al detalle |
+| POST | /recompensas/crear | Recibe titulo, tipo, valor, descripcion, condiciones, destinatarioId y persiste |
 
 ## Decisiones de diseño
 
-- Solo accesible para el rol `COORDINADOR` (`@PreAuthorize("hasRole('COORDINADOR')")`).
-- El formulario incluye un `<select>` con todos los investigadores del sistema para elegir el destinatario.
-- Los campos de texto extenso (descripción, condiciones) usan `<textarea>`.
-- Tras guardar, redirige a `/recompensas/{id}` (PRG pattern).
-- El campo `tipo` es un `<select>` con valores: `Económica`, `Reconocimiento`, `Tiempo libre`.
+- El GET llama a `InvestigadorService.obtenerTodos()` para poblar el selector de destinatario con todos los investigadores.
+- En el POST, `crear(...)` resuelve el investigador destinatario con `obtenerInvestigador(destinatarioId)`, instancia `new Recompensa()`, aplica los setters y llama a `save(recompensa)`.
+- Tras guardar, redirige a `redirect:/recompensas/{id}` (302, PRG).

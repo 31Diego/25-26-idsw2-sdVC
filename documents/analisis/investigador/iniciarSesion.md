@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para autenticar al Investigador y abrir el panel principal.
+Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para autenticar al investigador y abrir el panel principal.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: iniciarSesion()](../../../images/analisis/investigador/iniciarSesion-analisis.svg)|
+|![Análisis: iniciarSesion()](../../../images/analisis/investigador/iniciarSesion-investigador-analisis.svg)|
 |-|
 |Código fuente: [iniciarSesion.puml](../../../modelosUML/analisis/investigador/iniciarSesion.puml)|
 
@@ -30,37 +30,34 @@ Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón
 #### IniciarSesionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de inicio de sesión al Investigador
-- Capturar las credenciales introducidas (usuario y contraseña)
-- Invocar la autenticación en el controlador
-- Mostrar mensaje de error si las credenciales son incorrectas
-- Redirigir al panel principal si la autenticación es correcta
+- Recibir la solicitud `iniciarSesion()` desde `:SESION_CERRADA`
+- Solicitar la autenticación al controlador mediante `autenticar(usuario, contrasena) : boolean`
+- Mostrar el formulario de inicio de sesión al investigador
+- Transitar a `:PANEL_PRINCIPAL_ABIERTO` si las credenciales son correctas
+- Mostrar error y permanecer si las credenciales son incorrectas
 
 **Colaboraciones**:
-- **Entrada**: Recibe `iniciarSesion()` desde `:SESION_CERRADA`
-- **Control**: Se comunica con `AutenticacionController`
-- **Salida**: Navega a `:PANEL_PRINCIPAL_ABIERTO` o se mantiene en sí misma si falla
+- **Entrada**: Desde `:SESION_CERRADA` con `iniciarSesion()`
+- **Control**: Se comunica con `AutenticacionController` mediante `autenticar(usuario, contrasena) : boolean`
+- **Salida**: Transita a `:PANEL_PRINCIPAL_ABIERTO` (`sesionIniciada()`) o se mantiene en sí misma (`credencialesIncorrectas()`)
 
 ### clases de control
 
 #### AutenticacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de autenticación del Investigador
-- Validar las credenciales contra el repositorio de investigadores
-- Devolver resultado de autenticación (verdadero/falso)
+- Recibir `autenticar(usuario, contrasena)` y delegar la verificación de credenciales en el repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `IniciarSesionView`
-- **Repositorio**: Delega la verificación de credenciales a `InvestigadorRepository`
+- **Repositorio**: Delega en `InvestigadorRepository` mediante `buscarPorCredenciales(usuario, contrasena) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para buscar investigador por credenciales
+- Buscar un investigador por sus credenciales mediante `buscarPorCredenciales(usuario, contrasena) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `AutenticacionController`
@@ -69,8 +66,7 @@ Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de un usuario del sistema
-- Encapsular atributos: nombre de usuario, contraseña, rol
+- Representar los datos del investigador autenticado
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -79,29 +75,30 @@ Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:SESION_CERRADA` → `IniciarSesionView.iniciarSesion()`
-2. **Autenticación**: `IniciarSesionView` → `AutenticacionController.autenticar(usuario, contrasena)` : `boolean`
-3. **Acceso a datos**: `AutenticacionController` → `InvestigadorRepository.buscarPorCredenciales(usuario, contrasena)` : `Investigador`
-4. **Éxito**: `IniciarSesionView` → `:PANEL_PRINCIPAL_ABIERTO.sesionIniciada()`
-5. **Fallo**: `IniciarSesionView` → muestra error de credenciales incorrectas
+1. El sistema está en `:SESION_CERRADA`
+2. El investigador accede al formulario: `IniciarSesionView` recibe `iniciarSesion()`
+3. El investigador introduce sus credenciales y confirma
+4. `IniciarSesionView` invoca `autenticar(usuario, contrasena) : boolean` en `AutenticacionController`
+5. `AutenticacionController` delega en `InvestigadorRepository.buscarPorCredenciales(usuario, contrasena)` y obtiene un `Investigador` o nulo
+6. Si las credenciales son correctas: la vista transita a `:PANEL_PRINCIPAL_ABIERTO` con `sesionIniciada()`
+7. Si las credenciales son incorrectas: la vista se mantiene en sí misma con `credencialesIncorrectas()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario de acceso|`IniciarSesionView`|Captura usuario y contraseña|
-|Validar credenciales|`AutenticacionController`|`autenticar(usuario, contrasena)`|
-|Acceso a datos de investigadores|`InvestigadorRepository`|`buscarPorCredenciales(usuario, contrasena)`|
-|Navegar al panel principal|`IniciarSesionView`|→ `:PANEL_PRINCIPAL_ABIERTO`|
-|Informar de error en credenciales|`IniciarSesionView`|`credencialesIncorrectas()`|
+|Autenticar al investigador|`AutenticacionController`|`autenticar(usuario, contrasena) : boolean`|
+|Buscar investigador por credenciales|`InvestigadorRepository`|`buscarPorCredenciales(usuario, contrasena) : Investigador`|
+|Abrir panel principal|`IniciarSesionView`|`sesionIniciada()`|
+|Informar de credenciales incorrectas|`IniciarSesionView`|`credencialesIncorrectas()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Investigador
+- **Vista**: Solo presentación del formulario e interacción con el investigador
 - **Control**: Solo coordinación de la lógica de autenticación
-- **Entidad**: Solo datos y reglas de negocio del usuario
+- **Entidad**: Solo datos y reglas de negocio del investigador
 
 ### agnóstico tecnológicamente
 

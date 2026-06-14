@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Investigador gestione sus propias publicaciones.
+Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador gestione sus publicaciones propias.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirMisPublicaciones()](../../../images/analisis/investigador/abrirMisPublicaciones-analisis.svg)|
+|![Análisis: abrirMisPublicaciones()](../../../images/analisis/investigador/abrirMisPublicaciones-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirMisPublicaciones.puml](../../../modelosUML/analisis/investigador/abrirMisPublicaciones.puml)|
 
@@ -30,35 +30,33 @@ Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el
 #### MisPublicacionesView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la lista de publicaciones propias del Investigador
-- Ofrecer acceso a una publicación propia concreta
-- Ofrecer la opción de crear una nueva publicación
-- Navegar de vuelta al panel principal
+- Recibir la solicitud `abrirMisPublicaciones()` desde `:PANEL_PRINCIPAL_ABIERTO` o desde `:MI_PUBLICACION_ABIERTA`
+- Solicitar al controlador las publicaciones propias mediante `obtenerMisPublicaciones() : List<Publicacion>`
+- Mostrar la lista de publicaciones propias al investigador
+- Ofrecer acceso a publicaciones individuales, a la creación y vuelta al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirMisPublicaciones()` desde `:PANEL_PRINCIPAL_ABIERTO` o `:MI_PUBLICACION_ABIERTA`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:MIS_PUBLICACIONES_ABIERTAS` y colaboraciones `AbrirMiPublicacion`, `CrearPublicacion`
+- **Entrada**: Desde `:PANEL_PRINCIPAL_ABIERTO` o `:MI_PUBLICACION_ABIERTA` con `abrirMisPublicaciones()`
+- **Control**: Se comunica con `PublicacionController` mediante `obtenerMisPublicaciones() : List<Publicacion>`
+- **Salida**: Transita a `:MIS_PUBLICACIONES_ABIERTAS` (`publicacionesCargadas()`), `:Collaboration AbrirMiPublicacion` (`abrirMiPublicacion(id)`), `:Collaboration CrearPublicacion` (`crearPublicacion()`), `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de las publicaciones del Investigador autenticado
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerMisPublicaciones()` y delegar en el repositorio la obtención de publicaciones por autor
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `MisPublicacionesView`
-- **Repositorio**: Delega el acceso a datos a `PublicacionRepository`
+- **Repositorio**: Delega en `PublicacionRepository` mediante `obtenerPorAutor(id) : List<Publicacion>`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar método para obtener publicaciones filtradas por autor
+- Recuperar publicaciones filtradas por autor mediante `obtenerPorAutor(id) : List<Publicacion>`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -67,8 +65,7 @@ Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de una publicación propia del Investigador
-- Encapsular atributos: título, contenido, fecha, respuestas
+- Representar los datos de una publicación propia en el listado
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -77,25 +74,29 @@ Análisis de colaboración del caso de uso `abrirMisPublicaciones()` mediante el
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `MisPublicacionesView.abrirMisPublicaciones()`
-2. **Listado**: `MisPublicacionesView` → `PublicacionController.obtenerMisPublicaciones()` : `List<Publicacion>`
-3. **Acceso a datos**: `PublicacionController` → `PublicacionRepository.obtenerPorAutor(id)` : `List<Publicacion>`
-4. **Presentación**: `MisPublicacionesView` → `:MIS_PUBLICACIONES_ABIERTAS.publicacionesCargadas()`
-5. **Navegación**: El Investigador puede abrir una publicación propia, crear una nueva o volver al panel
+1. El sistema está en `:PANEL_PRINCIPAL_ABIERTO` o `:MI_PUBLICACION_ABIERTA`
+2. El investigador solicita ver sus publicaciones: `MisPublicacionesView` recibe `abrirMisPublicaciones()`
+3. `MisPublicacionesView` invoca `obtenerMisPublicaciones()` en `PublicacionController`
+4. `PublicacionController` delega en `PublicacionRepository.obtenerPorAutor(id)` y obtiene `List<Publicacion>`
+5. La vista muestra la lista → transita a `:MIS_PUBLICACIONES_ABIERTAS` con `publicacionesCargadas()`
+6. Desde `:MIS_PUBLICACIONES_ABIERTAS` el investigador puede navegar a `abrirMiPublicacion(id)`, `crearPublicacion()` o `abrirPanelPrincipal()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar solo publicaciones propias|`MisPublicacionesView`|Coordina con `PublicacionController.obtenerMisPublicaciones()`|
-|Abrir publicación propia|`MisPublicacionesView`|→ Colaboración `AbrirMiPublicacion`|
-|Crear nueva publicación|`MisPublicacionesView`|→ Colaboración `CrearPublicacion`|
+|Obtener publicaciones propias|`PublicacionController`|`obtenerMisPublicaciones() : List<Publicacion>`|
+|Acceder a publicaciones por autor|`PublicacionRepository`|`obtenerPorAutor(id) : List<Publicacion>`|
+|Mostrar lista de publicaciones propias|`MisPublicacionesView`|`publicacionesCargadas()`|
+|Abrir publicación propia|`MisPublicacionesView`|`abrirMiPublicacion(id)`|
+|Crear nueva publicación|`MisPublicacionesView`|`crearPublicacion()`|
+|Volver al panel principal|`MisPublicacionesView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Investigador
+- **Vista**: Solo presentación e interacción con el investigador
 - **Control**: Solo coordinación y filtrado por autor
 - **Entidad**: Solo datos y reglas de negocio de la publicación
 

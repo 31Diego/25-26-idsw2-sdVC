@@ -1,4 +1,4 @@
-# abrirMisPublicaciones — Diseño · Investigador
+# abrirMisPublicaciones — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Recuperar y mostrar el listado de publicaciones cuyo autor es el investigador autenticado. Comportamiento idéntico al del coordinador; la URL es compartida.
+Recuperar y mostrar el listado de publicaciones cuyo autor es el investigador autenticado.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/abrirMisPublicaciones-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/abrirMisPublicaciones.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/abrirMisPublicaciones.puml)
 
@@ -22,19 +22,19 @@ Recuperar y mostrar el listado de publicaciones cuyo autor es el investigador au
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| MisPublicacionesView | `PublicacionController` `@Controller` | Recibe GET /mis-publicaciones; filtra por autor y devuelve mis-publicaciones.html |
-| PublicacionService | `PublicacionService` `@Service` | Devuelve las publicaciones del autor vía `obtenerPorAutor(investigador)` |
-| PublicacionRepository | `PublicacionRepository` JpaRepository | Ejecuta `findByAutor(investigador)` |
-| Publicacion | `Publicacion` `@Entity` | Tabla publicaciones; relación `@ManyToOne` hacia `Investigador` (autor) |
+| Controlador de publicaciones | PublicacionController @Controller | Atiende GET /mis-publicaciones; filtra por autor y devuelve mis-publicaciones.html |
+| Servicio de publicaciones | PublicacionService @Service | `obtenerPorAutor(investigador)` devuelve solo las publicaciones del autor |
+| Repositorio de publicaciones | PublicacionRepository JpaRepository | Ejecuta SELECT * FROM publicaciones WHERE autor_id=? vía findByAutor(investigador) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /mis-publicaciones | Lista las publicaciones del usuario autenticado |
+| GET | /mis-publicaciones | Lista las publicaciones del investigador autenticado |
 
 ## Decisiones de diseño
 
-- La URL `/mis-publicaciones` es compartida entre ambos actores; el filtrado se hace por el autor obtenido de `@AuthenticationPrincipal`.
-- `PublicacionRepository` añade `findByAutor(Investigador autor)` para la consulta filtrada.
-- Desde la lista se puede navegar a cada publicación propia y crear una nueva.
+- El autor se obtiene del `@AuthenticationPrincipal`; el filtrado se delega al servicio con `obtenerPorAutor(investigador)`.
+- La URL `/mis-publicaciones` es compartida entre ambos actores.
+- Desde la lista se puede navegar al detalle de cada publicación y crear una nueva.

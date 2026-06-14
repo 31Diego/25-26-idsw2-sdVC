@@ -1,4 +1,4 @@
-# abrirProyectos — Diseño (Investigador)
+# abrirProyectos — Diseño
 
 ## Información del artefacto
 
@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Recuperar y mostrar solo los proyectos en los que el Investigador autenticado participa como miembro. Mismo endpoint que el Coordinador (`GET /proyectos`); el controller decide el alcance de la consulta según el rol del usuario.
+Recuperar y mostrar solo los proyectos en los que el investigador autenticado participa como miembro. Soporta búsqueda opcional por criterio de texto filtrada por investigador.
 
 ## Diagrama de secuencia
 
@@ -22,23 +22,22 @@ Recuperar y mostrar solo los proyectos en los que el Investigador autenticado pa
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| ProyectosView (azul) | `ProyectosController` `@Controller` | Recibe GET /proyectos; obtiene el investigador del contexto de seguridad y ramifica por rol |
-| ProyectosController (amarillo) | `ProyectosService` `@Service` | Ruta INVESTIGADOR: llama a `findByInvestigadoresContaining` o `buscarPorCriterioEInvestigador` |
-| ProyectoRepository (naranja) | `ProyectoRepository` JpaRepository | Ejecuta la query filtrada por investigador |
-| Proyecto (naranja) | `Proyecto` `@Entity` | Tabla proyectos; relación `@ManyToMany` con `Investigador` |
-| Investigador (naranja) | `Investigador` `@Entity` | Se usa como parámetro de filtrado |
+| Controlador de proyectos | ProyectoController @Controller | Atiende GET /proyectos con @AuthenticationPrincipal investigador |
+| Servicio de proyectos | ProyectoService @Service | `obtenerProyectosParaUsuario(investigador, criterio)` delega en la policy del investigador |
+| Policy de consulta | ConsultaInvestigador policies | Decide entre `findByInvestigadoresContaining` o `buscarPorCriterioEInvestigador` |
+| Repositorio de proyectos | ProyectoRepository JpaRepository | Ejecuta la consulta filtrada por investigador_id en proyecto_investigador |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /proyectos | Lista proyectos (todos si coordinador, propios si investigador) |
-| GET | /proyectos?criterio=texto | Lista filtrada (mismo alcance según rol) |
+| GET | /proyectos | Lista los proyectos del investigador autenticado |
+| GET | /proyectos?criterio=texto | Lista proyectos del investigador filtrados por título |
 
 ## Decisiones de diseño
 
-- El controller recibe el usuario autenticado con `@AuthenticationPrincipal Investigador`.
-- Si `rol == COORDINADOR` → comportamiento existente (`findAll` / `buscarPorCriterio`).
-- Si `rol == INVESTIGADOR` → `findByInvestigadoresContaining(investigador)` / `buscarPorCriterioEInvestigador(investigador, criterio)`.
-- La relación `@ManyToMany` entre `Proyecto` e `Investigador` usa una tabla join `proyecto_investigador` generada por Hibernate.
-- El template oculta el botón "Nuevo proyecto" para investigadores con `sec:authorize="hasRole('COORDINADOR')"`.
+- El investigador autenticado llega como `@AuthenticationPrincipal`.
+- Flujo alternativo `alt`: sin filtro → `findByInvestigadoresContaining(investigador)` con JOIN sobre proyecto_investigador; con filtro → `buscarPorCriterioEInvestigador(investigador, criterio)`.
+- La lista se añade al modelo con `model.addAttribute("proyectos", lista)`.
+- La vista no muestra el botón "Nuevo proyecto" para el investigador (visible solo para el coordinador).

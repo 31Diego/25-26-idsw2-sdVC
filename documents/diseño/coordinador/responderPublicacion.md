@@ -1,4 +1,4 @@
-# responderPublicacion — Diseño · Coordinador
+# responderPublicacion — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Registrar una respuesta de texto a una publicación existente. El formulario está embebido en la vista de la publicación. Comportamiento idéntico al del investigador.
+Registrar una respuesta de texto a una publicación existente. El formulario está embebido en la vista de la publicación.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/responderPublicacion-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/responderPublicacion-coordinador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/responderPublicacion.puml)
 
@@ -22,19 +22,20 @@ Registrar una respuesta de texto a una publicación existente. El formulario est
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| PublicacionView | `PublicacionController` `@Controller` | Recibe POST /publicaciones/{id}/responder; delega en el service y redirige |
-| PublicacionService | `PublicacionService` `@Service` | Crea y guarda la `Respuesta` via `responder(id, contenido, autor)` |
-| RespuestaRepository | `RespuestaRepository` JpaRepository | Ejecuta INSERT INTO respuestas |
-| Respuesta | `Respuesta` `@Entity` | Entidad con `contenido`, `fecha` (LocalDate.now()), `autor` y `publicacion` |
+| Controlador de publicaciones | PublicacionController @Controller | Atiende POST /publicaciones/{id}/responder y redirige |
+| Servicio de publicaciones | PublicacionService @Service | `responder(id, contenido, autor)` crea y guarda la Respuesta |
+| Repositorio de publicaciones | PublicacionRepository JpaRepository | SELECT * FROM publicaciones WHERE id = ? para cargar la publicacion padre |
+| Repositorio de respuestas | RespuestaRepository JpaRepository | Ejecuta INSERT INTO respuestas via save(respuesta) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| POST | /publicaciones/{id}/responder | Guarda la respuesta y redirige a GET /publicaciones/{id} |
+| POST | /publicaciones/{id}/responder | Guarda la respuesta (contenido) y redirige a GET /publicaciones/{id} |
 
 ## Decisiones de diseño
 
-- El autor de la respuesta se obtiene del `@AuthenticationPrincipal` — el controller no recibe el autor como parámetro de formulario.
-- La fecha se asigna en el service con `LocalDate.now()`, no viene del formulario.
-- Tras el POST se redirige al GET de la misma publicación (patrón Post/Redirect/Get), evitando reenvío accidental del formulario.
+- El servicio instancia `new Respuesta()` y le asigna: contenido, fecha (`LocalDate.now()`), autor y publicacion.
+- El autor se obtiene del `@AuthenticationPrincipal`; no viene del formulario.
+- Tras guardar, redirige a GET /publicaciones/{id} (patrón Post/Redirect/Get).

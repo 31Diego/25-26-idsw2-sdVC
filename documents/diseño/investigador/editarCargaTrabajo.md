@@ -1,4 +1,4 @@
-# editarCargaTrabajo — Diseño · Investigador
+# editarCargaTrabajo — Diseño
 
 ## Información del artefacto
 
@@ -14,7 +14,7 @@ Mostrar el formulario de edición de la carga de trabajo propia del investigador
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/editarCargaTrabajo-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/editarCargaTrabajo-investigador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/editarCargaTrabajo.puml)
 
@@ -22,22 +22,21 @@ Mostrar el formulario de edición de la carga de trabajo propia del investigador
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EditarCargaTrabajoView (GET) | `CargaTrabajoController` `@Controller` | Recibe GET /carga-trabajo/editar; carga la CargaTrabajo del investigador autenticado |
-| EditarCargaTrabajoView (POST) | `CargaTrabajoController` `@Controller` | Recibe POST con los tres campos; delega en el service y redirige a /carga-trabajo |
-| CargaTrabajoService | `CargaTrabajoService` `@Service` | `obtenerOCrearPorInvestigador` + `actualizar(id, horas…)` |
-| CargaTrabajoRepository | `CargaTrabajoRepository` JpaRepository | `findByInvestigadorId` para GET; `findById` + `save` para UPDATE |
-| CargaTrabajo | `CargaTrabajo` `@Entity` | Tabla cargas_trabajo |
+| Controlador de carga de trabajo (GET) | CargaTrabajoController @Controller GET /carga-trabajo/editar | Carga la CargaTrabajo del investigador y sirve el formulario |
+| Controlador de carga de trabajo (POST) | CargaTrabajoController @Controller POST /carga-trabajo/editar | Recibe los tres campos y persiste los cambios |
+| Servicio de carga de trabajo | CargaTrabajoService @Service | `obtenerOCrearPorInvestigador(investigador)` y `actualizar(carga, horas...)` |
+| Repositorio de carga de trabajo | CargaTrabajoRepository JpaRepository | SELECT por investigador_id y UPDATE vía save(carga) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /carga-trabajo/editar | Muestra el formulario de edición con los datos actuales del investigador |
-| POST | /carga-trabajo/editar | Persiste los cambios y redirige a /carga-trabajo |
+| GET | /carga-trabajo/editar | Muestra el formulario con los datos actuales de la carga de trabajo |
+| POST | /carga-trabajo/editar | Persiste horasDocencia, horasInvestigacion, horasActividades y redirige |
 
 ## Decisiones de diseño
 
-- La URL `/carga-trabajo/editar` es exclusiva del investigador para su propia carga; el coordinador usa `/investigadores/{id}/carga-trabajo/editar`.
-- El investigador llega aquí desde el enlace "Editar carga de trabajo" en la vista `/carga-trabajo`.
-- El template `editar-carga-trabajo.html` es compartido: si `${investigador}` está en el model (coordinador), muestra el nombre del investigador y apunta el POST a `/investigadores/{id}/…`; si no, apunta a `/carga-trabajo/editar`.
-- Tras guardar, redirige a `/carga-trabajo` (resumen personal).
+- La CargaTrabajo se añade al modelo con `model.addAttribute("carga", carga)` en el GET.
+- El POST llama a `obtenerOCrearPorInvestigador(investigador)` para obtener la entidad y luego a `actualizar(carga, horasDocencia, horasInvestigacion, horasActividades)` que aplica los setters y llama a `save(carga)`.
+- Tras guardar, redirige a `redirect:/carga-trabajo` (302).

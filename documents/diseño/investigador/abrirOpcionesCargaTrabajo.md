@@ -1,4 +1,4 @@
-# abrirOpcionesCargaTrabajo — Diseño · Investigador
+# abrirOpcionesCargaTrabajo — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Recuperar y mostrar el resumen personal de carga de trabajo del investigador autenticado: horas semanales de docencia, investigación y actividades académicas.
+Recuperar y mostrar el resumen personal de carga de trabajo del investigador autenticado; crea la entrada si aún no existe.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/abrirOpcionesCargaTrabajo-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/abrirOpcionesCargaTrabajo-investigador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/abrirOpcionesCargaTrabajo.puml)
 
@@ -22,19 +22,19 @@ Recuperar y mostrar el resumen personal de carga de trabajo del investigador aut
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| CargaTrabajoView | `CargaTrabajoController` `@Controller` | Recibe GET /carga-trabajo; detecta rol INVESTIGADOR; pone la CargaTrabajo en el Model y devuelve carga-trabajo.html |
-| CargaTrabajoService | `CargaTrabajoService` `@Service` | Busca la CargaTrabajo del investigador autenticado; la crea con 0.0 en todos los campos si no existe |
-| CargaTrabajoRepository | `CargaTrabajoRepository` JpaRepository | `findByInvestigadorId` + `save` si no existe |
-| CargaTrabajo | `CargaTrabajo` `@Entity` | Tabla cargas_trabajo: `horasDocencia`, `horasInvestigacion`, `horasActividades` |
+| Controlador de carga de trabajo | CargaTrabajoController @Controller @PreAuthorize(INVESTIGADOR) | Atiende GET /carga-trabajo y prepara el modelo |
+| Servicio de carga de trabajo | CargaTrabajoService @Service | `obtenerOCrearPorInvestigador(investigador)` busca o crea la CargaTrabajo |
+| Repositorio de carga de trabajo | CargaTrabajoRepository JpaRepository | SELECT * FROM cargas_trabajo WHERE investigador_id = ? y INSERT si no existe |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /carga-trabajo | Resumen personal del investigador (o tabla global si es coordinador) |
+| GET | /carga-trabajo | Muestra el resumen personal de carga de trabajo del investigador |
 
 ## Decisiones de diseño
 
-- `CargaTrabajoService.obtenerOCrearPorInvestigador` usa `orElseGet` para crear la entrada con 0.0 si el investigador aún no tiene CargaTrabajo asignada; garantiza que el template nunca recibe null en `${carga}`.
-- El total semanal se calcula directamente en el template con SpEL: `${carga.horasDocencia + carga.horasInvestigacion + carga.horasActividades}`.
-- La URL es la misma que la del coordinador (`/carga-trabajo`); la bifurcación ocurre en el controller comparando `investigador.getRol()`.
+- Flujo alternativo `alt`: si la CargaTrabajo existe → se devuelve la existente; si no existe → `save(nueva CargaTrabajo)` con valores 0.0, 0.0, 0.0.
+- La CargaTrabajo se añade al modelo con `model.addAttribute("carga", cargaTrabajo)`.
+- La URL `/carga-trabajo` está protegida con `@PreAuthorize("hasRole('INVESTIGADOR')")` para el flujo del investigador.

@@ -1,4 +1,4 @@
-# abrirPublicaciones — Diseño · Investigador
+# abrirPublicaciones — Diseño
 
 ## Información del artefacto
 
@@ -14,7 +14,7 @@ Recuperar y mostrar el listado completo de publicaciones del sistema (título, a
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/abrirPublicaciones-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/abrirPublicaciones-investigador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/abrirPublicaciones.puml)
 
@@ -22,19 +22,19 @@ Recuperar y mostrar el listado completo de publicaciones del sistema (título, a
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| PublicacionesView | `PublicacionController` `@Controller` | Recibe GET /publicaciones; añade la lista al Model y devuelve publicaciones.html |
-| PublicacionService | `PublicacionService` `@Service` | Devuelve todas las publicaciones vía `obtenerTodas()` |
-| PublicacionRepository | `PublicacionRepository` JpaRepository | Ejecuta SELECT * FROM publicaciones |
-| Publicacion | `Publicacion` `@Entity` | Tabla publicaciones; relación `@ManyToOne` hacia `Investigador` (autor) |
+| Controlador de publicaciones | PublicacionController @Controller | Atiende GET /publicaciones y prepara el modelo |
+| Servicio de publicaciones | PublicacionService @Service | `obtenerTodas()` devuelve todas las publicaciones |
+| Repositorio de publicaciones | PublicacionRepository JpaRepository | Ejecuta SELECT * FROM publicaciones vía findAll() |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /publicaciones | Lista todas las publicaciones del sistema |
+| GET | /publicaciones | Lista todas las publicaciones del sistema (título, autor, fecha) |
 
 ## Decisiones de diseño
 
 - La URL `/publicaciones` es compartida entre ambos actores; no hay bifurcación por rol.
-- La relación `@ManyToOne` entre `Publicacion` e `Investigador` se carga por defecto en EAGER en JPA, por lo que el template accede a `pub.autor.nombre` directamente sin consulta adicional.
-- El DataLoader inicializa tres publicaciones de prueba al arrancar la aplicación por primera vez.
+- La lista se añade al modelo con `model.addAttribute("publicaciones", lista)`.
+- La vista `publicaciones.html` muestra título, autor y fecha de cada publicación.

@@ -1,4 +1,4 @@
-# crearPublicacion — Diseño · Coordinador
+# crearPublicacion — Diseño
 
 ## Información del artefacto
 
@@ -14,7 +14,7 @@ Presentar un formulario vacío, recoger los datos introducidos por el coordinado
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/crearPublicacion-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/crearPublicacion.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/crearPublicacion.puml)
 
@@ -22,21 +22,21 @@ Presentar un formulario vacío, recoger los datos introducidos por el coordinado
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| CrearPublicacionView | `PublicacionController` `@Controller` | GET muestra el formulario vacío; POST persiste y redirige |
-| PublicacionService | `PublicacionService` `@Service` | `crear(titulo, contenido, autor)` — instancia, fija fecha actual y persiste |
-| PublicacionRepository | `PublicacionRepository` JpaRepository | INSERT INTO publicaciones |
-| Publicacion | `Publicacion` `@Entity` | Tabla publicaciones |
+| Controlador de publicaciones (GET) | PublicacionController @Controller GET /mis-publicaciones/crear | Sirve el formulario vacío |
+| Controlador de publicaciones (POST) | PublicacionController @Controller POST /mis-publicaciones/crear | Persiste la publicación y redirige |
+| Servicio de publicaciones | PublicacionService @Service | `crear(titulo, contenido, coordinador)` instancia, asigna fecha y persiste |
+| Repositorio de publicaciones | PublicacionRepository JpaRepository | Ejecuta INSERT INTO publicaciones vía save(publicacion) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /mis-publicaciones/crear | Muestra el formulario de creación |
-| POST | /mis-publicaciones/crear | Persiste la publicación y redirige al detalle |
+| GET | /mis-publicaciones/crear | Muestra el formulario de creación vacío |
+| POST | /mis-publicaciones/crear | Recibe titulo y contenido; persiste y redirige al detalle |
 
 ## Decisiones de diseño
 
-- El autor se obtiene de `@AuthenticationPrincipal`, no del formulario — el usuario no puede falsificar la autoría.
-- La fecha se fija en el servicio con `LocalDate.now()`.
-- Tras guardar, redirige a `/mis-publicaciones/{id}` para mostrar la publicación recién creada (PRG pattern).
-- Comportamiento idéntico para coordinador e investigador; la URL es compartida.
+- El autor se obtiene del `@AuthenticationPrincipal`; no viene del formulario.
+- El servicio instancia `new Publicacion()`, asigna `fecha = LocalDate.now()`, autor y demás datos, y llama a `save(publicacion)`.
+- Tras guardar, redirige a `redirect:/mis-publicaciones/{id}` con el id devuelto por el repositorio (302).

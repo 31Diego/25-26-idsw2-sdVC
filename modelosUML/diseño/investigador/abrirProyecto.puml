@@ -23,12 +23,11 @@ Repo --> Service : Proyecto
 deactivate Service
 Service --> Ctrl : Proyecto
 
-Ctrl -> Service : tieneAcceso(proyecto, investigador)
-Service --> Ctrl : boolean
+Ctrl -> Ctrl : sinAcceso(proyecto, investigador)
 
-alt !tieneAcceso
+alt sinAcceso
     Ctrl --> Nav : 302 redirect → /proyectos
-else tieneAcceso
+else !sinAcceso
     Ctrl -> Ctrl : model.addAttribute("proyecto", proyecto)
     Ctrl --> Nav : 200 OK · proyecto.html\n(sin Editar / Eliminar / Agregar investigador)
 end

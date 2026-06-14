@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `editarRecompensa()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para modificar los datos de una recompensa existente.
+Análisis de colaboración del caso de uso `editarRecompensa()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador modifique los datos de una recompensa existente.
 
 ## diagrama de colaboración
 
@@ -30,36 +30,38 @@ Análisis de colaboración del caso de uso `editarRecompensa()` mediante el patr
 #### EditarRecompensaView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de edición con los datos actuales de la recompensa
-- Recuperar los datos actuales a través del controlador
-- Capturar los cambios del Coordinador
-- Invocar el guardado en el controlador
+- Recibir la solicitud `editarRecompensa()` desde `:RECOMPENSA_ABIERTA`
+- Solicitar al controlador los datos actuales de la recompensa mediante `obtenerRecompensa(id) : Recompensa`
+- Mostrar el formulario de edición con los datos actuales
+- Notificar al controlador los cambios del campo mediante `modificarCampos(datos) : void`
+- Solicitar al controlador el guardado mediante `guardarRecompensa(datos) : Recompensa`
 - Navegar de vuelta a la recompensa tras la edición
 
 **Colaboraciones**:
-- **Entrada**: Recibe `editarRecompensa()` desde `:RECOMPENSA_ABIERTA`
-- **Control**: Se comunica con `RecompensaController`
-- **Salida**: Navega a `:RECOMPENSA_ABIERTA`
+- **Entrada**: Desde `:RECOMPENSA_ABIERTA` con `editarRecompensa()`
+- **Control**: Se comunica con `RecompensaController` mediante `obtenerRecompensa(id)`, `modificarCampos(datos)` y `guardarRecompensa(datos)`
+- **Salida**: Transita a `:RECOMPENSA_ABIERTA` con `edicionFinalizada()`
 
 ### clases de control
 
 #### RecompensaController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención y persistencia de los datos de la recompensa
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerRecompensa(id)` y delegar en el repositorio la obtención de la recompensa
+- Recibir `modificarCampos(datos)` para procesar cambios en tiempo real
+- Recibir `guardarRecompensa(datos)` y delegar la actualización al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EditarRecompensaView`
-- **Repositorio**: Delega operaciones a `RecompensaRepository`
+- **Repositorio**: Delega en `RecompensaRepository` mediante `obtenerPorId(id) : Recompensa` y `actualizar(recompensa) : Recompensa`
 
 ### clases de entidad (entity)
 
 #### RecompensaRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de recompensas
-- Proporcionar métodos para obtener y actualizar una recompensa
+- Recuperar una recompensa por id mediante `obtenerPorId(id) : Recompensa`
+- Persistir los cambios en la recompensa mediante `actualizar(recompensa) : Recompensa`
 
 **Colaboraciones**:
 - **Control**: Responde a `RecompensaController`
@@ -68,8 +70,7 @@ Análisis de colaboración del caso de uso `editarRecompensa()` mediante el patr
 #### Recompensa
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de una recompensa
-- Encapsular atributos editables: título, descripción, tipo, valor, condiciones
+- Representar los datos de la recompensa a editar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `RecompensaRepository`
@@ -78,28 +79,33 @@ Análisis de colaboración del caso de uso `editarRecompensa()` mediante el patr
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:RECOMPENSA_ABIERTA` → `EditarRecompensaView.editarRecompensa()`
-2. **Carga**: `EditarRecompensaView` → `RecompensaController.obtenerRecompensa(id)` : `Recompensa`
-3. **Acceso a datos**: `RecompensaController` → `RecompensaRepository.obtenerPorId(id)` : `Recompensa`
-4. **Edición**: El Coordinador modifica los datos
-5. **Guardado**: `EditarRecompensaView` → `RecompensaController.guardarRecompensa(datos)` : `Recompensa`
-6. **Persistencia**: `RecompensaController` → `RecompensaRepository.actualizar(recompensa)` : `Recompensa`
-7. **Finalización**: `EditarRecompensaView` → `:RECOMPENSA_ABIERTA.edicionFinalizada()`
+1. El sistema está en `:RECOMPENSA_ABIERTA`
+2. El coordinador solicita editar recompensa: `EditarRecompensaView` recibe `editarRecompensa()`
+3. `EditarRecompensaView` invoca `obtenerRecompensa(id)` en `RecompensaController`
+4. `RecompensaController` delega en `RecompensaRepository.obtenerPorId(id)` y obtiene un objeto `Recompensa`
+5. El formulario se muestra con los datos actuales
+6. El coordinador modifica los campos: `EditarRecompensaView` invoca `modificarCampos(datos) : void` en `RecompensaController`
+7. El coordinador confirma el guardado: `EditarRecompensaView` invoca `guardarRecompensa(datos)` en `RecompensaController`
+8. `RecompensaController` delega en `RecompensaRepository.actualizar(recompensa)` y obtiene el objeto actualizado
+9. La vista navega de vuelta → `:RECOMPENSA_ABIERTA` con `edicionFinalizada()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar datos actuales|`EditarRecompensaView`|Coordina con `RecompensaController.obtenerRecompensa(id)`|
-|Modificar recompensa|`EditarRecompensaView`|Captura cambios en el formulario|
-|Persistir cambios|`RecompensaController`|`guardarRecompensa(datos)` → `RecompensaRepository.actualizar()`|
+|Obtener datos actuales de la recompensa|`RecompensaController`|`obtenerRecompensa(id) : Recompensa`|
+|Acceder a la recompensa por id|`RecompensaRepository`|`obtenerPorId(id) : Recompensa`|
+|Notificar cambios en campos|`RecompensaController`|`modificarCampos(datos) : void`|
+|Guardar cambios de la recompensa|`RecompensaController`|`guardarRecompensa(datos) : Recompensa`|
+|Persistir actualización de la recompensa|`RecompensaRepository`|`actualizar(recompensa) : Recompensa`|
+|Volver a la recompensa|`EditarRecompensaView`|`edicionFinalizada()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Coordinador
-- **Control**: Solo coordinación de la obtención y persistencia
+- **Vista**: Solo presentación del formulario e interacción con el coordinador
+- **Control**: Solo coordinación de la obtención y persistencia de la recompensa
 - **Entidad**: Solo datos y reglas de negocio de la recompensa
 
 ### agnóstico tecnológicamente

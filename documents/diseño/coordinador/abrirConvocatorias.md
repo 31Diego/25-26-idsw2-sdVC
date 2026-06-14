@@ -1,4 +1,4 @@
-# abrirConvocatorias — Diseño · Coordinador
+# abrirConvocatorias — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Recuperar y mostrar el listado de convocatorias registradas en el sistema, con soporte de filtrado por texto, área y estado.
+Recuperar y mostrar el listado de convocatorias registradas en el sistema, con soporte de filtrado en memoria por texto, área y estado.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/abrirConvocatorias-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/abrirConvocatorias.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/abrirConvocatorias.puml)
 
@@ -22,20 +22,20 @@ Recuperar y mostrar el listado de convocatorias registradas en el sistema, con s
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| ListarConvocatoriasView | `ConvocatoriaController` `@Controller` | Recibe GET /convocatorias; añade la lista al Model y devuelve convocatorias.html |
-| ConvocatoriasController | `ConvocatoriaService` `@Service` | `obtenerTodas()` y `buscarPorCriterios(q, area, estado)` |
-| ConvocatoriaRepository | `ConvocatoriaRepository` JpaRepository | SELECT completo o filtrado sobre la tabla convocatorias |
-| Convocatoria | `Convocatoria` `@Entity` | Tabla convocatorias |
+| Controlador de convocatorias | ConvocatoriaController @Controller | Atiende GET /convocatorias con parámetros opcionales q, area y estado |
+| Servicio de convocatorias | ConvocatoriaService @Service | `buscarPorCriterios(q, area, estado)` carga todas y filtra en memoria |
+| Repositorio de convocatorias | ConvocatoriaRepository JpaRepository | Ejecuta SELECT * FROM convocatorias vía findAll() |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
 | GET | /convocatorias | Lista todas las convocatorias |
-| GET | /convocatorias?q=...&area=...&estado=... | Lista convocatorias con filtros aplicados |
+| GET | /convocatorias?q=...&area=...&estado=... | Lista convocatorias filtradas por los criterios indicados |
 
 ## Decisiones de diseño
 
-- El filtrado se delega a `ConvocatoriaService`; si los parámetros están vacíos o ausentes, se devuelve el listado completo.
-- La URL `/convocatorias` está restringida a `COORDINADOR` mediante `@PreAuthorize("hasRole('COORDINADOR')")`.
-- El template muestra un botón "Importar convocatoria" que navega a `/convocatorias/importar`.
+- El servicio carga todas las convocatorias con `findAll()` y aplica los filtros en memoria; si los parámetros son null o blank, no filtra.
+- Los parámetros q, area y estado son `@RequestParam` opcionales.
+- La vista `convocatorias.html` muestra el listado y el botón "Importar convocatoria".

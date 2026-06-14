@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Permitir al investigador solicitar la eliminación de su propia cuenta desde sus opciones de perfil. Si el id de la ruta no coincide con el investigador autenticado, se redirige a sus propias opciones.
+Permitir al investigador solicitar la eliminación de su propia cuenta; verifica que el id de la ruta corresponde al investigador autenticado, y tras registrar la solicitud invalida la sesión redirigiendo al login.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/solicitarEliminacionPerfil-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/solicitarEliminacionPerfil-investigador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/solicitarEliminacionPerfil.puml)
 
@@ -22,20 +22,23 @@ Permitir al investigador solicitar la eliminación de su propia cuenta desde sus
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| SolicitarEliminacionView (azul) | `SolicitarEliminacionController` `@Controller` | Mismo controlador que el coordinador; verifica que el id coincida con el investigador autenticado |
-| EliminacionController (amarillo) | `SolicitudEliminacionService` `@Service` | Llama a crearSolicitud(investigador, motivo) |
-| SolicitudEliminacionRepository (naranja) | `SolicitudEliminacionRepository` JpaRepository | Ejecuta INSERT |
-| SolicitudEliminacion (naranja) | `SolicitudEliminacion` `@Entity` | Se crea con estado=PENDIENTE y fecha=hoy |
+| Controlador de eliminación (GET) | EliminacionController @Controller GET /investigadores/{id}/solicitar-eliminacion | Verifica `puedeGestionar` y sirve el formulario |
+| Controlador de eliminación (POST) | EliminacionController @Controller POST /investigadores/{id}/solicitar-eliminacion | Verifica, crea solicitud, invalida sesión y redirige |
+| Servicio de solicitud de eliminación | SolicitudEliminacionService @Service | `puedeGestionar(investigador, id)`, `crearSolicitud(objetivo, motivo)` y `requiereLogoutTrasEnviar(investigador)` |
+| Servicio de investigador | InvestigadorService @Service | `obtenerInvestigador(id)` carga el investigador objetivo |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | SELECT * FROM investigadores WHERE id = ? |
+| Repositorio de solicitudes | SolicitudEliminacionRepository JpaRepository | INSERT INTO solicitudes_eliminacion vía save |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /investigadores/{id}/solicitar-eliminacion | Muestra el formulario (solo si id == propio) |
-| POST | /investigadores/{id}/solicitar-eliminacion | Persiste la solicitud |
+| GET | /investigadores/{id}/solicitar-eliminacion | Muestra el formulario si puedeGestionar; redirige a /perfil/opciones si no |
+| POST | /investigadores/{id}/solicitar-eliminacion | Crea la solicitud, invalida la sesión y redirige a /login?logout |
 
 ## Decisiones de diseño
 
-- El id en la URL corresponde al propio investigador; se obtiene del modelo `opciones-perfil` que ya tiene `investigador.id`.
-- El controlador comprueba `id == investigador.getId()` para el rol INVESTIGADOR y redirige a `/perfil/opciones` si no coincide.
-- Tras el POST, redirige a `/perfil/opciones`.
+- En GET y POST: flujo `alt` si `!puedeGestionar` → 302 redirect a `/perfil/opciones`; si `puedeGestionar` → continúa.
+- Tras crear la solicitud en el POST, `requiereLogoutTrasEnviar(investigador)` devuelve `true`; el controlador ejecuta `SecurityContextHolder.clearContext()` y `session.invalidate()`.
+- La sesión se invalida inmediatamente tras enviar la solicitud; el investigador es redirigido a `/login?logout`.

@@ -1,4 +1,4 @@
-# abrirMiPublicacion — Diseño · Investigador
+# abrirMiPublicacion — Diseño
 
 ## Información del artefacto
 
@@ -14,7 +14,7 @@ Mostrar el detalle de una publicación propia del investigador, con acceso direc
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/abrirMiPublicacion-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/abrirMiPublicacion.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/abrirMiPublicacion.puml)
 
@@ -22,19 +22,19 @@ Mostrar el detalle de una publicación propia del investigador, con acceso direc
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| MiPublicacionView | `PublicacionController` `@Controller` | Recibe GET /mis-publicaciones/{id}; verifica propiedad y devuelve mi-publicacion.html |
-| PublicacionService | `PublicacionService` `@Service` | `obtenerPorId(id)` para cargar la publicación |
-| PublicacionRepository | `PublicacionRepository` JpaRepository | SELECT por id |
-| Publicacion | `Publicacion` `@Entity` | Tabla publicaciones |
+| Controlador de publicaciones | PublicacionController @Controller | Atiende GET /mis-publicaciones/{id}; verifica propiedad y devuelve mi-publicacion.html |
+| Servicio de publicaciones | PublicacionService @Service | `obtenerPorId(id)` carga la publicación |
+| Repositorio de publicaciones | PublicacionRepository JpaRepository | Ejecuta SELECT * FROM publicaciones WHERE id=? |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /mis-publicaciones/{id} | Muestra el detalle de la publicación propia |
+| GET | /mis-publicaciones/{id} | Muestra el detalle de la publicación propia con enlaces Editar y Eliminar |
 
 ## Decisiones de diseño
 
-- El endpoint verifica que la publicación pertenece al usuario autenticado; si no es así, redirige a `/mis-publicaciones`.
-- Los enlaces Editar y Eliminar apuntan a `/publicaciones/{id}/editar` y `/publicaciones/{id}/eliminar`, reutilizando la lógica ya construida.
-- El control de acceso en esos endpoints permite al autor editar/eliminar su propia publicación.
+- El controlador verifica que el autor de la publicación coincide con el investigador autenticado (`verificar autor == investigador`); si no coincide, redirige a `/mis-publicaciones`.
+- La vista `mi-publicacion.html` muestra el detalle completo y los enlaces Editar y Eliminar.
+- Los enlaces apuntan a `/publicaciones/{id}/editar` y `/publicaciones/{id}/eliminar`.

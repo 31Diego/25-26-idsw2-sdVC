@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `editarProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para modificar los datos de un proyecto de investigación existente.
+Análisis de colaboración del caso de uso `editarProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador modifique los datos de un proyecto de investigación existente.
 
 ## diagrama de colaboración
 
@@ -30,38 +30,38 @@ Análisis de colaboración del caso de uso `editarProyecto()` mediante el patró
 #### EditarProyectoView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de edición con los datos actuales del proyecto
-- Recuperar los datos actuales a través del controlador
-- Capturar los cambios introducidos por el Coordinador
-- Invocar el guardado en el controlador
+- Recibir la solicitud `editarProyecto()` desde `:PROYECTO_ABIERTO`
+- Solicitar al controlador los datos actuales del proyecto mediante `obtenerProyecto(id) : Proyecto`
+- Mostrar el formulario de edición con los datos actuales
+- Notificar al controlador los cambios del campo mediante `modificarCampos(datos) : void`
+- Solicitar al controlador el guardado mediante `guardarProyecto(datos) : Proyecto`
 - Navegar de vuelta al proyecto tras la edición
 
 **Colaboraciones**:
-- **Entrada**: Recibe `editarProyecto()` desde `:PROYECTO_ABIERTO`
-- **Control**: Se comunica con `ProyectoController`
-- **Salida**: Navega a `:PROYECTO_ABIERTO`
+- **Entrada**: Desde `:PROYECTO_ABIERTO` con `editarProyecto()`
+- **Control**: Se comunica con `ProyectoController` mediante `obtenerProyecto(id)`, `modificarCampos(datos)` y `guardarProyecto(datos)`
+- **Salida**: Transita a `:PROYECTO_ABIERTO` con `edicionFinalizada()`
 
 ### clases de control
 
 #### ProyectoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de los datos actuales del proyecto
-- Validar y persistir los datos modificados
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerProyecto(id)` y delegar en el repositorio la obtención del proyecto
+- Recibir `modificarCampos(datos)` para procesar cambios en tiempo real
+- Recibir `guardarProyecto(datos)` y delegar la actualización al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EditarProyectoView`
-- **Repositorio**: Delega operaciones de datos a `ProyectoRepository`
+- **Repositorio**: Delega en `ProyectoRepository` mediante `obtenerPorId(id) : Proyecto` y `actualizar(proyecto) : Proyecto`
 
 ### clases de entidad (entity)
 
 #### ProyectoRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de proyectos
-- Proporcionar método para obtener un proyecto por identificador
-- Persistir los cambios en el proyecto
+- Recuperar un proyecto por id mediante `obtenerPorId(id) : Proyecto`
+- Persistir los cambios en el proyecto mediante `actualizar(proyecto) : Proyecto`
 
 **Colaboraciones**:
 - **Control**: Responde a `ProyectoController`
@@ -70,8 +70,7 @@ Análisis de colaboración del caso de uso `editarProyecto()` mediante el patró
 #### Proyecto
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de un proyecto de investigación
-- Encapsular atributos editables: título, descripción, estado, fechas
+- Representar los datos del proyecto de investigación a editar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ProyectoRepository`
@@ -80,29 +79,33 @@ Análisis de colaboración del caso de uso `editarProyecto()` mediante el patró
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PROYECTO_ABIERTO` → `EditarProyectoView.editarProyecto()`
-2. **Carga de datos**: `EditarProyectoView` → `ProyectoController.obtenerProyecto(id)` : `Proyecto`
-3. **Acceso a datos**: `ProyectoController` → `ProyectoRepository.obtenerPorId(id)` : `Proyecto`
-4. **Edición**: El Coordinador modifica los datos del proyecto
-5. **Guardado**: `EditarProyectoView` → `ProyectoController.guardarProyecto(datos)` : `Proyecto`
-6. **Persistencia**: `ProyectoController` → `ProyectoRepository.actualizar(proyecto)` : `Proyecto`
-7. **Finalización**: `EditarProyectoView` → `:PROYECTO_ABIERTO.edicionFinalizada()`
+1. El sistema está en `:PROYECTO_ABIERTO`
+2. El coordinador solicita editar proyecto: `EditarProyectoView` recibe `editarProyecto()`
+3. `EditarProyectoView` invoca `obtenerProyecto(id)` en `ProyectoController`
+4. `ProyectoController` delega en `ProyectoRepository.obtenerPorId(id)` y obtiene un objeto `Proyecto`
+5. El formulario se muestra con los datos actuales
+6. El coordinador modifica los campos: `EditarProyectoView` invoca `modificarCampos(datos) : void` en `ProyectoController`
+7. El coordinador confirma el guardado: `EditarProyectoView` invoca `guardarProyecto(datos)` en `ProyectoController`
+8. `ProyectoController` delega en `ProyectoRepository.actualizar(proyecto)` y obtiene el objeto actualizado
+9. La vista navega de vuelta → `:PROYECTO_ABIERTO` con `edicionFinalizada()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar datos actuales del proyecto|`EditarProyectoView`|Coordina con `ProyectoController.obtenerProyecto(id)`|
-|Modificar datos del proyecto|`EditarProyectoView`|Captura cambios en el formulario|
-|Persistir cambios|`ProyectoController`|`guardarProyecto(datos)` → `ProyectoRepository.actualizar()`|
-|Volver al proyecto|`EditarProyectoView`|→ `:PROYECTO_ABIERTO`|
+|Obtener datos actuales del proyecto|`ProyectoController`|`obtenerProyecto(id) : Proyecto`|
+|Acceder al proyecto por id|`ProyectoRepository`|`obtenerPorId(id) : Proyecto`|
+|Notificar cambios en campos|`ProyectoController`|`modificarCampos(datos) : void`|
+|Guardar cambios del proyecto|`ProyectoController`|`guardarProyecto(datos) : Proyecto`|
+|Persistir actualización del proyecto|`ProyectoRepository`|`actualizar(proyecto) : Proyecto`|
+|Volver al proyecto|`EditarProyectoView`|`edicionFinalizada()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Coordinador
-- **Control**: Solo coordinación de la obtención y persistencia de datos
+- **Vista**: Solo presentación del formulario e interacción con el coordinador
+- **Control**: Solo coordinación de la obtención y persistencia del proyecto
 - **Entidad**: Solo datos y reglas de negocio del proyecto
 
 ### agnóstico tecnológicamente

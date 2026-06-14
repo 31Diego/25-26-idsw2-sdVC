@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `editarEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para modificar los datos de un entregable existente.
+Análisis de colaboración del caso de uso `editarEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador modifique los datos de un entregable existente.
 
 ## diagrama de colaboración
 
@@ -30,37 +30,38 @@ Análisis de colaboración del caso de uso `editarEntregable()` mediante el patr
 #### EditarEntregableView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de edición con los datos actuales del entregable
-- Recuperar los datos actuales a través del controlador
-- Capturar los cambios introducidos por el Coordinador
-- Invocar el guardado en el controlador
+- Recibir la solicitud `editarEntregable()` desde `:ENTREGABLE_ABIERTO`
+- Solicitar al controlador los datos actuales del entregable mediante `obtenerEntregable(id) : Entregable`
+- Mostrar el formulario de edición con los datos actuales
+- Notificar al controlador los cambios del campo mediante `modificarCampos(datos) : void`
+- Solicitar al controlador el guardado mediante `guardarEntregable(datos) : Entregable`
 - Navegar de vuelta al entregable tras la edición
 
 **Colaboraciones**:
-- **Entrada**: Recibe `editarEntregable()` desde `:ENTREGABLE_ABIERTO`
-- **Control**: Se comunica con `EntregableController`
-- **Salida**: Navega a `:ENTREGABLE_ABIERTO`
+- **Entrada**: Desde `:ENTREGABLE_ABIERTO` con `editarEntregable()`
+- **Control**: Se comunica con `EntregableController` mediante `obtenerEntregable(id)`, `modificarCampos(datos)` y `guardarEntregable(datos)`
+- **Salida**: Transita a `:ENTREGABLE_ABIERTO` con `edicionFinalizada()`
 
 ### clases de control
 
 #### EntregableController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de los datos actuales del entregable
-- Validar y persistir los datos modificados
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerEntregable(id)` y delegar en el repositorio la obtención del entregable
+- Recibir `modificarCampos(datos)` para procesar cambios en tiempo real
+- Recibir `guardarEntregable(datos)` y delegar la actualización al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EditarEntregableView`
-- **Repositorio**: Delega operaciones de datos a `EntregableRepository`
+- **Repositorio**: Delega en `EntregableRepository` mediante `obtenerPorId(id) : Entregable` y `actualizar(entregable) : Entregable`
 
 ### clases de entidad (entity)
 
 #### EntregableRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de entregables
-- Proporcionar método para obtener y actualizar un entregable
+- Recuperar un entregable por id mediante `obtenerPorId(id) : Entregable`
+- Persistir los cambios en el entregable mediante `actualizar(entregable) : Entregable`
 
 **Colaboraciones**:
 - **Control**: Responde a `EntregableController`
@@ -69,8 +70,7 @@ Análisis de colaboración del caso de uso `editarEntregable()` mediante el patr
 #### Entregable
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de un entregable
-- Encapsular atributos editables: título, descripción, fecha límite, estado
+- Representar los datos del entregable a editar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `EntregableRepository`
@@ -79,28 +79,33 @@ Análisis de colaboración del caso de uso `editarEntregable()` mediante el patr
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:ENTREGABLE_ABIERTO` → `EditarEntregableView.editarEntregable()`
-2. **Carga de datos**: `EditarEntregableView` → `EntregableController.obtenerEntregable(id)` : `Entregable`
-3. **Acceso a datos**: `EntregableController` → `EntregableRepository.obtenerPorId(id)` : `Entregable`
-4. **Edición**: El Coordinador modifica los datos del entregable
-5. **Guardado**: `EditarEntregableView` → `EntregableController.guardarEntregable(datos)` : `Entregable`
-6. **Persistencia**: `EntregableController` → `EntregableRepository.actualizar(entregable)` : `Entregable`
-7. **Finalización**: `EditarEntregableView` → `:ENTREGABLE_ABIERTO.edicionFinalizada()`
+1. El sistema está en `:ENTREGABLE_ABIERTO`
+2. El coordinador solicita editar entregable: `EditarEntregableView` recibe `editarEntregable()`
+3. `EditarEntregableView` invoca `obtenerEntregable(id)` en `EntregableController`
+4. `EntregableController` delega en `EntregableRepository.obtenerPorId(id)` y obtiene un objeto `Entregable`
+5. El formulario se muestra con los datos actuales
+6. El coordinador modifica los campos: `EditarEntregableView` invoca `modificarCampos(datos) : void` en `EntregableController`
+7. El coordinador confirma el guardado: `EditarEntregableView` invoca `guardarEntregable(datos)` en `EntregableController`
+8. `EntregableController` delega en `EntregableRepository.actualizar(entregable)` y obtiene el objeto actualizado
+9. La vista navega de vuelta → `:ENTREGABLE_ABIERTO` con `edicionFinalizada()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar datos actuales|`EditarEntregableView`|Coordina con `EntregableController.obtenerEntregable(id)`|
-|Modificar datos del entregable|`EditarEntregableView`|Captura cambios en el formulario|
-|Persistir cambios|`EntregableController`|`guardarEntregable(datos)` → `EntregableRepository.actualizar()`|
+|Obtener datos actuales del entregable|`EntregableController`|`obtenerEntregable(id) : Entregable`|
+|Acceder al entregable por id|`EntregableRepository`|`obtenerPorId(id) : Entregable`|
+|Notificar cambios en campos|`EntregableController`|`modificarCampos(datos) : void`|
+|Guardar cambios del entregable|`EntregableController`|`guardarEntregable(datos) : Entregable`|
+|Persistir actualización del entregable|`EntregableRepository`|`actualizar(entregable) : Entregable`|
+|Volver al entregable|`EditarEntregableView`|`edicionFinalizada()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Coordinador
-- **Control**: Solo coordinación de la obtención y persistencia de datos
+- **Vista**: Solo presentación del formulario e interacción con el coordinador
+- **Control**: Solo coordinación de la obtención y persistencia del entregable
 - **Entidad**: Solo datos y reglas de negocio del entregable
 
 ### agnóstico tecnológicamente

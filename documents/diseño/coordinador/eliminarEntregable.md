@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Mostrar la confirmación de eliminación y borrar el entregable (y su archivo adjunto si existe) tras la confirmación.
+Mostrar la confirmación de eliminación y borrar el entregable (y su archivo adjunto si existe) tras la confirmación del coordinador.
 
 ## Diagrama de secuencia
 
@@ -22,21 +22,22 @@ Mostrar la confirmación de eliminación y borrar el entregable (y su archivo ad
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EliminarEntregableView (azul) | `EliminarEntregableController` `@Controller` | GET muestra confirmación; POST elimina |
-| EntregableController (amarillo) | `EntregableService` `@Service` | findById para mostrar datos; elimina registro y archivo |
-| EntregableRepository (naranja) | `EntregableRepository` JpaRepository | SELECT (GET) y DELETE (POST) |
-| Sistema de ficheros | `./archivos/` | Borra el archivo adjunto si existe |
+| Controlador de entregables (GET) | EntregableController @Controller GET /proyectos/{proyectoId}/entregables/{id}/eliminar | Carga el entregable y muestra la confirmación |
+| Controlador de entregables (POST) | EntregableController @Controller POST /proyectos/{proyectoId}/entregables/{id}/eliminar | Elimina el entregable y su archivo si existe |
+| Servicio de entregables | EntregableService @Service | `obtenerEntregable(id)` y `eliminarEntregable(id)` |
+| Servicio de archivos | ArchivoService @Service | `eliminarArchivo(rutaArchivo)` si el entregable tiene archivo adjunto |
+| Repositorio de entregables | EntregableRepository JpaRepository | SELECT por id y DELETE via deleteById(id) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
 | GET | /proyectos/{proyectoId}/entregables/{id}/eliminar | Muestra la pantalla de confirmación |
-| POST | /proyectos/{proyectoId}/entregables/{id}/eliminar | Elimina el entregable |
+| POST | /proyectos/{proyectoId}/entregables/{id}/eliminar | Elimina el entregable y redirige al listado |
 
 ## Decisiones de diseño
 
-- El GET carga el entregable para mostrar título, tipo y estado en la pantalla de confirmación.
-- El servicio borra el archivo físico con `Files.deleteIfExists()` antes de llamar a `deleteById`.
-- Si el archivo ya no existe en disco, `deleteIfExists` no lanza excepción (operación segura).
-- Tras eliminar, redirige a `/proyectos/{proyectoId}/entregables` (PRG).
+- En el GET, el entregable se carga con `obtenerEntregable(id)` y se añaden al modelo `"entregable"` y `"proyectoId"`.
+- El POST llama a `eliminarEntregable(id)` que: primero hace `findById` para obtener la ruta del archivo; luego flujo alternativo `alt`: si tiene archivo adjunto → `ArchivoSvc.eliminarArchivo(rutaArchivo)`; finalmente `deleteById(id)`.
+- Tras eliminar, redirige a `/proyectos/{proyectoId}/entregables` (302 redirect).

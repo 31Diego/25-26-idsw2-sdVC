@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Investigador elimine un entregable tras confirmar la acción.
+Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador elimine un entregable tras confirmar la acción.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: eliminarEntregable()](../../../images/analisis/investigador/eliminarEntregable-analisis.svg)|
+|![Análisis: eliminarEntregable()](../../../images/analisis/investigador/eliminarEntregable-investigador-analisis.svg)|
 |-|
 |Código fuente: [eliminarEntregable.puml](../../../modelosUML/analisis/investigador/eliminarEntregable.puml)|
 
@@ -30,35 +30,36 @@ Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el pa
 #### EliminarEntregableView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la pantalla de confirmación de eliminación con los datos del entregable
-- Capturar la confirmación del Investigador
-- Invocar la eliminación en el controlador
-- Navegar a la lista de entregables tras la eliminación
+- Recibir la solicitud `eliminarEntregable()` desde `:ENTREGABLE_ABIERTO`
+- Solicitar los datos del entregable para la confirmación mediante `cargarEntregableParaEliminacion(id) : Entregable`
+- Solicitar la eliminación definitiva mediante `eliminarEntregable(id) : void`
+- Mostrar la pantalla de confirmación al investigador
+- Transitar a `:ENTREGABLES_ABIERTOS` al finalizar
 
 **Colaboraciones**:
-- **Entrada**: Recibe `eliminarEntregable()` desde `:ENTREGABLE_ABIERTO`
-- **Control**: Se comunica con `EntregableController`
-- **Salida**: Navega a `:ENTREGABLES_ABIERTOS`
+- **Entrada**: Desde `:ENTREGABLE_ABIERTO` con `eliminarEntregable()`
+- **Control**: Se comunica con `EntregableController` mediante `cargarEntregableParaEliminacion(id)` y `eliminarEntregable(id)`
+- **Salida**: Transita a `:ENTREGABLES_ABIERTOS` con `abrirEntregables()`
 
 ### clases de control
 
 #### EntregableController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la carga del entregable para mostrar en la confirmación
-- Ejecutar la eliminación del entregable del repositorio
+- Recibir `cargarEntregableParaEliminacion(id)` y delegar en el repositorio la obtención del entregable
+- Recibir `eliminarEntregable(id)` y delegar la eliminación en el repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EliminarEntregableView`
-- **Repositorio**: Delega la operación de datos a `EntregableRepository`
+- **Repositorio**: Delega en `EntregableRepository` mediante `obtenerPorId(id) : Entregable` y `eliminarPorId(id) : void`
 
 ### clases de entidad (entity)
 
 #### EntregableRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de entregables
-- Proporcionar métodos para obtener y eliminar un entregable por identificador
+- Recuperar un entregable por id para la confirmación mediante `obtenerPorId(id) : Entregable`
+- Eliminar definitivamente el entregable mediante `eliminarPorId(id) : void`
 
 **Colaboraciones**:
 - **Control**: Responde a `EntregableController`
@@ -67,8 +68,7 @@ Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el pa
 #### Entregable
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información del entregable a eliminar
-- Encapsular atributos para mostrar en la pantalla de confirmación
+- Representar los datos del entregable a mostrar en la confirmación de eliminación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `EntregableRepository`
@@ -77,28 +77,32 @@ Análisis de colaboración del caso de uso `eliminarEntregable()` mediante el pa
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:ENTREGABLE_ABIERTO` → `EliminarEntregableView.eliminarEntregable()`
-2. **Carga para confirmación**: `EliminarEntregableView` → `EntregableController.cargarEntregableParaEliminacion(id)` : `Entregable`
-3. **Acceso a datos**: `EntregableController` → `EntregableRepository.obtenerPorId(id)` : `Entregable`
-4. **Confirmación**: El Investigador confirma la eliminación
-5. **Eliminación**: `EliminarEntregableView` → `EntregableController.eliminarEntregable(id)` : `void`
-6. **Persistencia**: `EntregableController` → `EntregableRepository.eliminarPorId(id)` : `void`
-7. **Finalización**: `EliminarEntregableView` → `:ENTREGABLES_ABIERTOS.abrirEntregables()`
+1. El sistema está en `:ENTREGABLE_ABIERTO`
+2. El investigador solicita eliminar: `EliminarEntregableView` recibe `eliminarEntregable()`
+3. `EliminarEntregableView` invoca `cargarEntregableParaEliminacion(id) : Entregable` en `EntregableController`
+4. `EntregableController` delega en `EntregableRepository.obtenerPorId(id)` y obtiene el `Entregable`
+5. La vista muestra la pantalla de confirmación con los datos del entregable
+6. El investigador confirma la eliminación
+7. `EliminarEntregableView` invoca `eliminarEntregable(id) : void` en `EntregableController`
+8. `EntregableController` delega en `EntregableRepository.eliminarPorId(id)`
+9. La vista transita a `:ENTREGABLES_ABIERTOS` con `abrirEntregables()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar confirmación con datos del entregable|`EntregableController`|`cargarEntregableParaEliminacion(id)`|
-|Ejecutar eliminación|`EntregableController`|`eliminarEntregable(id)` → `EntregableRepository.eliminarPorId(id)`|
-|Redirigir tras eliminación|`EliminarEntregableView`|→ `:ENTREGABLES_ABIERTOS`|
+|Cargar entregable para confirmación|`EntregableController`|`cargarEntregableParaEliminacion(id) : Entregable`|
+|Acceder al entregable por id|`EntregableRepository`|`obtenerPorId(id) : Entregable`|
+|Eliminar el entregable|`EntregableController`|`eliminarEntregable(id) : void`|
+|Ejecutar eliminación en base de datos|`EntregableRepository`|`eliminarPorId(id) : void`|
+|Volver al listado de entregables|`EliminarEntregableView`|`abrirEntregables()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación de confirmación e interacción con el Investigador
-- **Control**: Solo coordinación de la carga y eliminación
+- **Vista**: Solo presentación de la confirmación e interacción con el investigador
+- **Control**: Solo coordinación de la carga para confirmación y la eliminación
 - **Entidad**: Solo datos y reglas de negocio del entregable
 
 ### agnóstico tecnológicamente

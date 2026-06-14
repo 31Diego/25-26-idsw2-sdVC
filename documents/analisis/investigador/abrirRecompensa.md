@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirRecompensa()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el detalle de una recompensa al Investigador en modo consulta.
+Análisis de colaboración del caso de uso `abrirRecompensa()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador consulte el detalle de una recompensa.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirRecompensa()](../../../images/analisis/investigador/abrirRecompensa-analisis.svg)|
+|![Análisis: abrirRecompensa()](../../../images/analisis/investigador/abrirRecompensa-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirRecompensa.puml](../../../modelosUML/analisis/investigador/abrirRecompensa.puml)|
 
@@ -30,34 +30,33 @@ Análisis de colaboración del caso de uso `abrirRecompensa()` mediante el patr�
 #### RecompensaView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el detalle completo de la recompensa al Investigador
-- Mostrar información: nombre, descripción, puntos, condiciones
-- Navegar de vuelta al listado de recompensas
+- Recibir la solicitud `abrirRecompensa(id)` desde `:RECOMPENSAS_ABIERTAS`
+- Solicitar al controlador los datos de la recompensa mediante `obtenerRecompensa(id) : Recompensa`
+- Mostrar el detalle de la recompensa al investigador
+- Ofrecer vuelta al listado de recompensas
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirRecompensa(id)` desde `:RECOMPENSAS_ABIERTAS`
-- **Control**: Se comunica con `RecompensaController`
-- **Salida**: Navega a `:RECOMPENSA_ABIERTA` y `:RECOMPENSAS_ABIERTAS`
+- **Entrada**: Desde `:RECOMPENSAS_ABIERTAS` con `abrirRecompensa(id)`
+- **Control**: Se comunica con `RecompensaController` mediante `obtenerRecompensa(id) : Recompensa`
+- **Salida**: Transita a `:RECOMPENSA_ABIERTA` (`recompensaMostrada()`), `:RECOMPENSAS_ABIERTAS` (`abrirRecompensas()`)
 
 ### clases de control
 
 #### RecompensaController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle de la recompensa
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerRecompensa(id)` y delegar en el repositorio la obtención de la recompensa
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `RecompensaView`
-- **Repositorio**: Delega el acceso a datos a `RecompensaRepository`
+- **Repositorio**: Delega en `RecompensaRepository` mediante `obtenerPorId(id) : Recompensa`
 
 ### clases de entidad (entity)
 
 #### RecompensaRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de recompensas
-- Proporcionar método para obtener una recompensa por identificador
+- Recuperar una recompensa por id mediante `obtenerPorId(id) : Recompensa`
 
 **Colaboraciones**:
 - **Control**: Responde a `RecompensaController`
@@ -66,8 +65,7 @@ Análisis de colaboración del caso de uso `abrirRecompensa()` mediante el patr�
 #### Recompensa
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de una recompensa
-- Encapsular atributos: nombre, descripción, puntos, condiciones
+- Representar los datos completos de la recompensa a mostrar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `RecompensaRepository`
@@ -76,26 +74,28 @@ Análisis de colaboración del caso de uso `abrirRecompensa()` mediante el patr�
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:RECOMPENSAS_ABIERTAS` → `RecompensaView.abrirRecompensa(id)`
-2. **Obtención de datos**: `RecompensaView` → `RecompensaController.obtenerRecompensa(id)` : `Recompensa`
-3. **Acceso a datos**: `RecompensaController` → `RecompensaRepository.obtenerPorId(id)` : `Recompensa`
-4. **Presentación**: `RecompensaView` → `:RECOMPENSA_ABIERTA.recompensaMostrada()`
-5. **Navegación**: El Investigador puede volver al listado de recompensas
+1. El sistema está en `:RECOMPENSAS_ABIERTAS`
+2. El investigador selecciona una recompensa: `RecompensaView` recibe `abrirRecompensa(id)`
+3. `RecompensaView` invoca `obtenerRecompensa(id)` en `RecompensaController`
+4. `RecompensaController` delega en `RecompensaRepository.obtenerPorId(id)` y obtiene un objeto `Recompensa`
+5. La vista muestra el detalle → transita a `:RECOMPENSA_ABIERTA` con `recompensaMostrada()`
+6. Desde `:RECOMPENSA_ABIERTA` el investigador puede volver con `abrirRecompensas()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar detalle de la recompensa|`RecompensaView`|Coordina con `RecompensaController.obtenerRecompensa(id)`|
-|Datos completos de la recompensa|`Recompensa`|Encapsula todos los atributos|
-|Acceso a datos|`RecompensaRepository`|`obtenerPorId(id)`|
+|Obtener datos de la recompensa|`RecompensaController`|`obtenerRecompensa(id) : Recompensa`|
+|Acceder a la recompensa por id|`RecompensaRepository`|`obtenerPorId(id) : Recompensa`|
+|Mostrar detalle de la recompensa|`RecompensaView`|`recompensaMostrada()`|
+|Volver al listado de recompensas|`RecompensaView`|`abrirRecompensas()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Investigador
-- **Control**: Solo coordinación y obtención del detalle
+- **Vista**: Solo presentación e interacción con el investigador
+- **Control**: Solo coordinación y obtención de la recompensa
 - **Entidad**: Solo datos y reglas de negocio de la recompensa
 
 ### agnóstico tecnológicamente

@@ -1,4 +1,4 @@
-# abrirRecompensas — Diseño · Coordinador
+# abrirRecompensas — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Mostrar al coordinador el listado completo de todas las recompensas registradas en el sistema, con acceso directo a cada detalle y a la creación de nuevas recompensas.
+Mostrar al coordinador el listado completo de todas las recompensas registradas en el sistema.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/abrirRecompensas-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/abrirRecompensas.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/abrirRecompensas.puml)
 
@@ -22,19 +22,19 @@ Mostrar al coordinador el listado completo de todas las recompensas registradas 
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| RecompensasView | `RecompensaController` `@Controller` | GET /recompensas — determina el rol y retorna el listado correspondiente |
-| RecompensaController | `RecompensaService` `@Service` | `obtenerTodas()` — devuelve todas las recompensas |
-| RecompensaRepository | `RecompensaRepository` JpaRepository | SELECT * FROM recompensas |
-| Recompensa | `Recompensa` `@Entity` | Tabla recompensas |
+| Controlador de recompensas | RecompensaController @Controller | Atiende GET /recompensas; detecta rol COORDINADOR |
+| Servicio de recompensas | RecompensaService @Service | `obtenerParaUsuario(investigador)` → rol COORDINADOR → `obtenerTodas()` via findAll() |
+| Repositorio de recompensas | RecompensaRepository JpaRepository | Ejecuta SELECT * FROM recompensas vía findAll() |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /recompensas | Muestra el listado de todas las recompensas (coordinador ve todas) |
+| GET | /recompensas | Muestra el listado completo de todas las recompensas (coordinador ve todas) |
 
 ## Decisiones de diseño
 
-- El mismo endpoint `/recompensas` sirve a ambos roles; el controlador comprueba el rol del usuario autenticado para filtrar (`obtenerTodas()` para coordinador, `obtenerPorDestinatario()` para investigador).
-- El listado muestra: título, tipo, valor, destinatario (nombre).
-- Desde el listado el coordinador puede acceder al detalle de cada recompensa y al formulario de creación.
+- El mismo endpoint `/recompensas` sirve a ambos roles; el servicio ramifica por rol (`rol == COORDINADOR → obtenerTodas()`).
+- La nota en el diagrama indica: `rol == COORDINADOR → obtenerTodas()`.
+- La vista `recompensas.html` muestra el listado completo con enlace al detalle de cada recompensa y botón "Crear recompensa".

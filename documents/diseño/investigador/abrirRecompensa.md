@@ -1,4 +1,4 @@
-# abrirRecompensa — Diseño · Investigador
+# abrirRecompensa — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Mostrar al investigador el detalle completo de una recompensa que le ha sido asignada. Un investigador no puede acceder al detalle de recompensas de otros usuarios.
+Mostrar al investigador el detalle completo de una recompensa que le ha sido asignada; redirige si el investigador no es el destinatario.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/abrirRecompensa-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/abrirRecompensa.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/abrirRecompensa.puml)
 
@@ -22,18 +22,18 @@ Mostrar al investigador el detalle completo de una recompensa que le ha sido asi
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| RecompensaView | `RecompensaController` `@Controller` | GET /recompensas/{id} — verifica que el destinatario coincide |
-| RecompensaController | `RecompensaService` `@Service` | `obtenerPorId(id)` |
-| RecompensaRepository | `RecompensaRepository` JpaRepository | SELECT … WHERE id = ? |
-| Recompensa | `Recompensa` `@Entity` | Tabla recompensas |
+| Controlador de recompensas | RecompensaController @Controller | Atiende GET /recompensas/{id}; verifica que el destinatario coincide con el usuario autenticado |
+| Servicio de recompensas | RecompensaService @Service | `obtenerPorId(id)` recupera la recompensa |
+| Repositorio de recompensas | RecompensaRepository JpaRepository | Ejecuta SELECT * FROM recompensas WHERE id = ? |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /recompensas/{id} | Muestra el detalle si el investigador es el destinatario |
+| GET | /recompensas/{id} | Muestra el detalle si el investigador es el destinatario; redirige en caso contrario |
 
 ## Decisiones de diseño
 
-- El controlador comprueba que `recompensa.getDestinatario().getId()` coincide con el id del usuario autenticado; si no, redirige a `/recompensas`.
-- El detalle no muestra los botones de editar ni eliminar para el investigador.
+- Flujo alternativo `alt`: si `destinatario == usuario autenticado` → vista `recompensa.html` (sin botones de gestión); si acceso denegado → redirect a `/recompensas`.
+- La vista no muestra los botones de editar ni eliminar para el investigador.

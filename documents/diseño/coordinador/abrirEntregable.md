@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Recuperar y mostrar el detalle completo de un entregable concreto.
+Recuperar y mostrar el detalle completo de un entregable concreto dentro de su proyecto.
 
 ## Diagrama de secuencia
 
@@ -22,9 +22,10 @@ Recuperar y mostrar el detalle completo de un entregable concreto.
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| AbrirEntregableView (azul) | `EntregableController` `@Controller` | GET devuelve el detalle del entregable |
-| EntregableController (amarillo) | `EntregableService` `@Service` | Llama a findById |
-| EntregableRepository (naranja) | `EntregableRepository` JpaRepository | Ejecuta SELECT por id |
+| Controlador de entregables | EntregableController @Controller | Atiende GET /proyectos/{proyectoId}/entregables/{id} y prepara el modelo |
+| Servicio de entregables | EntregableService @Service | `obtenerEntregable(id)` carga el entregable por id |
+| Repositorio de entregables | EntregableRepository JpaRepository | Ejecuta SELECT * FROM entregables WHERE id = ? vía findById(id) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
@@ -34,6 +35,6 @@ Recuperar y mostrar el detalle completo de un entregable concreto.
 
 ## Decisiones de diseño
 
-- El `proyectoId` en la URL se usa para los enlaces de navegación (volver al listado, editar, eliminar).
+- El repositorio retorna `Optional<Entregable>`; el servicio lo resuelve con `orElseThrow()`.
+- Se añaden al modelo `"entregable"` y `"proyectoId"` (para los enlaces de navegación: volver al listado, editar, eliminar).
 - Si el entregable tiene `rutaArchivo`, la vista muestra el nombre del archivo adjunto.
-- El `orElseThrow()` de JPA lanza excepción si el id no existe; Spring devuelve 500 (pendiente manejo de errores).

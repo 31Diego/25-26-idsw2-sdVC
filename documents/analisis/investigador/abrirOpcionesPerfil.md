@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirOpcionesPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar al Investigador las opciones disponibles sobre su propio perfil.
+Análisis de colaboración del caso de uso `abrirOpcionesPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador consulte su perfil y acceda a las opciones disponibles.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirOpcionesPerfil()](../../../images/analisis/investigador/abrirOpcionesPerfil-analisis.svg)|
+|![Análisis: abrirOpcionesPerfil()](../../../images/analisis/investigador/abrirOpcionesPerfil-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirOpcionesPerfil.puml](../../../modelosUML/analisis/investigador/abrirOpcionesPerfil.puml)|
 
@@ -30,34 +30,33 @@ Análisis de colaboración del caso de uso `abrirOpcionesPerfil()` mediante el p
 #### OpcionesPerfilView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Mostrar los datos actuales del perfil del Investigador
-- Ofrecer opciones: editar perfil y solicitar eliminación del perfil
-- Navegar de vuelta al panel principal
+- Recibir la solicitud `abrirOpcionesPerfil()` desde `:PANEL_PRINCIPAL_ABIERTO`
+- Solicitar al controlador los datos del perfil mediante `obtenerPerfil() : Investigador`
+- Mostrar el perfil del investigador con las opciones disponibles
+- Ofrecer acceso a la edición del perfil, solicitud de eliminación y vuelta al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirOpcionesPerfil()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Control**: Se comunica con `PerfilController`
-- **Salida**: Navega a colaboraciones `EditarPerfil` y `SolicitarEliminacion`, o regresa al panel
+- **Entrada**: Desde `:PANEL_PRINCIPAL_ABIERTO` con `abrirOpcionesPerfil()`
+- **Control**: Se comunica con `PerfilController` mediante `obtenerPerfil() : Investigador`
+- **Salida**: Transita a `:OPCIONES_PERFIL_ABIERTO` (`perfilMostrado()`), `:Collaboration EditarPerfil` (`editarPerfil()`), `:Collaboration SolicitarEliminacion` (`solicitarEliminacionPerfil()`), `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### PerfilController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del perfil del Investigador autenticado
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerPerfil()` y delegar en el repositorio la obtención del investigador autenticado
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `OpcionesPerfilView`
-- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository`
+- **Repositorio**: Delega en `InvestigadorRepository` mediante `obtenerPorId(id) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para obtener investigador por identificador
+- Recuperar el investigador autenticado por id mediante `obtenerPorId(id) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `PerfilController`
@@ -66,8 +65,7 @@ Análisis de colaboración del caso de uso `abrirOpcionesPerfil()` mediante el p
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información del perfil del Investigador
-- Encapsular atributos: nombre, email, username, carga de trabajo
+- Representar los datos del perfil del investigador
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -76,28 +74,31 @@ Análisis de colaboración del caso de uso `abrirOpcionesPerfil()` mediante el p
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `OpcionesPerfilView.abrirOpcionesPerfil()`
-2. **Obtención de datos**: `OpcionesPerfilView` → `PerfilController.obtenerPerfil()` : `Investigador`
-3. **Acceso a datos**: `PerfilController` → `InvestigadorRepository.obtenerPorId(id)` : `Investigador`
-4. **Presentación**: `OpcionesPerfilView` → `:OPCIONES_PERFIL_ABIERTO.perfilMostrado()`
-5. **Navegación**: El Investigador puede editar su perfil o solicitar su eliminación
+1. El sistema está en `:PANEL_PRINCIPAL_ABIERTO`
+2. El investigador solicita ver su perfil: `OpcionesPerfilView` recibe `abrirOpcionesPerfil()`
+3. `OpcionesPerfilView` invoca `obtenerPerfil()` en `PerfilController`
+4. `PerfilController` delega en `InvestigadorRepository.obtenerPorId(id)` y obtiene un objeto `Investigador`
+5. La vista muestra el perfil con opciones → transita a `:OPCIONES_PERFIL_ABIERTO` con `perfilMostrado()`
+6. Desde `:OPCIONES_PERFIL_ABIERTO` el investigador puede navegar a `editarPerfil()`, `solicitarEliminacionPerfil()` o `abrirPanelPrincipal()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar datos del perfil|`OpcionesPerfilView`|Coordina con `PerfilController.obtenerPerfil()`|
-|Acceso a datos del perfil|`InvestigadorRepository`|`obtenerPorId(id)`|
-|Editar perfil|`OpcionesPerfilView`|→ Colaboración `EditarPerfil`|
-|Solicitar eliminación|`OpcionesPerfilView`|→ Colaboración `SolicitarEliminacion`|
+|Obtener datos del perfil|`PerfilController`|`obtenerPerfil() : Investigador`|
+|Acceder al investigador por id|`InvestigadorRepository`|`obtenerPorId(id) : Investigador`|
+|Mostrar perfil con opciones|`OpcionesPerfilView`|`perfilMostrado()`|
+|Editar perfil|`OpcionesPerfilView`|`editarPerfil()`|
+|Solicitar eliminación del perfil|`OpcionesPerfilView`|`solicitarEliminacionPerfil()`|
+|Volver al panel principal|`OpcionesPerfilView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Investigador
+- **Vista**: Solo presentación e interacción con el investigador
 - **Control**: Solo coordinación y obtención del perfil
-- **Entidad**: Solo datos y reglas de negocio del perfil
+- **Entidad**: Solo datos y reglas de negocio del investigador
 
 ### agnóstico tecnológicamente
 

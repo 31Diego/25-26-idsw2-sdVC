@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el perfil de un investigador al Investigador en modo consulta.
+Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador consulte el perfil de otro investigador.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirInvestigador()](../../../images/analisis/investigador/abrirInvestigador-analisis.svg)|
+|![Análisis: abrirInvestigador()](../../../images/analisis/investigador/abrirInvestigador-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirInvestigador.puml](../../../modelosUML/analisis/investigador/abrirInvestigador.puml)|
 
@@ -30,34 +30,33 @@ Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el pat
 #### InvestigadorView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el perfil completo de un investigador en modo consulta
-- Mostrar información: nombre, email, rol, carga de trabajo
-- Navegar de vuelta al directorio de investigadores
+- Recibir la solicitud `abrirInvestigador(id)` desde `:INVESTIGADORES_ABIERTOS`
+- Solicitar al controlador los datos del investigador mediante `obtenerInvestigador(id) : Investigador`
+- Mostrar el perfil del investigador al investigador en modo consulta
+- Navegar de vuelta al listado de investigadores
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirInvestigador(id)` desde `:INVESTIGADORES_ABIERTOS`
-- **Control**: Se comunica con `InvestigadorController`
-- **Salida**: Navega a `:INVESTIGADOR_ABIERTO` y `:INVESTIGADORES_ABIERTOS`
+- **Entrada**: Desde `:INVESTIGADORES_ABIERTOS` con `abrirInvestigador(id)`
+- **Control**: Se comunica con `InvestigadorController` mediante `obtenerInvestigador(id) : Investigador`
+- **Salida**: Transita a `:INVESTIGADOR_ABIERTO` (`investigadorMostrado()`) y a `:INVESTIGADORES_ABIERTOS` (`abrirInvestigadores()`)
 
 ### clases de control
 
 #### InvestigadorController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del perfil del investigador solicitado
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerInvestigador(id)` y delegar en el repositorio la obtención del investigador
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `InvestigadorView`
-- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository`
+- **Repositorio**: Delega en `InvestigadorRepository` mediante `obtenerPorId(id) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para obtener un investigador por identificador
+- Recuperar un investigador por id mediante `obtenerPorId(id) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `InvestigadorController`
@@ -66,8 +65,7 @@ Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el pat
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa del perfil de un investigador
-- Encapsular atributos: nombre, email, rol, carga de trabajo
+- Representar los datos del perfil del investigador a mostrar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -76,25 +74,27 @@ Análisis de colaboración del caso de uso `abrirInvestigador()` mediante el pat
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:INVESTIGADORES_ABIERTOS` → `InvestigadorView.abrirInvestigador(id)`
-2. **Obtención de datos**: `InvestigadorView` → `InvestigadorController.obtenerInvestigador(id)` : `Investigador`
-3. **Acceso a datos**: `InvestigadorController` → `InvestigadorRepository.obtenerPorId(id)` : `Investigador`
-4. **Presentación**: `InvestigadorView` → `:INVESTIGADOR_ABIERTO.investigadorMostrado()`
-5. **Navegación**: El Investigador puede volver al directorio
+1. El sistema está en `:INVESTIGADORES_ABIERTOS`
+2. El investigador selecciona un investigador: `InvestigadorView` recibe `abrirInvestigador(id)`
+3. `InvestigadorView` invoca `obtenerInvestigador(id)` en `InvestigadorController`
+4. `InvestigadorController` delega en `InvestigadorRepository.obtenerPorId(id)` y obtiene un objeto `Investigador`
+5. La vista muestra el perfil → transita a `:INVESTIGADOR_ABIERTO` con `investigadorMostrado()`
+6. Desde `:INVESTIGADOR_ABIERTO` el investigador puede navegar con `abrirInvestigadores()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar perfil del investigador|`InvestigadorView`|Coordina con `InvestigadorController.obtenerInvestigador(id)`|
-|Datos completos del perfil|`Investigador`|Encapsula todos los atributos|
-|Acceso a datos|`InvestigadorRepository`|`obtenerPorId(id)`|
+|Obtener datos del investigador|`InvestigadorController`|`obtenerInvestigador(id) : Investigador`|
+|Acceder al investigador por id|`InvestigadorRepository`|`obtenerPorId(id) : Investigador`|
+|Mostrar perfil del investigador|`InvestigadorView`|`investigadorMostrado()`|
+|Volver al directorio|`InvestigadorView`|`abrirInvestigadores()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Investigador
+- **Vista**: Solo presentación e interacción con el investigador
 - **Control**: Solo coordinación y obtención del perfil
 - **Entidad**: Solo datos y reglas de negocio del investigador
 

@@ -6,7 +6,7 @@
 - **Fase RUP**: Elaboración
 - **Disciplina**: Diseño
 - **Actor**: Coordinador
-- **Caso de uso**: abrirSolicitudEliminacionPerfil(id)
+- **Caso de uso**: abrirSolicitudEliminacionPerfil()
 
 ## Propósito
 
@@ -22,19 +22,19 @@ Recuperar y mostrar el detalle de una solicitud de eliminación de perfil concre
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| SolicitudEliminacionView (azul) | `SolicitudEliminacionController` `@Controller` | Recibe GET /solicitudes-eliminacion/{id}; pone la solicitud en el Model y devuelve solicitud-eliminacion.html |
-| EliminacionController (amarillo) | `SolicitudEliminacionService` `@Service` | Llama a findById(id) |
-| SolicitudEliminacionRepository (naranja) | `SolicitudEliminacionRepository` JpaRepository | Ejecuta SELECT WHERE id = ? |
-| SolicitudEliminacion (naranja) | `SolicitudEliminacion` `@Entity` | Entidad con investigador, motivo, fecha, estado |
+| Controlador de eliminación | EliminacionController @Controller | Atiende GET /solicitudes-eliminacion/{id} y prepara el modelo |
+| Servicio de solicitud de eliminación | SolicitudEliminacionService @Service | `obtenerSolicitud(id)` recupera la solicitud por id |
+| Repositorio de solicitudes | SolicitudEliminacionRepository JpaRepository | Ejecuta SELECT * FROM solicitudes_eliminacion WHERE id = ? vía findById(id) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /solicitudes-eliminacion/{id} | Muestra el detalle de una solicitud |
+| GET | /solicitudes-eliminacion/{id} | Muestra el detalle de la solicitud |
 
 ## Decisiones de diseño
 
-- Acceso restringido a `COORDINADOR` mediante `@PreAuthorize("hasRole('COORDINADOR')")`.
-- La vista enlaza a `/investigadores/{investigador.id}/opciones` para que el coordinador pueda resolver la solicitud accediendo al perfil.
-- El servicio `obtenerSolicitud(id)` ya existía de la implementación de `abrirSolicitudesEliminacionPerfil`.
+- El id llega como `@PathVariable`.
+- La solicitud se añade al modelo con `model.addAttribute("solicitud", solicitud)`.
+- La vista `solicitud-eliminacion.html` enlaza a `/investigadores/{investigador.id}/opciones` para resolver la solicitud.

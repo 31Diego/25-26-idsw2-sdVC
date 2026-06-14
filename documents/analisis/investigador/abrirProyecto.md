@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el detalle de un proyecto al Investigador en modo consulta.
+Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador consulte el detalle de un proyecto.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirProyecto()](../../../images/analisis/investigador/abrirProyecto-analisis.svg)|
+|![Análisis: abrirProyecto()](../../../images/analisis/investigador/abrirProyecto-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirProyecto.puml](../../../modelosUML/analisis/investigador/abrirProyecto.puml)|
 
@@ -30,35 +30,33 @@ Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón
 #### ProyectoView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el detalle completo del proyecto al Investigador
-- Mostrar información del proyecto: título, descripción, estado, fechas, investigadores, entregables
-- Ofrecer acceso a los entregables del proyecto y a la lista de investigadores
-- Navegar de vuelta a la lista de proyectos
+- Recibir la solicitud `abrirProyecto(id)` desde `:PROYECTOS_ABIERTOS` o `:ENTREGABLES_ABIERTOS`
+- Solicitar al controlador los datos del proyecto mediante `obtenerProyecto(id) : Proyecto`
+- Mostrar el detalle del proyecto al investigador en modo consulta
+- Ofrecer acceso a los entregables, a la lista de investigadores y vuelta a proyectos
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirProyecto(id)` desde `:PROYECTOS_ABIERTOS` o `:ENTREGABLES_ABIERTOS`
-- **Control**: Se comunica con `ProyectoController`
-- **Salida**: Navega a `:PROYECTO_ABIERTO` y a colaboraciones de consulta
+- **Entrada**: Desde `:PROYECTOS_ABIERTOS` o `:ENTREGABLES_ABIERTOS` con `abrirProyecto(id)`
+- **Control**: Se comunica con `ProyectoController` mediante `obtenerProyecto(id) : Proyecto`
+- **Salida**: Transita a `:PROYECTO_ABIERTO` (`proyectoMostrado()`), `:Collaboration AbrirEntregables` (`abrirEntregables()`), `:Collaboration AbrirInvestigadores` (`abrirInvestigadores()`), `:PROYECTOS_ABIERTOS` (`abrirProyectos()`)
 
 ### clases de control
 
 #### ProyectoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle completo del proyecto
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerProyecto(id)` y delegar en el repositorio la obtención del proyecto
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `ProyectoView`
-- **Repositorio**: Delega el acceso a datos a `ProyectoRepository`
+- **Repositorio**: Delega en `ProyectoRepository` mediante `obtenerPorId(id) : Proyecto`
 
 ### clases de entidad (entity)
 
 #### ProyectoRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de proyectos
-- Proporcionar método para obtener un proyecto por identificador
+- Recuperar un proyecto por id mediante `obtenerPorId(id) : Proyecto`
 
 **Colaboraciones**:
 - **Control**: Responde a `ProyectoController`
@@ -67,8 +65,7 @@ Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón
 #### Proyecto
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de un proyecto de investigación
-- Encapsular atributos: título, descripción, estado, fechas de inicio y fin, investigadores, entregables
+- Representar los datos completos del proyecto a mostrar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `ProyectoRepository`
@@ -77,28 +74,30 @@ Análisis de colaboración del caso de uso `abrirProyecto()` mediante el patrón
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PROYECTOS_ABIERTOS` → `ProyectoView.abrirProyecto(id)`
-2. **Obtención de datos**: `ProyectoView` → `ProyectoController.obtenerProyecto(id)` : `Proyecto`
-3. **Acceso a datos**: `ProyectoController` → `ProyectoRepository.obtenerPorId(id)` : `Proyecto`
-4. **Presentación**: `ProyectoView` → `:PROYECTO_ABIERTO.proyectoMostrado()`
-5. **Navegación**: El Investigador puede acceder a entregables o a la lista de investigadores del proyecto
+1. El sistema está en `:PROYECTOS_ABIERTOS` o `:ENTREGABLES_ABIERTOS`
+2. El investigador selecciona un proyecto: `ProyectoView` recibe `abrirProyecto(id)`
+3. `ProyectoView` invoca `obtenerProyecto(id)` en `ProyectoController`
+4. `ProyectoController` delega en `ProyectoRepository.obtenerPorId(id)` y obtiene un objeto `Proyecto`
+5. La vista muestra el detalle → transita a `:PROYECTO_ABIERTO` con `proyectoMostrado()`
+6. Desde `:PROYECTO_ABIERTO` el investigador puede navegar a `abrirEntregables()`, `abrirInvestigadores()` o `abrirProyectos()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar detalle del proyecto|`ProyectoView`|Coordina con `ProyectoController.obtenerProyecto(id)`|
-|Datos completos del proyecto|`Proyecto`|Encapsula todos los atributos|
-|Acceso a datos|`ProyectoRepository`|`obtenerPorId(id)`|
-|Ver entregables|`ProyectoView`|→ Colaboración `AbrirEntregables`|
-|Ver investigadores del proyecto|`ProyectoView`|→ Colaboración `AbrirInvestigadores`|
+|Obtener datos del proyecto|`ProyectoController`|`obtenerProyecto(id) : Proyecto`|
+|Acceder al proyecto por id|`ProyectoRepository`|`obtenerPorId(id) : Proyecto`|
+|Mostrar detalle del proyecto|`ProyectoView`|`proyectoMostrado()`|
+|Acceder a los entregables|`ProyectoView`|`abrirEntregables()`|
+|Acceder a los investigadores del proyecto|`ProyectoView`|`abrirInvestigadores()`|
+|Volver al listado de proyectos|`ProyectoView`|`abrirProyectos()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Investigador
-- **Control**: Solo coordinación y obtención del detalle
+- **Vista**: Solo presentación e interacción con el investigador
+- **Control**: Solo coordinación y obtención del proyecto
 - **Entidad**: Solo datos y reglas de negocio del proyecto
 
 ### agnóstico tecnológicamente

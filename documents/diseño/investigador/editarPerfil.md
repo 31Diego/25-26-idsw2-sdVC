@@ -1,4 +1,4 @@
-# editarPerfil — Diseño (Investigador)
+# editarPerfil — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Presentar al investigador un formulario editable con sus propios datos de perfil. No incluye el campo `rol` (solo el coordinador puede alterarlo, y solo al editar el perfil de otro investigador).
+Presenta al investigador un formulario editable con sus propios datos de perfil, sin el campo rol, y persiste los cambios.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/editarPerfil-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/editarPerfil-investigador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/editarPerfil.puml)
 
@@ -22,20 +22,22 @@ Presentar al investigador un formulario editable con sus propios datos de perfil
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EditarPerfilView (azul) | `EditarPerfilController` `@Controller` | Recibe GET y POST en /perfil/editar |
-| EditarPerfilController (amarillo) | `InvestigadorService` `@Service` | Recupera el investigador por username; lo actualiza sin tocar el rol |
-| InvestigadorRepository (naranja) | `InvestigadorRepository` JpaRepository | Ejecuta SELECT por username y UPDATE por id |
-| Investigador (naranja) | `Investigador` `@Entity` | Tabla investigadores en H2 |
+| Controlador de perfil (GET) | PerfilController @Controller GET /perfil/editar | Carga el investigador por username y sirve el formulario |
+| Controlador de perfil (POST) | PerfilController @Controller POST /perfil/editar | Persiste los cambios sin modificar el rol |
+| Servicio de investigador | InvestigadorService @Service | `obtenerInvestigadorPorUsername(username)` y `actualizarPerfil(id, ..., rol=null, ...)` |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | SELECT por username y UPDATE por id vía save(investigador) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /perfil/editar | Muestra el formulario del propio perfil |
-| POST | /perfil/editar | Guarda los cambios (sin modificar rol) |
+| GET | /perfil/editar | Muestra el formulario del propio perfil sin campo rol |
+| POST | /perfil/editar | Guarda nombre, apellidos, campo, carrera, master, username, password (sin modificar rol) |
 
 ## Decisiones de diseño
 
-- El campo `rol` no aparece en el formulario: el investigador no puede cambiar su propio rol.
-- El controller es compartido con el coordinador (`EditarPerfilController`); la plantilla `editar-perfil.html` oculta el campo `rol` cuando `esPropioPeril = true`.
-- Tras guardar, redirige a `/perfil/opciones`.
+- En GET y POST, el investigador se carga por `findByUsername(username)` del `Authentication`.
+- El POST llama a `actualizarPerfil(id, nombre, apellidos, campo, carrera, master, rol=null, username, password)`; el rol se pasa como `null` para que no se modifique.
+- El formulario no incluye el campo `rol`; el template lo oculta con `esPropioPeril = true`.
+- Tras guardar, redirige a `redirect:/perfil/opciones` (302).

@@ -1,4 +1,4 @@
-# abrirOpcionesCargaTrabajo — Diseño · Coordinador
+# abrirOpcionesCargaTrabajo — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Recuperar y mostrar la tabla global de carga de trabajo de todos los usuarios del sistema (horas semanales por categoría).
+Recuperar y mostrar la tabla global de carga de trabajo de todos los investigadores del sistema (horas semanales por categoría).
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/abrirOpcionesCargaTrabajo-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/abrirOpcionesCargaTrabajo-coordinador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/abrirOpcionesCargaTrabajo.puml)
 
@@ -22,20 +22,20 @@ Recuperar y mostrar la tabla global de carga de trabajo de todos los usuarios de
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| CargaTrabajoView | `CargaTrabajoController` `@Controller` | Recibe GET /carga-trabajo; detecta rol COORDINADOR; pone la lista en el Model y devuelve carga-trabajo.html |
-| InvestigadorService | `InvestigadorService` `@Service` | Devuelve todos los investigadores vía `obtenerInvestigadores(null)` |
-| InvestigadorRepository | `InvestigadorRepository` JpaRepository | Ejecuta SELECT * FROM investigadores |
-| CargaTrabajo | `CargaTrabajo` `@Entity` | Tabla cargas_trabajo; cargada en EAGER desde `Investigador.cargaTrabajo` |
+| Controlador de carga de trabajo | CargaTrabajoController @Controller | Atiende GET /coordinador/carga-trabajo y prepara el modelo |
+| Servicio de investigador | InvestigadorService @Service | `obtenerTodos()` devuelve todos los investigadores |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | Ejecuta SELECT * FROM investigadores vía findAll() |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /carga-trabajo | Tabla global (coordinador) o resumen personal (investigador) |
+| GET | /coordinador/carga-trabajo | Muestra la tabla global de carga de trabajo de todos los investigadores |
 
 ## Decisiones de diseño
 
-- La URL `/carga-trabajo` es compartida entre actores; el controller bifurca por `investigador.getRol()`.
-- `Investigador` declara `@OneToOne(mappedBy = "investigador", cascade = CascadeType.ALL)` hacia `CargaTrabajo`. Al ser `@OneToOne`, JPA carga la relación en EAGER por defecto; el template accede a `inv.cargaTrabajo` directamente sin consulta adicional.
-- Si un usuario aún no tiene `CargaTrabajo` asignada, el template muestra 0.0 con expresión condicional `th:text`.
-- El DataLoader inicializa entradas de `CargaTrabajo` para todos los usuarios al arrancar la aplicación por primera vez.
+- El controlador llama a `InvestigadorService.obtenerTodos()` que internamente usa `findAll()`.
+- La lista de investigadores se añade al modelo con `model.addAttribute("investigadores", lista)`.
+- La vista `carga-trabajo.html` muestra la tabla con horas de docencia, investigación y actividades por investigador.
+- Cada fila incluye un enlace "Editar" que navega a `/investigadores/{id}/carga-trabajo/editar`.

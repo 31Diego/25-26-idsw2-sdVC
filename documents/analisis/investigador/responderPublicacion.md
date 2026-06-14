@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `responderPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Investigador publique una respuesta en una publicación existente.
+Análisis de colaboración del caso de uso `responderPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador publique una respuesta en una publicación existente.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: responderPublicacion()](../../../images/analisis/investigador/responderPublicacion-analisis.svg)|
+|![Análisis: responderPublicacion()](../../../images/analisis/investigador/responderPublicacion-investigador-analisis.svg)|
 |-|
 |Código fuente: [responderPublicacion.puml](../../../modelosUML/analisis/investigador/responderPublicacion.puml)|
 
@@ -30,35 +30,33 @@ Análisis de colaboración del caso de uso `responderPublicacion()` mediante el 
 #### ResponderPublicacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de respuesta al Investigador
-- Capturar el contenido de la respuesta
-- Invocar el guardado en el controlador
-- Regresar al detalle de la publicación tras enviar la respuesta
+- Recibir la solicitud `responderPublicacion()` desde `:PUBLICACION_ABIERTA`
+- Solicitar el guardado de la respuesta mediante `guardarRespuesta(datos) : Publicacion`
+- Mostrar el formulario de respuesta al investigador
+- Transitar a `:PUBLICACION_ABIERTA` al finalizar
 
 **Colaboraciones**:
-- **Entrada**: Recibe `responderPublicacion()` desde `:PUBLICACION_ABIERTA`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:PUBLICACION_ABIERTA`
+- **Entrada**: Desde `:PUBLICACION_ABIERTA` con `responderPublicacion()`
+- **Control**: Se comunica con `PublicacionController` mediante `guardarRespuesta(datos) : Publicacion`
+- **Salida**: Transita a `:PUBLICACION_ABIERTA` con `respuestaEnviada()`
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de guardado de la respuesta
-- Actualizar la publicación con la nueva respuesta
+- Recibir `guardarRespuesta(datos)` y delegar la actualización de la publicación en el repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `ResponderPublicacionView`
-- **Repositorio**: Delega la persistencia a `PublicacionRepository`
+- **Repositorio**: Delega en `PublicacionRepository` mediante `actualizar(publicacion) : Publicacion`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar método para actualizar una publicación con la nueva respuesta
+- Actualizar la publicación con la respuesta añadida mediante `actualizar(publicacion) : Publicacion`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -67,8 +65,7 @@ Análisis de colaboración del caso de uso `responderPublicacion()` mediante el 
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la publicación incluyendo sus respuestas
-- Encapsular el nuevo comentario añadido por el Investigador
+- Representar la publicación incluyendo la nueva respuesta añadida
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -77,25 +74,26 @@ Análisis de colaboración del caso de uso `responderPublicacion()` mediante el 
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PUBLICACION_ABIERTA` → `ResponderPublicacionView.responderPublicacion()`
-2. **Captura**: El Investigador escribe su respuesta
-3. **Guardado**: `ResponderPublicacionView` → `PublicacionController.guardarRespuesta(datos)` : `Publicacion`
-4. **Persistencia**: `PublicacionController` → `PublicacionRepository.actualizar(publicacion)` : `Publicacion`
-5. **Finalización**: `ResponderPublicacionView` → `:PUBLICACION_ABIERTA.respuestaEnviada()`
+1. El sistema está en `:PUBLICACION_ABIERTA`
+2. El investigador solicita responder: `ResponderPublicacionView` recibe `responderPublicacion()`
+3. El investigador escribe su respuesta y confirma
+4. `ResponderPublicacionView` invoca `guardarRespuesta(datos) : Publicacion` en `PublicacionController`
+5. `PublicacionController` delega en `PublicacionRepository.actualizar(publicacion)` y obtiene la `Publicacion` actualizada
+6. La vista transita a `:PUBLICACION_ABIERTA` con `respuestaEnviada()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario de respuesta|`ResponderPublicacionView`|Captura el contenido de la respuesta|
-|Persistir la respuesta|`PublicacionController`|`guardarRespuesta(datos)` → `PublicacionRepository.actualizar()`|
-|Confirmar envío|`ResponderPublicacionView`|→ `:PUBLICACION_ABIERTA`|
+|Guardar la respuesta|`PublicacionController`|`guardarRespuesta(datos) : Publicacion`|
+|Persistir la publicación con la respuesta|`PublicacionRepository`|`actualizar(publicacion) : Publicacion`|
+|Confirmar envío de la respuesta|`ResponderPublicacionView`|`respuestaEnviada()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Investigador
+- **Vista**: Solo presentación del formulario e interacción con el investigador
 - **Control**: Solo coordinación del guardado de la respuesta
 - **Entidad**: Solo datos y reglas de negocio de la publicación
 

@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirMiPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para presentar el detalle de una publicación propia al Investigador y ofrecer opciones de gestión.
+Análisis de colaboración del caso de uso `abrirMiPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador consulte el detalle de una publicación propia y acceda a las opciones de gestión.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: abrirMiPublicacion()](../../../images/analisis/investigador/abrirMiPublicacion-analisis.svg)|
+|![Análisis: abrirMiPublicacion()](../../../images/analisis/investigador/abrirMiPublicacion-investigador-analisis.svg)|
 |-|
 |Código fuente: [abrirMiPublicacion.puml](../../../modelosUML/analisis/investigador/abrirMiPublicacion.puml)|
 
@@ -30,35 +30,34 @@ Análisis de colaboración del caso de uso `abrirMiPublicacion()` mediante el pa
 #### MiPublicacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el detalle de la publicación propia al Investigador
-- Mostrar contenido, fecha y respuestas recibidas
-- Ofrecer opciones de gestión: editar y eliminar
+- Recibir la solicitud `abrirMiPublicacion(id)` desde `:MIS_PUBLICACIONES_ABIERTAS`
+- Solicitar al controlador los datos de la publicación mediante `obtenerPublicacion(id) : Publicacion`
+- Mostrar el detalle de la publicación propia al investigador
+- Ofrecer acceso a las colaboraciones de edición y eliminación
 - Navegar de vuelta al listado de mis publicaciones
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirMiPublicacion(id)` desde `:MIS_PUBLICACIONES_ABIERTAS`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:MI_PUBLICACION_ABIERTA` y colaboraciones `EditarPublicacion`, `EliminarPublicacion`
+- **Entrada**: Desde `:MIS_PUBLICACIONES_ABIERTAS` con `abrirMiPublicacion(id)`
+- **Control**: Se comunica con `PublicacionController` mediante `obtenerPublicacion(id) : Publicacion`
+- **Salida**: Transita a `:MI_PUBLICACION_ABIERTA` (`publicacionMostrada()`), `:Collaboration EditarPublicacion` (`editarPublicacion()`), `:Collaboration EliminarPublicacion` (`eliminarPublicacion()`), `:MIS_PUBLICACIONES_ABIERTAS` (`abrirMisPublicaciones()`)
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención del detalle de la publicación propia
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerPublicacion(id)` y delegar en el repositorio la obtención de la publicación
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `MiPublicacionView`
-- **Repositorio**: Delega el acceso a datos a `PublicacionRepository`
+- **Repositorio**: Delega en `PublicacionRepository` mediante `obtenerPorId(id) : Publicacion`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar método para obtener una publicación por identificador
+- Recuperar una publicación por id mediante `obtenerPorId(id) : Publicacion`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -67,8 +66,7 @@ Análisis de colaboración del caso de uso `abrirMiPublicacion()` mediante el pa
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información completa de una publicación propia
-- Encapsular atributos: título, contenido, autor, fecha, respuestas
+- Representar los datos completos de la publicación propia a mostrar
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -77,28 +75,30 @@ Análisis de colaboración del caso de uso `abrirMiPublicacion()` mediante el pa
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:MIS_PUBLICACIONES_ABIERTAS` → `MiPublicacionView.abrirMiPublicacion(id)`
-2. **Obtención de datos**: `MiPublicacionView` → `PublicacionController.obtenerPublicacion(id)` : `Publicacion`
-3. **Acceso a datos**: `PublicacionController` → `PublicacionRepository.obtenerPorId(id)` : `Publicacion`
-4. **Presentación**: `MiPublicacionView` → `:MI_PUBLICACION_ABIERTA.publicacionMostrada()`
-5. **Navegación**: El Investigador puede editar, eliminar o volver al listado
+1. El sistema está en `:MIS_PUBLICACIONES_ABIERTAS`
+2. El investigador selecciona una publicación propia: `MiPublicacionView` recibe `abrirMiPublicacion(id)`
+3. `MiPublicacionView` invoca `obtenerPublicacion(id)` en `PublicacionController`
+4. `PublicacionController` delega en `PublicacionRepository.obtenerPorId(id)` y obtiene un objeto `Publicacion`
+5. La vista muestra el detalle → transita a `:MI_PUBLICACION_ABIERTA` con `publicacionMostrada()`
+6. Desde `:MI_PUBLICACION_ABIERTA` el investigador puede navegar a `editarPublicacion()`, `eliminarPublicacion()` o `abrirMisPublicaciones()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Mostrar detalle de la publicación propia|`MiPublicacionView`|Coordina con `PublicacionController.obtenerPublicacion(id)`|
-|Datos completos|`Publicacion`|Encapsula todos los atributos|
-|Acceso a datos|`PublicacionRepository`|`obtenerPorId(id)`|
-|Editar publicación|`MiPublicacionView`|→ Colaboración `EditarPublicacion`|
-|Eliminar publicación|`MiPublicacionView`|→ Colaboración `EliminarPublicacion`|
+|Obtener datos de la publicación|`PublicacionController`|`obtenerPublicacion(id) : Publicacion`|
+|Acceder a la publicación por id|`PublicacionRepository`|`obtenerPorId(id) : Publicacion`|
+|Mostrar detalle de la publicación|`MiPublicacionView`|`publicacionMostrada()`|
+|Editar publicación|`MiPublicacionView`|`editarPublicacion()`|
+|Eliminar publicación|`MiPublicacionView`|`eliminarPublicacion()`|
+|Volver al listado|`MiPublicacionView`|`abrirMisPublicaciones()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Investigador
-- **Control**: Solo coordinación y obtención del detalle
+- **Vista**: Solo presentación e interacción con el investigador
+- **Control**: Solo coordinación y obtención de la publicación
 - **Entidad**: Solo datos y reglas de negocio de la publicación
 
 ### agnóstico tecnológicamente

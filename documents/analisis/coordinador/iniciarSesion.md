@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para autenticar al Coordinador y abrir el panel principal.
+Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para autenticar al coordinador y abrir el panel principal.
 
 ## diagrama de colaboración
 
@@ -30,37 +30,33 @@ Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón
 #### IniciarSesionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de inicio de sesión al Coordinador
-- Capturar las credenciales introducidas (usuario y contraseña)
-- Invocar la autenticación en el controlador
-- Mostrar mensaje de error si las credenciales son incorrectas
-- Redirigir al panel principal si la autenticación es correcta
+- Recibir la solicitud `iniciarSesion()` desde `:SESION_CERRADA`
+- Solicitar al controlador la autenticación mediante `autenticar(usuario, contrasena) : boolean`
+- Navegar al panel principal si la autenticación es correcta
+- Mostrar error de credenciales si la autenticación falla con `credencialesIncorrectas()`
 
 **Colaboraciones**:
-- **Entrada**: Recibe `iniciarSesion()` desde `:SESION_CERRADA`
-- **Control**: Se comunica con `AutenticacionController`
-- **Salida**: Navega a `:PANEL_PRINCIPAL_ABIERTO` o se mantiene en sí misma si falla
+- **Entrada**: Desde `:SESION_CERRADA` con `iniciarSesion()`
+- **Control**: Se comunica con `AutenticacionController` mediante `autenticar(usuario, contrasena) : boolean`
+- **Salida**: Transita a `:PANEL_PRINCIPAL_ABIERTO` (`sesionIniciada()`) o se mantiene en sí misma (`credencialesIncorrectas()`)
 
 ### clases de control
 
 #### AutenticacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de autenticación del Coordinador
-- Validar las credenciales contra el repositorio de investigadores
-- Devolver resultado de autenticación (verdadero/falso)
+- Recibir `autenticar(usuario, contrasena)` y delegar en el repositorio la verificación de credenciales
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `IniciarSesionView`
-- **Repositorio**: Delega la verificación de credenciales a `InvestigadorRepository`
+- **Repositorio**: Delega en `InvestigadorRepository` mediante `buscarPorCredenciales(usuario, contrasena) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para buscar investigador por credenciales
+- Buscar un investigador por sus credenciales mediante `buscarPorCredenciales(usuario, contrasena) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `AutenticacionController`
@@ -69,8 +65,7 @@ Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de un usuario del sistema
-- Encapsular atributos: nombre de usuario, contraseña, rol
+- Representar los datos del usuario autenticado incluyendo sus credenciales y rol
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -79,29 +74,30 @@ Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:SESION_CERRADA` → `IniciarSesionView.iniciarSesion()`
-2. **Autenticación**: `IniciarSesionView` → `AutenticacionController.autenticar(usuario, contrasena)` : `boolean`
-3. **Acceso a datos**: `AutenticacionController` → `InvestigadorRepository.buscarPorCredenciales(usuario, contrasena)` : `Investigador`
-4. **Éxito**: `IniciarSesionView` → `:PANEL_PRINCIPAL_ABIERTO.sesionIniciada()`
-5. **Fallo**: `IniciarSesionView` → muestra error de credenciales incorrectas
+1. El sistema está en `:SESION_CERRADA`
+2. El coordinador solicita iniciar sesión: `IniciarSesionView` recibe `iniciarSesion()`
+3. El coordinador introduce usuario y contraseña
+4. `IniciarSesionView` invoca `autenticar(usuario, contrasena)` en `AutenticacionController` → devuelve `boolean`
+5. `AutenticacionController` delega en `InvestigadorRepository.buscarPorCredenciales(usuario, contrasena)` y obtiene un objeto `Investigador`
+6. Si la autenticación es correcta: la vista navega → `:PANEL_PRINCIPAL_ABIERTO` con `sesionIniciada()`
+7. Si la autenticación falla: `IniciarSesionView` muestra el error con `credencialesIncorrectas()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar formulario de acceso|`IniciarSesionView`|Captura usuario y contraseña|
-|Validar credenciales|`AutenticacionController`|`autenticar(usuario, contrasena)`|
-|Acceso a datos de investigadores|`InvestigadorRepository`|`buscarPorCredenciales(usuario, contrasena)`|
-|Navegar al panel principal|`IniciarSesionView`|→ `:PANEL_PRINCIPAL_ABIERTO`|
-|Informar de error en credenciales|`IniciarSesionView`|`credencialesIncorrectas()`|
+|Autenticar al coordinador|`AutenticacionController`|`autenticar(usuario, contrasena) : boolean`|
+|Verificar credenciales en repositorio|`InvestigadorRepository`|`buscarPorCredenciales(usuario, contrasena) : Investigador`|
+|Navegar al panel principal|`IniciarSesionView`|`sesionIniciada()`|
+|Mostrar error de credenciales|`IniciarSesionView`|`credencialesIncorrectas()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Coordinador
+- **Vista**: Solo presentación del formulario e interacción con el coordinador
 - **Control**: Solo coordinación de la lógica de autenticación
-- **Entidad**: Solo datos y reglas de negocio del usuario
+- **Entidad**: Solo datos y reglas de negocio del investigador
 
 ### agnóstico tecnológicamente
 
@@ -121,7 +117,7 @@ Análisis de colaboración del caso de uso `iniciarSesion()` mediante el patrón
 `InvestigadorRepository` abstrae el acceso a datos, permitiendo diferentes implementaciones sin afectar al controlador.
 
 ### mvc pattern
-Separación clara entre presentación (`IniciarSesionView`), lógica de aplicación (`AutenticacionController`) y datos (`Usuario`, `UsuarioRepository`).
+Separación clara entre presentación (`IniciarSesionView`), lógica de aplicación (`AutenticacionController`) y datos (`Investigador`, `InvestigadorRepository`).
 
 ## referencias
 

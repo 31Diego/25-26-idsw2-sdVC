@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Mostrar el formulario de creación, persistir el nuevo entregable y guardar el archivo adjunto si se proporciona.
+Mostrar el formulario de creación, persistir el nuevo entregable asociado a un proyecto y guardar el archivo adjunto si se proporciona.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/crearEntregable-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/crearEntregable-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/crearEntregable.puml)
 
@@ -22,36 +22,26 @@ Mostrar el formulario de creación, persistir el nuevo entregable y guardar el a
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| CrearEntregableView (azul) | `CrearEntregableController` `@Controller` | GET devuelve formulario vacío; POST guarda el entregable |
-| EntregableController (amarillo) | `EntregableService` `@Service` | Asocia el proyecto, gestiona el archivo y llama a save |
-| ProyectoRepository (naranja) | `ProyectoRepository` JpaRepository | Recupera el proyecto para asociarlo al entregable |
-| EntregableRepository (naranja) | `EntregableRepository` JpaRepository | Ejecuta INSERT INTO entregables |
-| Sistema de ficheros | `./archivos/` | Carpeta donde se almacena el archivo adjunto |
+| Controlador de entregables (GET) | EntregableController @Controller GET /proyectos/{proyectoId}/entregables/nuevo | Sirve el formulario vacío |
+| Controlador de entregables (POST) | EntregableController @Controller POST /proyectos/{proyectoId}/entregables/nuevo | Persiste el entregable |
+| Servicio de proyectos | ProyectoService @Service | `obtenerProyecto(proyectoId)` carga el proyecto para asociarlo |
+| Servicio de entregables | EntregableService @Service | `guardarEntregable(entregable, archivo, proyecto)` gestiona archivo y persiste |
+| Servicio de archivos | ArchivoService @Service | `guardarArchivo(archivo)` guarda el fichero y devuelve el nombre |
+| Repositorio de proyectos | ProyectoRepository JpaRepository | SELECT * FROM proyectos WHERE id = ? |
+| Repositorio de entregables | EntregableRepository JpaRepository | Ejecuta INSERT INTO entregables (...) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
 | GET | /proyectos/{proyectoId}/entregables/nuevo | Muestra el formulario vacío |
-| POST | /proyectos/{proyectoId}/entregables/nuevo | Guarda el nuevo entregable |
-
-## Campos del formulario
-
-| Campo | Tipo | Requerido |
-|---|---|---|
-| titulo | String | Sí |
-| tipo | String (selector) | Sí |
-| fechaLimite | LocalDate | No |
-| estado | String (selector) | Sí |
-| descripcion | Texto largo | No |
-| archivo | MultipartFile | No |
+| POST | /proyectos/{proyectoId}/entregables/nuevo | Recibe titulo, tipo, fechaLimite, estado, descripcion, archivo y guarda |
 
 ## Decisiones de diseño
 
-- El formulario usa `enctype="multipart/form-data"` para permitir la subida de archivo.
-- Si `archivo` no está vacío, el servicio crea el directorio `./archivos/` (si no existe) y copia el fichero con `Files.copy()`.
-- El nombre original del archivo (`getOriginalFilename()`) se persiste en `entregable.rutaArchivo`.
-- La asociación proyecto–entregable se resuelve en el servicio con `proyectoRepository.findById(proyectoId)`.
-- Tras guardar, redirige a `/proyectos/{proyectoId}/entregables` (patrón PRG).
-- Tipos disponibles: INFORME, DATASET, PRESENTACION, OTRO.
-- Estados disponibles: PENDIENTE, EN_CURSO, ENTREGADO.
+- En el GET, el controller añade `model.addAttribute("entregable", new Entregable())` para el binding.
+- En el POST se aplica validación de datos (`validarDatos`); luego se carga el proyecto con `obtenerProyecto(proyectoId)` y se llama a `guardarEntregable(entregable, archivo, proyecto)`.
+- Flujo alternativo `alt` en el servicio: si hay archivo adjunto → `ArchivoSvc.guardarArchivo(archivo)` devuelve el nombre y se asigna a `entregable.setRutaArchivo(nombre)`.
+- El servicio asigna el proyecto con `entregable.setProyecto(proyecto)` antes de llamar a `save(entregable)`.
+- Tras guardar, redirige a `/proyectos/{proyectoId}/entregables` (302 redirect).

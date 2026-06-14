@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `eliminarInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para desvincular un investigador de un proyecto de investigación.
+Análisis de colaboración del caso de uso `eliminarInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador desvincule un investigador de un proyecto.
 
 ## diagrama de colaboración
 
@@ -30,35 +30,36 @@ Análisis de colaboración del caso de uso `eliminarInvestigador()` mediante el 
 #### EliminarInvestigadorView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Mostrar confirmación de desvinculación del investigador del proyecto
-- Invocar la eliminación de la asociación en el controlador
-- Navegar de vuelta al proyecto tras la operación
+- Recibir la solicitud `eliminarInvestigador()` desde `:PROYECTO_ABIERTO`
+- Solicitar al controlador los datos del investigador a desvincular mediante `cargarInvestigadorParaEliminacion(idInvestigador) : Investigador`
+- Mostrar la pantalla de confirmación con los datos del investigador
+- Solicitar al controlador la desvinculación definitiva mediante `eliminarInvestigador(idProyecto, idInvestigador) : void`
+- Navegar de vuelta al proyecto tras la desvinculación
 
 **Colaboraciones**:
-- **Entrada**: Recibe `eliminarInvestigador()` desde `:PROYECTO_ABIERTO`
-- **Control**: Se comunica con `ProyectoController`
-- **Salida**: Navega a `:PROYECTO_ABIERTO`
+- **Entrada**: Desde `:PROYECTO_ABIERTO` con `eliminarInvestigador()`
+- **Control**: Se comunica con `ProyectoController` mediante `cargarInvestigadorParaEliminacion(idInvestigador)` y `eliminarInvestigador(idProyecto, idInvestigador)`
+- **Salida**: Transita a `:PROYECTO_ABIERTO` con `investigadorEliminado()`
 
 ### clases de control
 
 #### ProyectoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de desvinculación del investigador del proyecto
-- Verificar que el investigador pertenece al proyecto
-- Invocar la eliminación de la asociación
+- Recibir `cargarInvestigadorParaEliminacion(idInvestigador)` y delegar en `InvestigadorRepository` la obtención del investigador
+- Recibir `eliminarInvestigador(idProyecto, idInvestigador)` y delegar la desvinculación a `ProyectoRepository`
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EliminarInvestigadorView`
-- **Repositorio**: Delega operaciones a `InvestigadorRepository`
+- **Repositorio investigador**: Delega en `InvestigadorRepository` mediante `obtenerPorId(idInvestigador) : Investigador`
+- **Repositorio proyecto**: Delega en `ProyectoRepository` mediante `eliminarInvestigador(idProyecto, idInvestigador) : void`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para obtener un investigador por identificador
+- Recuperar un investigador por id mediante `obtenerPorId(idInvestigador) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `ProyectoController`
@@ -67,38 +68,58 @@ Análisis de colaboración del caso de uso `eliminarInvestigador()` mediante el 
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información del investigador a desvincular
-- Encapsular la relación con los proyectos a los que pertenece
+- Representar los datos del investigador mostrados en la confirmación de desvinculación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
+
+#### ProyectoRepository
+**Estereotipo**: Entidad  
+**Responsabilidades**:
+- Gestionar la desvinculación del investigador del proyecto mediante `eliminarInvestigador(idProyecto, idInvestigador) : void`
+
+**Colaboraciones**:
+- **Control**: Responde a `ProyectoController`
+- **Entidad**: Gestiona instancias de `Proyecto`
+
+#### Proyecto
+**Estereotipo**: Entidad  
+**Responsabilidades**:
+- Representar el proyecto del que se desvincula el investigador
+
+**Colaboraciones**:
+- **Repositorio**: Es gestionado por `ProyectoRepository`
 
 ## flujo de colaboración
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PROYECTO_ABIERTO` → `EliminarInvestigadorView.eliminarInvestigador()`
-2. **Confirmación**: El Coordinador confirma la desvinculación
-3. **Desvinculación**: `EliminarInvestigadorView` → `ProyectoController.eliminarInvestigador(idProyecto, idInvestigador)` : `void`
-4. **Verificación**: `ProyectoController` → `InvestigadorRepository.obtenerPorId(id)` : `Investigador`
-5. **Finalización**: `EliminarInvestigadorView` → `:PROYECTO_ABIERTO.investigadorEliminado()`
+1. El sistema está en `:PROYECTO_ABIERTO`
+2. El coordinador solicita desvincular investigador: `EliminarInvestigadorView` recibe `eliminarInvestigador()`
+3. `EliminarInvestigadorView` invoca `cargarInvestigadorParaEliminacion(idInvestigador)` en `ProyectoController`
+4. `ProyectoController` delega en `InvestigadorRepository.obtenerPorId(idInvestigador)` y obtiene un objeto `Investigador`
+5. La pantalla de confirmación se muestra con los datos del investigador
+6. El coordinador confirma: `EliminarInvestigadorView` invoca `eliminarInvestigador(idProyecto, idInvestigador) : void` en `ProyectoController`
+7. `ProyectoController` delega en `ProyectoRepository.eliminarInvestigador(idProyecto, idInvestigador)`
+8. La vista navega de vuelta → `:PROYECTO_ABIERTO` con `investigadorEliminado()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Confirmar desvinculación|`EliminarInvestigadorView`|Muestra diálogo de confirmación|
-|Desvincular del proyecto|`ProyectoController`|`eliminarInvestigador(idProyecto, idInvestigador)`|
-|Verificar investigador|`InvestigadorRepository`|`obtenerPorId(id)`|
-|Volver al proyecto|`EliminarInvestigadorView`|→ `:PROYECTO_ABIERTO`|
+|Cargar datos del investigador para confirmación|`ProyectoController`|`cargarInvestigadorParaEliminacion(idInvestigador) : Investigador`|
+|Acceder al investigador por id|`InvestigadorRepository`|`obtenerPorId(idInvestigador) : Investigador`|
+|Desvincular investigador del proyecto|`ProyectoController`|`eliminarInvestigador(idProyecto, idInvestigador) : void`|
+|Persistir la desvinculación|`ProyectoRepository`|`eliminarInvestigador(idProyecto, idInvestigador) : void`|
+|Volver al proyecto|`EliminarInvestigadorView`|`investigadorEliminado()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación de la confirmación e interacción con el Coordinador
+- **Vista**: Solo presentación de la confirmación e interacción con el coordinador
 - **Control**: Solo coordinación del proceso de desvinculación
-- **Entidad**: Solo datos y reglas de negocio del investigador
+- **Entidad**: Solo datos y gestión de la persistencia del investigador y del proyecto
 
 ### agnóstico tecnológicamente
 
@@ -115,10 +136,10 @@ Análisis de colaboración del caso de uso `eliminarInvestigador()` mediante el 
 ## patrones aplicados
 
 ### repository pattern
-`InvestigadorRepository` abstrae el acceso a datos, permitiendo diferentes implementaciones sin afectar al controlador.
+`InvestigadorRepository` y `ProyectoRepository` abstraen el acceso a datos, permitiendo diferentes implementaciones sin afectar al controlador.
 
 ### mvc pattern
-Separación clara entre presentación (`EliminarInvestigadorView`), lógica de aplicación (`ProyectoController`) y datos (`Investigador`, `InvestigadorRepository`).
+Separación clara entre presentación (`EliminarInvestigadorView`), lógica de aplicación (`ProyectoController`) y datos (`Investigador`, `InvestigadorRepository`, `Proyecto`, `ProyectoRepository`).
 
 ## referencias
 

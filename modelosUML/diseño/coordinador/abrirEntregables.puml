@@ -14,6 +14,15 @@ Coord -> Nav : clic en "Entregables"
 activate Nav
 Nav -> Ctrl : GET /proyectos/{proyectoId}/entregables
 activate Ctrl
+Ctrl -> PService : obtenerProyecto(proyectoId)
+activate PService
+PService -> ProyectoRepo : findById(proyectoId)
+activate ProyectoRepo
+ProyectoRepo -> DB : SELECT * FROM proyectos WHERE id = ?
+DB --> ProyectoRepo : Proyecto
+deactivate ProyectoRepo
+PService --> Ctrl : Proyecto
+deactivate PService
 Ctrl -> Service : obtenerEntregablesDeProyecto(proyectoId)
 activate Service
 Service -> Repo : findByProyectoId(proyectoId)
@@ -24,16 +33,7 @@ deactivate Repo
 Repo --> Service : List<Entregable>
 deactivate Service
 Service --> Ctrl : List<Entregable>
-Ctrl -> PService : obtenerProyecto(proyectoId)
-activate PService
-PService -> ProyectoRepo : findById(proyectoId)
-activate ProyectoRepo
-ProyectoRepo -> DB : SELECT * FROM proyectos WHERE id = ?
-DB --> ProyectoRepo : Proyecto
-deactivate ProyectoRepo
-PService --> Ctrl : Proyecto
-deactivate PService
-Ctrl -> Ctrl : model.addAttribute("entregables", ...)\nmodel.addAttribute("proyecto", ...)
+Ctrl -> Ctrl : model.addAttribute("proyecto", ...)\nmodel.addAttribute("entregables", ...)
 Ctrl --> Nav : 200 OK · entregables.html
 deactivate Ctrl
 Nav --> Coord : muestra listado de entregables

@@ -10,7 +10,7 @@
 
 ## Propósito
 
-Cargar un proyecto existente en un formulario pre-rellenado, aplicar las modificaciones del usuario y persistir el resultado.
+Cargar un proyecto existente en un formulario pre-rellenado, aplicar las modificaciones del coordinador y persistir el resultado.
 
 ## Diagrama de secuencia
 
@@ -22,20 +22,21 @@ Cargar un proyecto existente en un formulario pre-rellenado, aplicar las modific
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EditarProyectoView (azul) | `EditarProyectoController` `@Controller` | GET carga y muestra el formulario; POST aplica cambios y persiste |
-| ProyectoController (amarillo) | `ProyectoService` `@Service` | `obtenerProyecto(id)` para la carga; `actualizarProyecto(id, datos)` para el guardado |
-| ProyectoRepository (naranja) | `ProyectoRepository` JpaRepository | SELECT (carga) + UPDATE (guardado) |
-| Proyecto (naranja) | `Proyecto` `@Entity` | Tabla proyectos en H2 |
+| Controlador de proyectos (GET) | ProyectoController @Controller GET /proyectos/{id}/editar | Carga el proyecto y sirve el formulario pre-relleno |
+| Controlador de proyectos (POST) | ProyectoController @Controller POST /proyectos/{id}/editar | Recibe los campos modificados y persiste |
+| Servicio de proyectos | ProyectoService @Service | `obtenerProyecto(id)` y `actualizarProyecto(id, datos)` |
+| Repositorio de proyectos | ProyectoRepository JpaRepository | SELECT por id (GET) y UPDATE vía save(proyecto) (POST) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /proyectos/{id}/editar | Muestra el formulario pre-rellenado |
-| POST | /proyectos/{id}/editar | Aplica los cambios y persiste |
+| GET | /proyectos/{id}/editar | Muestra el formulario pre-relleno con los datos actuales |
+| POST | /proyectos/{id}/editar | Guarda los campos modificados y redirige al detalle |
 
 ## Decisiones de diseño
 
-- El GET hace `findById(id)` y pasa el objeto al template con `th:object`.
-- El `modificarCampos` del análisis se implementa en `actualizarProyecto()` del servicio: carga el objeto de BD y copia campo a campo desde el formulario. Esto evita que el POST sobrescriba campos no editables (como el id).
-- Tras guardar, redirige a `/proyectos/{id}` para mostrar el resultado (PRG pattern).
+- En el GET, `obtenerProyecto(id)` carga la entidad y se añade al modelo con `model.addAttribute("proyecto", proyecto)`.
+- En el POST, `actualizarProyecto(id, datos)` hace primero `findById(id)` para cargar la entidad existente y luego copia campo a campo desde el formulario (nota `modificarCampos`), evitando sobrescribir campos no editables.
+- Tras guardar, redirige a `/proyectos/{id}` (302 redirect) para mostrar el resultado actualizado.

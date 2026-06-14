@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `editarCargaTrabajo()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Investigador actualice su disponibilidad y horas de trabajo.
+Análisis de colaboración del caso de uso `editarCargaTrabajo()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador actualice su disponibilidad y horas de trabajo.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: editarCargaTrabajo()](../../../images/analisis/investigador/editarCargaTrabajo-analisis.svg)|
+|![Análisis: editarCargaTrabajo()](../../../images/analisis/investigador/editarCargaTrabajo-investigador-analisis.svg)|
 |-|
 |Código fuente: [editarCargaTrabajo.puml](../../../modelosUML/analisis/investigador/editarCargaTrabajo.puml)|
 
@@ -30,35 +30,38 @@ Análisis de colaboración del caso de uso `editarCargaTrabajo()` mediante el pa
 #### EditarCargaTrabajoView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de edición de carga de trabajo prellenado con los datos actuales
-- Capturar los cambios introducidos por el Investigador
-- Invocar el guardado en el controlador
-- Navegar de vuelta a las opciones de carga de trabajo o al panel principal
+- Recibir la solicitud `editarCargaTrabajo()` desde `:OPCIONES_CARGA_TRABAJO_ABIERTAS`
+- Solicitar los datos actuales mediante `obtenerCargaTrabajo(id) : Investigador`
+- Notificar los campos modificados mediante `modificarCampos(datos) : void`
+- Solicitar el guardado mediante `guardarCargaTrabajo(datos) : Investigador`
+- Mostrar el formulario de edición prellenado al investigador
+- Transitar a `:OPCIONES_CARGA_TRABAJO_ABIERTAS` o `:PANEL_PRINCIPAL_ABIERTO` al finalizar
 
 **Colaboraciones**:
-- **Entrada**: Recibe `editarCargaTrabajo()` desde `:OPCIONES_CARGA_TRABAJO_ABIERTAS`
-- **Control**: Se comunica con `CargaTrabajoController`
-- **Salida**: Navega a `:OPCIONES_CARGA_TRABAJO_ABIERTAS` o `:PANEL_PRINCIPAL_ABIERTO`
+- **Entrada**: Desde `:OPCIONES_CARGA_TRABAJO_ABIERTAS` con `editarCargaTrabajo()`
+- **Control**: Se comunica con `CargaTrabajoController` mediante `obtenerCargaTrabajo(id)`, `modificarCampos(datos)` y `guardarCargaTrabajo(datos)`
+- **Salida**: Transita a `:OPCIONES_CARGA_TRABAJO_ABIERTAS` (`edicionFinalizada()`) o `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### CargaTrabajoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la carga de los datos actuales para prellenar el formulario
-- Validar y persistir los cambios en la carga de trabajo
+- Recibir `obtenerCargaTrabajo(id)` y delegar en el repositorio la obtención del investigador
+- Recibir `modificarCampos(datos)` y gestionar el estado de los campos modificados
+- Recibir `guardarCargaTrabajo(datos)` y delegar la actualización en el repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EditarCargaTrabajoView`
-- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository`
+- **Repositorio**: Delega en `InvestigadorRepository` mediante `obtenerPorId(id) : Investigador` y `actualizar(investigador) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar métodos para obtener y actualizar el investigador
+- Recuperar el investigador por id mediante `obtenerPorId(id) : Investigador`
+- Actualizar el investigador con la nueva carga de trabajo mediante `actualizar(investigador) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `CargaTrabajoController`
@@ -67,8 +70,7 @@ Análisis de colaboración del caso de uso `editarCargaTrabajo()` mediante el pa
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar al investigador incluyendo su carga de trabajo editable
-- Encapsular atributos de disponibilidad y horas asignadas
+- Representar al investigador incluyendo sus datos de carga de trabajo
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -77,29 +79,34 @@ Análisis de colaboración del caso de uso `editarCargaTrabajo()` mediante el pa
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:OPCIONES_CARGA_TRABAJO_ABIERTAS` → `EditarCargaTrabajoView.editarCargaTrabajo()`
-2. **Carga de datos**: `EditarCargaTrabajoView` → `CargaTrabajoController.obtenerCargaTrabajo(id)` : `Investigador`
-3. **Acceso a datos**: `CargaTrabajoController` → `InvestigadorRepository.obtenerPorId(id)` : `Investigador`
-4. **Edición**: El Investigador modifica los campos del formulario
-5. **Guardado**: `EditarCargaTrabajoView` → `CargaTrabajoController.guardarCargaTrabajo(datos)` : `Investigador`
-6. **Persistencia**: `CargaTrabajoController` → `InvestigadorRepository.actualizar(investigador)` : `Investigador`
-7. **Finalización**: `EditarCargaTrabajoView` → `:OPCIONES_CARGA_TRABAJO_ABIERTAS.edicionFinalizada()`
+1. El sistema está en `:OPCIONES_CARGA_TRABAJO_ABIERTAS`
+2. El investigador solicita editar: `EditarCargaTrabajoView` recibe `editarCargaTrabajo()`
+3. `EditarCargaTrabajoView` invoca `obtenerCargaTrabajo(id) : Investigador` en `CargaTrabajoController`
+4. `CargaTrabajoController` delega en `InvestigadorRepository.obtenerPorId(id)` y obtiene el `Investigador`
+5. El investigador modifica los campos del formulario
+6. `EditarCargaTrabajoView` invoca `modificarCampos(datos) : void` en `CargaTrabajoController`
+7. `EditarCargaTrabajoView` invoca `guardarCargaTrabajo(datos) : Investigador` en `CargaTrabajoController`
+8. `CargaTrabajoController` delega en `InvestigadorRepository.actualizar(investigador)` y obtiene el `Investigador` actualizado
+9. La vista transita a `:OPCIONES_CARGA_TRABAJO_ABIERTAS` con `edicionFinalizada()` o a `:PANEL_PRINCIPAL_ABIERTO`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Prellenar formulario con datos actuales|`CargaTrabajoController`|`obtenerCargaTrabajo(id)` → `InvestigadorRepository.obtenerPorId(id)`|
-|Capturar cambios|`EditarCargaTrabajoView`|Formulario de disponibilidad y horas|
-|Persistir cambios|`CargaTrabajoController`|`guardarCargaTrabajo(datos)` → `InvestigadorRepository.actualizar()`|
-|Confirmar edición|`EditarCargaTrabajoView`|→ `:OPCIONES_CARGA_TRABAJO_ABIERTAS`|
+|Obtener datos actuales para prellenar|`CargaTrabajoController`|`obtenerCargaTrabajo(id) : Investigador`|
+|Acceder al investigador por id|`InvestigadorRepository`|`obtenerPorId(id) : Investigador`|
+|Registrar campos modificados|`CargaTrabajoController`|`modificarCampos(datos) : void`|
+|Guardar carga de trabajo actualizada|`CargaTrabajoController`|`guardarCargaTrabajo(datos) : Investigador`|
+|Persistir la actualización|`InvestigadorRepository`|`actualizar(investigador) : Investigador`|
+|Confirmar edición|`EditarCargaTrabajoView`|`edicionFinalizada()`|
+|Volver al panel principal|`EditarCargaTrabajoView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Investigador
-- **Control**: Solo coordinación de la carga y persistencia
+- **Vista**: Solo presentación del formulario e interacción con el investigador
+- **Control**: Solo coordinación de la carga, modificación y persistencia
 - **Entidad**: Solo datos y reglas de negocio del investigador
 
 ### agnóstico tecnológicamente

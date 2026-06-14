@@ -14,7 +14,7 @@ Mostrar el formulario de creación y persistir un nuevo proyecto tras validar lo
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/crearProyecto-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/crearProyecto-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/crearProyecto.puml)
 
@@ -22,33 +22,21 @@ Mostrar el formulario de creación y persistir un nuevo proyecto tras validar lo
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| CrearProyectoView (azul) | `CrearProyectoController` `@Controller` | GET devuelve el formulario vacío; POST recibe los datos y guarda |
-| ProyectoController (amarillo) | `ProyectoService` `@Service` | Llama a save(proyecto) |
-| ProyectoRepository (naranja) | `ProyectoRepository` JpaRepository | Ejecuta INSERT INTO proyectos |
-| Proyecto (naranja) | `Proyecto` `@Entity` | Tabla proyectos en H2 |
+| Controlador de proyectos | ProyectoController @Controller GET|POST /proyectos/nuevo | Sirve el formulario vacío (GET) y persiste el proyecto (POST) |
+| Servicio de proyectos | ProyectoService @Service | `guardarProyecto(proyecto)` guarda la entidad |
+| Repositorio de proyectos | ProyectoRepository JpaRepository | Ejecuta INSERT INTO proyectos (...) vía save(proyecto) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /proyectos/nuevo | Muestra el formulario vacío |
-| POST | /proyectos/nuevo | Guarda el nuevo proyecto |
-
-## Campos del formulario
-
-| Campo | Tipo | Requerido |
-|---|---|---|
-| titulo | String | Sí |
-| descripcion | Texto largo | No |
-| objetivos | Texto largo | No |
-| estado | String (selector) | Sí |
-| fechaInicio | LocalDate | No |
-| fechaFin | LocalDate | No |
+| GET | /proyectos/nuevo | Muestra el formulario vacío con un Proyecto vacío en el modelo |
+| POST | /proyectos/nuevo | Recibe titulo, descripcion, objetivos, estado, fechaInicio, fechaFin y guarda |
 
 ## Decisiones de diseño
 
-- El formulario usa `th:object="${proyecto}"` y `th:field="*{campo}"` para el binding automático.
-- El POST recibe un `@ModelAttribute Proyecto` — Spring hace el binding de los campos del formulario al objeto.
-- La validación mínima (análisis: `validarDatos`) se hace mediante el binding: si un campo requerido llega vacío, el POST no guarda (pendiente `@Valid` con Bean Validation).
-- Tras guardar, redirige a `/proyectos` (PRG pattern — Post/Redirect/Get).
-- El estado tiene opciones: EN_PROPUESTA, EN_CURSO, COMPLETADO, CANCELADO.
+- En el GET, el controller añade `model.addAttribute("proyecto", new Proyecto())` para el binding del formulario.
+- El POST aplica validación de campos requeridos (`@Valid / validarDatos`) en el binding antes de llamar al servicio.
+- `ProyectoService.guardarProyecto(proyecto)` llama a `save(proyecto)` que ejecuta INSERT y devuelve el Proyecto con id asignado.
+- Tras guardar, redirige a `/proyectos` (302 redirect, patrón PRG).

@@ -1,4 +1,4 @@
-# importarConvocatoria — Diseño · Coordinador
+# importarConvocatoria — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Presentar un formulario vacío para que el coordinador registre manualmente una nueva convocatoria en el sistema y persistirla. Funciona como un CREATE estándar (título, área, estado, fechas, descripción, requisitos, criterios, dotación, contacto).
+Presentar un formulario vacío para que el coordinador registre manualmente una nueva convocatoria y persistirla en el sistema.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/importarConvocatoria-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/importarConvocatoria.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/importarConvocatoria.puml)
 
@@ -22,21 +22,21 @@ Presentar un formulario vacío para que el coordinador registre manualmente una 
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| ImportarConvocatoriaView | `ConvocatoriaController` `@Controller` | GET muestra el formulario vacío; POST persiste y redirige |
-| ConvocatoriaController | `ConvocatoriaService` `@Service` | `guardar(datos)` — instancia la entidad, aplica los datos y llama al repositorio |
-| ConvocatoriaRepository | `ConvocatoriaRepository` JpaRepository | INSERT INTO convocatorias |
-| Convocatoria | `Convocatoria` `@Entity` | Tabla convocatorias |
+| Controlador de convocatorias (GET) | ConvocatoriaController @Controller GET /convocatorias/importar | Sirve el formulario vacío |
+| Controlador de convocatorias (POST) | ConvocatoriaController @Controller POST /convocatorias/importar | Persiste la nueva convocatoria |
+| Servicio de convocatorias | ConvocatoriaService @Service | `guardar(titulo, area, estado, fechaApertura, fechaCierre, descripcion, requisitos, criteriosEvaluacion, dotacion, documentacion, contacto)` |
+| Repositorio de convocatorias | ConvocatoriaRepository JpaRepository | Ejecuta INSERT INTO convocatorias vía save(convocatoria) |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
 | GET | /convocatorias/importar | Muestra el formulario de importación vacío |
-| POST | /convocatorias/importar | Persiste la nueva convocatoria y redirige al detalle |
+| POST | /convocatorias/importar | Persiste la nueva convocatoria con todos sus campos |
 
 ## Decisiones de diseño
 
-- Tras guardar, redirige a `/convocatorias/{id}` para mostrar la convocatoria recién creada (PRG pattern).
-- La ruta está restringida a `COORDINADOR` mediante `@PreAuthorize("hasRole('COORDINADOR')")`.
-- El estado inicial lo fija el coordinador en el formulario (campo enum: ABIERTA, CERRADA, PENDIENTE).
-- Los campos de texto extenso usan `<textarea>` en el template Thymeleaf.
+- El servicio instancia `new Convocatoria()`, aplica todos los setters con los datos del POST y llama a `save(convocatoria)`.
+- Los campos del POST son: titulo, area, estado, fechaApertura, fechaCierre, descripcion, requisitos, criteriosEvaluacion, dotacion, documentacion, contacto.
+- Tras guardar, redirige a `redirect:/convocatorias/{id}` con el id de la convocatoria recién creada (302, PRG).

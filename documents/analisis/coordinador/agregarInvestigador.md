@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `agregarInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para incorporar un investigador existente a un proyecto de investigación.
+Análisis de colaboración del caso de uso `agregarInvestigador()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador incorpore un investigador existente a un proyecto de investigación.
 
 ## diagrama de colaboración
 
@@ -30,36 +30,35 @@ Análisis de colaboración del caso de uso `agregarInvestigador()` mediante el p
 #### AgregarInvestigadorView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la lista de investigadores disponibles al Coordinador
-- Permitir seleccionar el investigador a agregar al proyecto
-- Invocar la asociación en el controlador
+- Recibir la solicitud `agregarInvestigador()` desde `:PROYECTO_ABIERTO`
+- Solicitar al controlador la lista de investigadores disponibles mediante `obtenerInvestigadoresDisponibles() : List<Investigador>`
+- Mostrar la lista al coordinador para que seleccione el investigador a agregar
+- Invocar la asociación al seleccionarse un investigador mediante `agregarInvestigador(idProyecto, idInvestigador) : void`
 - Navegar de vuelta al proyecto tras la operación
 
 **Colaboraciones**:
-- **Entrada**: Recibe `agregarInvestigador()` desde `:PROYECTO_ABIERTO`
-- **Control**: Se comunica con `ProyectoController`
-- **Salida**: Navega a `:PROYECTO_ABIERTO`
+- **Entrada**: Desde `:PROYECTO_ABIERTO` con `agregarInvestigador()`
+- **Control**: Se comunica con `ProyectoController` mediante `obtenerInvestigadoresDisponibles() : List<Investigador>` y `agregarInvestigador(idProyecto, idInvestigador) : void`
+- **Salida**: Transita a `:PROYECTO_ABIERTO` con `investigadorAgregado()`
 
 ### clases de control
 
 #### ProyectoController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de investigadores disponibles para el proyecto
-- Gestionar la asociación entre investigador y proyecto
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerInvestigadoresDisponibles()` y devolver todos los investigadores
+- Recibir `agregarInvestigador(idProyecto, idInvestigador)` y gestionar la asociación
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `AgregarInvestigadorView`
-- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository`
+- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository` mediante `obtenerTodos() : List<Investigador>`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar lista de todos los investigadores disponibles
+- Recuperar todos los investigadores mediante `obtenerTodos() : List<Investigador>`
 
 **Colaboraciones**:
 - **Control**: Responde a `ProyectoController`
@@ -68,8 +67,7 @@ Análisis de colaboración del caso de uso `agregarInvestigador()` mediante el p
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información del investigador a agregar al proyecto
-- Encapsular atributos: nombre, área, institución
+- Representar los datos de un investigador disponible para asignar al proyecto
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -78,29 +76,30 @@ Análisis de colaboración del caso de uso `agregarInvestigador()` mediante el p
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PROYECTO_ABIERTO` → `AgregarInvestigadorView.agregarInvestigador()`
-2. **Obtención de disponibles**: `AgregarInvestigadorView` → `ProyectoController.obtenerInvestigadoresDisponibles()` : `List<Investigador>`
-3. **Acceso a datos**: `ProyectoController` → `InvestigadorRepository.obtenerTodos()` : `List<Investigador>`
-4. **Selección**: El Coordinador selecciona el investigador a agregar
-5. **Asociación**: `AgregarInvestigadorView` → `ProyectoController.agregarInvestigador(idProyecto, idInvestigador)` : `void`
-6. **Finalización**: `AgregarInvestigadorView` → `:PROYECTO_ABIERTO.investigadorAgregado()`
+1. El sistema está en `:PROYECTO_ABIERTO`
+2. El coordinador solicita agregar investigador: `AgregarInvestigadorView` recibe `agregarInvestigador()`
+3. `AgregarInvestigadorView` invoca `obtenerInvestigadoresDisponibles()` en `ProyectoController`
+4. `ProyectoController` delega en `InvestigadorRepository.obtenerTodos()` y obtiene `List<Investigador>`
+5. El coordinador selecciona el investigador a agregar
+6. `AgregarInvestigadorView` invoca `agregarInvestigador(idProyecto, idInvestigador)` en `ProyectoController`
+7. La operación se completa → estado `:PROYECTO_ABIERTO` con `investigadorAgregado()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Listar investigadores disponibles|`AgregarInvestigadorView`|Coordina con `ProyectoController.obtenerInvestigadoresDisponibles()`|
-|Seleccionar investigador|`AgregarInvestigadorView`|Captura selección del Coordinador|
-|Asociar al proyecto|`ProyectoController`|`agregarInvestigador(idProyecto, idInvestigador)`|
-|Confirmar adición|`AgregarInvestigadorView`|→ `:PROYECTO_ABIERTO`|
+|Obtener investigadores disponibles|`ProyectoController`|`obtenerInvestigadoresDisponibles() : List<Investigador>`|
+|Listar todos los investigadores|`InvestigadorRepository`|`obtenerTodos() : List<Investigador>`|
+|Asociar investigador al proyecto|`ProyectoController`|`agregarInvestigador(idProyecto, idInvestigador) : void`|
+|Confirmar adición y volver al proyecto|`AgregarInvestigadorView`|`investigadorAgregado()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación de la lógica de asociación
-- **Entidad**: Solo datos y reglas de negocio del investigador
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación, obtención de disponibles y gestión de la asociación
+- **Entidad**: Solo datos y reglas de negocio de los investigadores
 
 ### agnóstico tecnológicamente
 

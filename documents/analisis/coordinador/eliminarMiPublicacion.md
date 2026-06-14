@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `eliminarMiPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para eliminar una publicación propia del Coordinador.
+Análisis de colaboración del caso de uso `eliminarMiPublicacion()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador elimine una publicación propia.
 
 ## diagrama de colaboración
 
@@ -30,34 +30,36 @@ Análisis de colaboración del caso de uso `eliminarMiPublicacion()` mediante el
 #### EliminarMiPublicacionView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Mostrar confirmación de eliminación de la publicación propia
-- Invocar la eliminación en el controlador tras confirmación
-- Navegar a la lista de publicaciones propias tras la operación
+- Recibir la solicitud `eliminarMiPublicacion()` desde `:MI_PUBLICACION_ABIERTA`
+- Solicitar al controlador los datos de la publicación a eliminar mediante `cargarPublicacionParaEliminacion(id) : Publicacion`
+- Mostrar la pantalla de confirmación con los datos de la publicación
+- Solicitar al controlador la eliminación definitiva mediante `eliminarPublicacion(id) : void`
+- Navegar al listado de publicaciones propias tras la eliminación
 
 **Colaboraciones**:
-- **Entrada**: Recibe `eliminarMiPublicacion()` desde `:MI_PUBLICACION_ABIERTA`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:MIS_PUBLICACIONES_ABIERTAS`
+- **Entrada**: Desde `:MI_PUBLICACION_ABIERTA` con `eliminarMiPublicacion()`
+- **Control**: Se comunica con `PublicacionController` mediante `cargarPublicacionParaEliminacion(id)` y `eliminarPublicacion(id)`
+- **Salida**: Transita a `:MIS_PUBLICACIONES_ABIERTAS` con `abrirMisPublicaciones()`
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de eliminación de la publicación propia
-- Invocar la eliminación en el repositorio
+- Recibir `cargarPublicacionParaEliminacion(id)` y delegar en el repositorio la obtención de la publicación
+- Recibir `eliminarPublicacion(id)` y delegar la eliminación al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EliminarMiPublicacionView`
-- **Repositorio**: Delega la eliminación a `PublicacionRepository`
+- **Repositorio**: Delega en `PublicacionRepository` mediante `obtenerPorId(id) : Publicacion` y `eliminarPorId(id) : void`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar método para eliminar una publicación por identificador
+- Recuperar una publicación por id mediante `obtenerPorId(id) : Publicacion`
+- Eliminar una publicación del sistema mediante `eliminarPorId(id) : void`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -66,8 +68,7 @@ Análisis de colaboración del caso de uso `eliminarMiPublicacion()` mediante el
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la publicación propia a eliminar
-- Encapsular la información necesaria para la eliminación
+- Representar los datos de la publicación propia mostrados en la confirmación de eliminación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -76,25 +77,30 @@ Análisis de colaboración del caso de uso `eliminarMiPublicacion()` mediante el
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:MI_PUBLICACION_ABIERTA` → `EliminarMiPublicacionView.eliminarMiPublicacion()`
-2. **Confirmación**: El Coordinador confirma la eliminación
-3. **Eliminación**: `EliminarMiPublicacionView` → `PublicacionController.eliminarPublicacion(id)` : `void`
-4. **Persistencia**: `PublicacionController` → `PublicacionRepository.eliminarPorId(id)` : `void`
-5. **Finalización**: `EliminarMiPublicacionView` → `:MIS_PUBLICACIONES_ABIERTAS.abrirMisPublicaciones()`
+1. El sistema está en `:MI_PUBLICACION_ABIERTA`
+2. El coordinador solicita eliminar su publicación: `EliminarMiPublicacionView` recibe `eliminarMiPublicacion()`
+3. `EliminarMiPublicacionView` invoca `cargarPublicacionParaEliminacion(id)` en `PublicacionController`
+4. `PublicacionController` delega en `PublicacionRepository.obtenerPorId(id)` y obtiene un objeto `Publicacion`
+5. La pantalla de confirmación se muestra con los datos de la publicación
+6. El coordinador confirma: `EliminarMiPublicacionView` invoca `eliminarPublicacion(id) : void` en `PublicacionController`
+7. `PublicacionController` delega en `PublicacionRepository.eliminarPorId(id)`
+8. La vista navega → `:MIS_PUBLICACIONES_ABIERTAS` con `abrirMisPublicaciones()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Confirmar eliminación|`EliminarMiPublicacionView`|Muestra diálogo de confirmación|
-|Eliminar publicación propia|`PublicacionController`|`eliminarPublicacion(id)` → `PublicacionRepository.eliminarPorId()`|
-|Volver a mis publicaciones|`EliminarMiPublicacionView`|→ `:MIS_PUBLICACIONES_ABIERTAS`|
+|Cargar datos para confirmación|`PublicacionController`|`cargarPublicacionParaEliminacion(id) : Publicacion`|
+|Acceder a la publicación por id|`PublicacionRepository`|`obtenerPorId(id) : Publicacion`|
+|Eliminar publicación propia|`PublicacionController`|`eliminarPublicacion(id) : void`|
+|Persistir la eliminación|`PublicacionRepository`|`eliminarPorId(id) : void`|
+|Navegar a mis publicaciones|`EliminarMiPublicacionView`|`abrirMisPublicaciones()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación de la confirmación e interacción con el Coordinador
+- **Vista**: Solo presentación de la confirmación e interacción con el coordinador
 - **Control**: Solo coordinación del proceso de eliminación
 - **Entidad**: Solo datos y gestión de la persistencia
 

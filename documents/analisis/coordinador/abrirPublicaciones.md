@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `abrirPublicaciones()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para listar y filtrar todas las publicaciones disponibles en el sistema.
+Análisis de colaboración del caso de uso `abrirPublicaciones()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador consulte el listado de todas las publicaciones del sistema, con opción de filtrado por criterio.
 
 ## diagrama de colaboración
 
@@ -30,37 +30,36 @@ Análisis de colaboración del caso de uso `abrirPublicaciones()` mediante el pa
 #### PublicacionesView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar la lista de publicaciones disponibles al Coordinador
-- Permitir filtrar publicaciones por criterios de búsqueda
-- Ofrecer acceso a una publicación concreta
-- Navegar de vuelta al panel principal
+- Recibir la solicitud `abrirPublicaciones()` desde `:PANEL_PRINCIPAL_ABIERTO`
+- Solicitar al controlador el listado completo mediante `obtenerPublicaciones() : List<Publicacion>`
+- Solicitar al controlador el listado filtrado mediante `filtrarPublicaciones(criterio) : List<Publicacion>`
+- Mostrar el listado resultante al coordinador
+- Ofrecer navegación a una publicación concreta o volver al panel principal
 
 **Colaboraciones**:
-- **Entrada**: Recibe `abrirPublicaciones()` desde `:PANEL_PRINCIPAL_ABIERTO`
-- **Control**: Se comunica con `PublicacionController`
-- **Salida**: Navega a `:PUBLICACIONES_ABIERTAS` y colaboración `AbrirPublicacion`
+- **Entrada**: Desde `:PANEL_PRINCIPAL_ABIERTO` con `abrirPublicaciones()`
+- **Control**: Se comunica con `PublicacionController` mediante `obtenerPublicaciones() : List<Publicacion>` y `filtrarPublicaciones(criterio) : List<Publicacion>`
+- **Salida**: Transita a `:PUBLICACIONES_ABIERTAS` (`publicacionesCargadas()`), a `:Collaboration AbrirPublicacion` (`abrirPublicacion(id)`) o a `:PANEL_PRINCIPAL_ABIERTO` (`abrirPanelPrincipal()`)
 
 ### clases de control
 
 #### PublicacionController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la obtención de todas las publicaciones
-- Gestionar la lógica de filtrado por criterios
-- Servir como intermediario entre la vista y el repositorio
+- Recibir `obtenerPublicaciones()` y devolver todas las publicaciones
+- Recibir `filtrarPublicaciones(criterio)` y devolver la lista filtrada
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `PublicacionesView`
-- **Repositorio**: Delega el acceso a datos a `PublicacionRepository`
+- **Repositorio**: Delega en `PublicacionRepository` mediante `obtenerTodos()` y `buscarPorCriterio(criterio)`
 
 ### clases de entidad (entity)
 
 #### PublicacionRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de publicaciones
-- Proporcionar método para obtener todas las publicaciones
-- Implementar búsqueda por criterios específicos
+- Recuperar todas las publicaciones mediante `obtenerTodos() : List<Publicacion>`
+- Recuperar publicaciones filtradas mediante `buscarPorCriterio(criterio) : List<Publicacion>`
 
 **Colaboraciones**:
 - **Control**: Responde a `PublicacionController`
@@ -69,8 +68,7 @@ Análisis de colaboración del caso de uso `abrirPublicaciones()` mediante el pa
 #### Publicacion
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información de una publicación
-- Encapsular atributos: título, resumen, autores, fecha, área temática
+- Representar los datos de una publicación del sistema
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `PublicacionRepository`
@@ -79,27 +77,34 @@ Análisis de colaboración del caso de uso `abrirPublicaciones()` mediante el pa
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:PANEL_PRINCIPAL_ABIERTO` → `PublicacionesView.abrirPublicaciones()`
-2. **Listado**: `PublicacionesView` → `PublicacionController.obtenerPublicaciones()` : `List<Publicacion>`
-3. **Acceso a datos**: `PublicacionController` → `PublicacionRepository.obtenerTodos()` : `List<Publicacion>`
-4. **Filtrado (opcional)**: `PublicacionesView` → `PublicacionController.filtrarPublicaciones(criterio)` : `List<Publicacion>`
-5. **Presentación**: `PublicacionesView` → `:PUBLICACIONES_ABIERTAS.publicacionesCargadas()`
+1. El sistema está en `:PANEL_PRINCIPAL_ABIERTO`
+2. El coordinador solicita ver publicaciones: `PublicacionesView` recibe `abrirPublicaciones()`
+3. `PublicacionesView` invoca `obtenerPublicaciones()` en `PublicacionController`
+4. `PublicacionController` delega en `PublicacionRepository.obtenerTodos()` y obtiene `List<Publicacion>`
+5. El listado se muestra → estado `:PUBLICACIONES_ABIERTAS` con `publicacionesCargadas()`
+6. El coordinador puede filtrar: `PublicacionesView` invoca `filtrarPublicaciones(criterio)` en `PublicacionController`, que delega en `PublicacionRepository.buscarPorCriterio(criterio)`
+7. Desde la vista el coordinador puede:
+   - Abrir una publicación → `:Collaboration AbrirPublicacion` con `abrirPublicacion(id)`
+   - Volver al panel principal → `:PANEL_PRINCIPAL_ABIERTO` con `abrirPanelPrincipal()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Presentar lista de publicaciones|`PublicacionesView`|Coordina con `PublicacionController.obtenerPublicaciones()`|
-|Permitir filtrado|`PublicacionesView`|Invoca `PublicacionController.filtrarPublicaciones(criterio)`|
-|Abrir publicación concreta|`PublicacionesView`|→ Colaboración `AbrirPublicacion`|
+|Mostrar listado de publicaciones|`PublicacionesView`|`obtenerPublicaciones() : List<Publicacion>`|
+|Filtrar publicaciones por criterio|`PublicacionController`|`filtrarPublicaciones(criterio) : List<Publicacion>`|
+|Acceder a todas las publicaciones|`PublicacionRepository`|`obtenerTodos() : List<Publicacion>`|
+|Buscar publicaciones por criterio|`PublicacionRepository`|`buscarPorCriterio(criterio) : List<Publicacion>`|
+|Navegar al detalle de una publicación|`PublicacionesView`|`abrirPublicacion(id)`|
+|Volver al panel principal|`PublicacionesView`|`abrirPanelPrincipal()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación e interacción con el Coordinador
-- **Control**: Solo coordinación y lógica de filtrado
-- **Entidad**: Solo datos y reglas de negocio de la publicación
+- **Vista**: Solo presentación e interacción con el coordinador
+- **Control**: Solo coordinación, obtención y filtrado del listado de publicaciones
+- **Entidad**: Solo datos y reglas de negocio de las publicaciones
 
 ### agnóstico tecnológicamente
 

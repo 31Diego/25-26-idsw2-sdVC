@@ -11,7 +11,7 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `eliminarRecompensa()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para eliminar una recompensa del sistema.
+Análisis de colaboración del caso de uso `eliminarRecompensa()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el coordinador elimine una recompensa del sistema.
 
 ## diagrama de colaboración
 
@@ -30,34 +30,36 @@ Análisis de colaboración del caso de uso `eliminarRecompensa()` mediante el pa
 #### EliminarRecompensaView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Mostrar confirmación de eliminación de la recompensa al Coordinador
-- Invocar la eliminación en el controlador tras confirmación
-- Navegar a la lista de recompensas tras la operación
+- Recibir la solicitud `eliminarRecompensa()` desde `:RECOMPENSA_ABIERTA`
+- Solicitar al controlador los datos de la recompensa a eliminar mediante `cargarRecompensaParaEliminacion(id) : Recompensa`
+- Mostrar la pantalla de confirmación con los datos de la recompensa
+- Solicitar al controlador la eliminación definitiva mediante `eliminarRecompensa(id) : void`
+- Navegar al listado de recompensas tras la eliminación
 
 **Colaboraciones**:
-- **Entrada**: Recibe `eliminarRecompensa()` desde `:RECOMPENSA_ABIERTA`
-- **Control**: Se comunica con `RecompensaController`
-- **Salida**: Navega a `:RECOMPENSAS_ABIERTAS`
+- **Entrada**: Desde `:RECOMPENSA_ABIERTA` con `eliminarRecompensa()`
+- **Control**: Se comunica con `RecompensaController` mediante `cargarRecompensaParaEliminacion(id)` y `eliminarRecompensa(id)`
+- **Salida**: Transita a `:RECOMPENSAS_ABIERTAS` con `abrirRecompensas()`
 
 ### clases de control
 
 #### RecompensaController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar el proceso de eliminación de la recompensa
-- Invocar la eliminación en el repositorio
+- Recibir `cargarRecompensaParaEliminacion(id)` y delegar en el repositorio la obtención de la recompensa
+- Recibir `eliminarRecompensa(id)` y delegar la eliminación al repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EliminarRecompensaView`
-- **Repositorio**: Delega la eliminación a `RecompensaRepository`
+- **Repositorio**: Delega en `RecompensaRepository` mediante `obtenerPorId(id) : Recompensa` y `eliminarPorId(id) : void`
 
 ### clases de entidad (entity)
 
 #### RecompensaRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de recompensas
-- Proporcionar método para eliminar una recompensa por identificador
+- Recuperar una recompensa por id mediante `obtenerPorId(id) : Recompensa`
+- Eliminar una recompensa del sistema mediante `eliminarPorId(id) : void`
 
 **Colaboraciones**:
 - **Control**: Responde a `RecompensaController`
@@ -66,8 +68,7 @@ Análisis de colaboración del caso de uso `eliminarRecompensa()` mediante el pa
 #### Recompensa
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la recompensa a eliminar
-- Encapsular la información necesaria para la eliminación
+- Representar los datos de la recompensa mostrados en la confirmación de eliminación
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `RecompensaRepository`
@@ -76,25 +77,30 @@ Análisis de colaboración del caso de uso `eliminarRecompensa()` mediante el pa
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:RECOMPENSA_ABIERTA` → `EliminarRecompensaView.eliminarRecompensa()`
-2. **Confirmación**: El Coordinador confirma la eliminación
-3. **Eliminación**: `EliminarRecompensaView` → `RecompensaController.eliminarRecompensa(id)` : `void`
-4. **Persistencia**: `RecompensaController` → `RecompensaRepository.eliminarPorId(id)` : `void`
-5. **Finalización**: `EliminarRecompensaView` → `:RECOMPENSAS_ABIERTAS.abrirRecompensas()`
+1. El sistema está en `:RECOMPENSA_ABIERTA`
+2. El coordinador solicita eliminar recompensa: `EliminarRecompensaView` recibe `eliminarRecompensa()`
+3. `EliminarRecompensaView` invoca `cargarRecompensaParaEliminacion(id)` en `RecompensaController`
+4. `RecompensaController` delega en `RecompensaRepository.obtenerPorId(id)` y obtiene un objeto `Recompensa`
+5. La pantalla de confirmación se muestra con los datos de la recompensa
+6. El coordinador confirma: `EliminarRecompensaView` invoca `eliminarRecompensa(id) : void` en `RecompensaController`
+7. `RecompensaController` delega en `RecompensaRepository.eliminarPorId(id)`
+8. La vista navega → `:RECOMPENSAS_ABIERTAS` con `abrirRecompensas()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Confirmar eliminación|`EliminarRecompensaView`|Muestra diálogo de confirmación|
-|Eliminar recompensa|`RecompensaController`|`eliminarRecompensa(id)` → `RecompensaRepository.eliminarPorId()`|
-|Volver a la lista|`EliminarRecompensaView`|→ `:RECOMPENSAS_ABIERTAS`|
+|Cargar datos para confirmación|`RecompensaController`|`cargarRecompensaParaEliminacion(id) : Recompensa`|
+|Acceder a la recompensa por id|`RecompensaRepository`|`obtenerPorId(id) : Recompensa`|
+|Eliminar recompensa del sistema|`RecompensaController`|`eliminarRecompensa(id) : void`|
+|Persistir la eliminación|`RecompensaRepository`|`eliminarPorId(id) : void`|
+|Navegar al listado de recompensas|`EliminarRecompensaView`|`abrirRecompensas()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación de la confirmación e interacción con el Coordinador
+- **Vista**: Solo presentación de la confirmación e interacción con el coordinador
 - **Control**: Solo coordinación del proceso de eliminación
 - **Entidad**: Solo datos y gestión de la persistencia
 

@@ -1,4 +1,4 @@
-# editarPerfil — Diseño (Coordinador)
+# editarPerfil — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Presentar un formulario editable con los datos de un perfil de investigador, incluyendo el campo `rol`. El coordinador puede editar cualquier investigador (vía `/investigadores/{id}/editar`) o su propio perfil (vía `/perfil/editar`, sin campo `rol`).
+Permite al coordinador editar los datos de perfil de un investigador, incluyendo el campo rol, y persiste los cambios en la base de datos.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/coordinador/editarPerfil-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/coordinador/editarPerfil-coordinador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/coordinador/editarPerfil.puml)
 
@@ -22,23 +22,22 @@ Presentar un formulario editable con los datos de un perfil de investigador, inc
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| EditarPerfilView (azul) | `EditarPerfilController` `@Controller` | Recibe GET y POST; carga/guarda el investigador |
-| EditarPerfilController (amarillo) | `InvestigadorService` `@Service` | Recupera y actualiza el investigador |
-| InvestigadorRepository (naranja) | `InvestigadorRepository` JpaRepository | Ejecuta SELECT y UPDATE por id |
-| Investigador (naranja) | `Investigador` `@Entity` | Tabla investigadores en H2 |
+| Controlador de perfil (GET) | PerfilController @Controller GET /investigadores/{id}/editar | Carga el investigador y sirve el formulario pre-relleno |
+| Controlador de perfil (POST) | PerfilController @Controller POST /investigadores/{id}/editar | Recibe y persiste los datos modificados |
+| Servicio de investigador | InvestigadorService @Service | `obtenerInvestigador(id)` y `actualizarPerfil(id, ...)` |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | SELECT por id (GET y POST) y UPDATE via save(investigador) |
+| Base de datos | H2 | Almacén persistente de investigadores |
 
 ## Rutas
 
-| Método | URL | Acción | Restricción |
-|---|---|---|---|
-| GET | /investigadores/{id}/editar | Muestra el formulario del investigador | Solo COORDINADOR |
-| POST | /investigadores/{id}/editar | Guarda los cambios incluyendo rol | Solo COORDINADOR |
-| GET | /perfil/editar | Muestra el formulario del propio perfil | Autenticado |
-| POST | /perfil/editar | Guarda cambios sin modificar rol | Autenticado |
+| Método | URL | Acción |
+|---|---|---|
+| GET | /investigadores/{id}/editar | Muestra el formulario de edición pre-relleno |
+| POST | /investigadores/{id}/editar | Guarda los cambios del perfil y redirige a las opciones |
 
 ## Decisiones de diseño
 
-- El campo `rol` (select entre INVESTIGADOR/COORDINADOR) solo se muestra en el formulario cuando `esPropioPeril = false` y el actor tiene rol COORDINADOR (`sec:authorize` + `th:if`). Así el cambio de rol queda integrado en la edición del perfil, sin endpoint separado.
-- Los endpoints `/investigadores/{id}/editar` están protegidos con `@PreAuthorize("hasRole('COORDINADOR')")`.
-- El formulario usa `@RequestParam` individuales (no binding directo a `Investigador`) para evitar que campos sensibles como `password` sean sobreescritos.
-- Tras guardar, redirige a `/investigadores/{id}/opciones` o `/perfil/opciones` según el contexto.
+- En el GET, se pasan al modelo `"investigador"` y `"esPropioPeril" = false`; el formulario incluye el campo `rol` (exclusivo de la edición por coordinador).
+- El POST recibe los campos: nombre, apellidos, campo, carrera, master, rol, username, password.
+- `InvestigadorService.actualizarPerfil(id, ...)` hace primero `findById` para cargar la entidad y luego `save(investigador)` para persistir con UPDATE.
+- Tras guardar, se redirige a `/investigadores/{id}/opciones` (302).

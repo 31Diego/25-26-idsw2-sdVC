@@ -1,4 +1,4 @@
-# abrirOpcionesPerfil — Diseño (Investigador)
+# abrirOpcionesPerfil — Diseño
 
 ## Información del artefacto
 
@@ -10,11 +10,11 @@
 
 ## Propósito
 
-Mostrar al investigador las opciones disponibles sobre su propio perfil: editar y solicitar eliminación.
+Muestra al investigador las opciones disponibles sobre su propio perfil cargando sus datos por username desde la sesión activa.
 
 ## Diagrama de secuencia
 
-![Diagrama de diseño](../../../images/diseño/investigador/abrirOpcionesPerfil-diseño.svg)
+![Diagrama de diseño](../../../images/diseño/investigador/abrirOpcionesPerfil-investigador-diseño.svg)
 
 [Código PlantUML](../../../modelosUML/diseño/investigador/abrirOpcionesPerfil.puml)
 
@@ -22,19 +22,19 @@ Mostrar al investigador las opciones disponibles sobre su propio perfil: editar 
 
 | Análisis | Spring Boot | Rol |
 |---|---|---|
-| OpcionesPerfilView (azul) | `OpcionesPerfilController` `@Controller` | Recibe GET /perfil/opciones; carga el investigador y devuelve opciones-perfil.html |
-| OpcionesPerfilController (amarillo) | `InvestigadorService` `@Service` | Recupera el investigador por username desde el Authentication |
-| InvestigadorRepository (naranja) | `InvestigadorRepository` JpaRepository | Ejecuta SELECT por username |
-| Investigador (naranja) | `Investigador` `@Entity` | Tabla investigadores en H2 |
+| Controlador de perfil | PerfilController @Controller | Atiende GET /perfil/opciones y prepara el modelo |
+| Servicio de investigador | InvestigadorService @Service | `obtenerInvestigadorPorUsername(username)` carga el investigador autenticado |
+| Repositorio de investigadores | InvestigadorRepository JpaRepository | Ejecuta SELECT * FROM investigadores WHERE username = ? |
+| Base de datos | H2 | Almacén persistente |
 
 ## Rutas
 
 | Método | URL | Acción |
 |---|---|---|
-| GET | /perfil/opciones | Muestra las opciones del propio perfil |
+| GET | /perfil/opciones | Muestra las opciones del propio perfil del investigador |
 
 ## Decisiones de diseño
 
-- El investigador obtiene sus datos mediante `findByUsername(username)` usando el username del `Authentication` — no depende del ID en la URL.
-- `esPropioPeril = true`: el template oculta el botón de cambiar rol y el enlace de vuelta al investigador.
-- El controller es compartido con el coordinador (`OpcionesPerfilController`); la vista adapta las opciones mostradas según el rol y `esPropioPeril`.
+- El investigador se carga por `findByUsername(username)` usando el username del `Authentication`, no por id en la URL.
+- Se añaden al modelo `"investigador"` y `"esPropioPeril" = true`.
+- `esPropioPeril = true` hace que el template oculte el campo rol y el enlace de vuelta al investigador.

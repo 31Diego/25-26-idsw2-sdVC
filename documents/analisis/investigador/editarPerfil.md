@@ -11,13 +11,13 @@
 
 ## propósito
 
-Análisis de colaboración del caso de uso `editarPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el Investigador modifique sus datos personales.
+Análisis de colaboración del caso de uso `editarPerfil()` mediante el patrón MVC, identificando las clases de análisis, sus responsabilidades y colaboraciones necesarias para que el investigador modifique sus datos personales.
 
 ## diagrama de colaboración
 
 <div align=center>
 
-|![Análisis: editarPerfil()](../../../images/analisis/investigador/editarPerfil-analisis.svg)|
+|![Análisis: editarPerfil()](../../../images/analisis/investigador/editarPerfil-investigador-analisis.svg)|
 |-|
 |Código fuente: [editarPerfil.puml](../../../modelosUML/analisis/investigador/editarPerfil.puml)|
 
@@ -30,35 +30,38 @@ Análisis de colaboración del caso de uso `editarPerfil()` mediante el patrón 
 #### EditarPerfilView
 **Estereotipo**: Vista (Boundary)  
 **Responsabilidades**:
-- Presentar el formulario de edición prellenado con los datos actuales del Investigador
-- Capturar los cambios introducidos (nombre, email, username, contraseña)
-- Invocar el guardado en el controlador
-- Navegar de vuelta a las opciones del perfil tras guardar
+- Recibir la solicitud `editarPerfil()` desde `:OPCIONES_PERFIL_ABIERTO`
+- Solicitar los datos actuales del perfil mediante `obtenerPerfil() : Investigador`
+- Notificar los campos modificados mediante `modificarCampos(datos) : void`
+- Solicitar el guardado mediante `guardarPerfil(datos) : Investigador`
+- Mostrar el formulario de edición prellenado al investigador
+- Transitar a `:OPCIONES_PERFIL_ABIERTO` al finalizar
 
 **Colaboraciones**:
-- **Entrada**: Recibe `editarPerfil()` desde `:OPCIONES_PERFIL_ABIERTO`
-- **Control**: Se comunica con `PerfilController`
-- **Salida**: Navega a `:OPCIONES_PERFIL_ABIERTO`
+- **Entrada**: Desde `:OPCIONES_PERFIL_ABIERTO` con `editarPerfil()`
+- **Control**: Se comunica con `PerfilController` mediante `obtenerPerfil()`, `modificarCampos(datos)` y `guardarPerfil(datos)`
+- **Salida**: Transita a `:OPCIONES_PERFIL_ABIERTO` con `abrirOpcionesPerfil()`
 
 ### clases de control
 
 #### PerfilController
 **Estereotipo**: Control  
 **Responsabilidades**:
-- Coordinar la carga del perfil actual para prellenar el formulario
-- Validar y persistir los cambios introducidos por el Investigador
+- Recibir `obtenerPerfil()` y delegar en el repositorio la obtención del investigador autenticado
+- Recibir `modificarCampos(datos)` y gestionar el estado de los campos modificados
+- Recibir `guardarPerfil(datos)` y delegar la actualización en el repositorio
 
 **Colaboraciones**:
 - **Vista**: Responde a solicitudes de `EditarPerfilView`
-- **Repositorio**: Delega el acceso a datos a `InvestigadorRepository`
+- **Repositorio**: Delega en `InvestigadorRepository` mediante `obtenerPorId(id) : Investigador` y `actualizar(investigador) : Investigador`
 
 ### clases de entidad (entity)
 
 #### InvestigadorRepository
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Abstraer el acceso a datos de investigadores
-- Proporcionar método para obtener y actualizar el perfil
+- Recuperar el investigador autenticado por id mediante `obtenerPorId(id) : Investigador`
+- Actualizar el perfil del investigador mediante `actualizar(investigador) : Investigador`
 
 **Colaboraciones**:
 - **Control**: Responde a `PerfilController`
@@ -67,8 +70,7 @@ Análisis de colaboración del caso de uso `editarPerfil()` mediante el patrón 
 #### Investigador
 **Estereotipo**: Entidad  
 **Responsabilidades**:
-- Representar la información editable del perfil
-- Encapsular atributos: nombre, email, username, contraseña
+- Representar los datos editables del perfil del investigador
 
 **Colaboraciones**:
 - **Repositorio**: Es gestionado por `InvestigadorRepository`
@@ -77,29 +79,33 @@ Análisis de colaboración del caso de uso `editarPerfil()` mediante el patrón 
 
 ### secuencia de operaciones
 
-1. **Inicio**: `:OPCIONES_PERFIL_ABIERTO` → `EditarPerfilView.editarPerfil()`
-2. **Carga del perfil**: `EditarPerfilView` → `PerfilController.obtenerPerfil()` : `Investigador`
-3. **Acceso a datos**: `PerfilController` → `InvestigadorRepository.obtenerPorId(id)` : `Investigador`
-4. **Edición**: El Investigador modifica los campos del formulario
-5. **Guardado**: `EditarPerfilView` → `PerfilController.guardarPerfil(datos)` : `Investigador`
-6. **Persistencia**: `PerfilController` → `InvestigadorRepository.actualizar(investigador)` : `Investigador`
-7. **Finalización**: `EditarPerfilView` → `:OPCIONES_PERFIL_ABIERTO.abrirOpcionesPerfil()`
+1. El sistema está en `:OPCIONES_PERFIL_ABIERTO`
+2. El investigador solicita editar su perfil: `EditarPerfilView` recibe `editarPerfil()`
+3. `EditarPerfilView` invoca `obtenerPerfil() : Investigador` en `PerfilController`
+4. `PerfilController` delega en `InvestigadorRepository.obtenerPorId(id)` y obtiene el `Investigador`
+5. El investigador modifica los campos del formulario
+6. `EditarPerfilView` invoca `modificarCampos(datos) : void` en `PerfilController`
+7. `EditarPerfilView` invoca `guardarPerfil(datos) : Investigador` en `PerfilController`
+8. `PerfilController` delega en `InvestigadorRepository.actualizar(investigador)` y obtiene el `Investigador` actualizado
+9. La vista transita a `:OPCIONES_PERFIL_ABIERTO` con `abrirOpcionesPerfil()`
 
 ## correspondencia con requisitos
 
 |Requisito del caso de uso|Clase responsable|Método/Colaboración|
 |-|-|-|
-|Prellenar formulario con datos actuales|`PerfilController`|`obtenerPerfil()` → `InvestigadorRepository.obtenerPorId(id)`|
-|Capturar cambios del Investigador|`EditarPerfilView`|Formulario con nombre, email, username, contraseña|
-|Persistir cambios|`PerfilController`|`guardarPerfil(datos)` → `InvestigadorRepository.actualizar()`|
-|Confirmar edición|`EditarPerfilView`|→ `:OPCIONES_PERFIL_ABIERTO`|
+|Obtener datos actuales del perfil|`PerfilController`|`obtenerPerfil() : Investigador`|
+|Acceder al investigador por id|`InvestigadorRepository`|`obtenerPorId(id) : Investigador`|
+|Registrar campos modificados|`PerfilController`|`modificarCampos(datos) : void`|
+|Guardar perfil actualizado|`PerfilController`|`guardarPerfil(datos) : Investigador`|
+|Persistir la actualización|`InvestigadorRepository`|`actualizar(investigador) : Investigador`|
+|Volver a opciones de perfil|`EditarPerfilView`|`abrirOpcionesPerfil()`|
 
 ## características del análisis
 
 ### separación de responsabilidades MVC
 
-- **Vista**: Solo presentación del formulario e interacción con el Investigador
-- **Control**: Solo coordinación de la carga y persistencia del perfil
+- **Vista**: Solo presentación del formulario e interacción con el investigador
+- **Control**: Solo coordinación de la carga, modificación y persistencia del perfil
 - **Entidad**: Solo datos y reglas de negocio del investigador
 
 ### agnóstico tecnológicamente
