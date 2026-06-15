@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: crearProyecto()](/documentos/casosDeUso/detalle/coordinador/crearProyecto/crearProyecto.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/crearProyecto/crearProyecto.svg) |
 |-|
-|Código fuente: [crearProyecto.puml](/documentos/casosDeUso/detalle/coordinador/crearProyecto/crearProyecto.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/crearProyecto/crearProyecto.puml) |
 
 </div>

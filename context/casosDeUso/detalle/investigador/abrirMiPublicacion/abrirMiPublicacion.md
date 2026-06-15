@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: abrirMiPublicacion()](/documentos/casosDeUso/detalle/investigador/abrirMiPublicacion/abrirMiPublicacion.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirMiPublicacion/abrirMiPublicacion.svg) |
 |-|
-|Código fuente: [abrirMiPublicacion.puml](/documentos/casosDeUso/detalle/investigador/abrirMiPublicacion/abrirMiPublicacion.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirMiPublicacion/abrirMiPublicacion.puml) |
 
 </div>

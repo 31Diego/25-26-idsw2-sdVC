@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: cerrarSesion()](/documentos/casosDeUso/detalle/investigador/cerrarSesion/cerrarSesion.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/cerrarSesion/cerrarSesion.svg) |
 |-|
-|Código fuente: [cerrarSesion.puml](/documentos/casosDeUso/detalle/investigador/cerrarSesion/cerrarSesion.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/cerrarSesion/cerrarSesion.puml) |
 
 </div>

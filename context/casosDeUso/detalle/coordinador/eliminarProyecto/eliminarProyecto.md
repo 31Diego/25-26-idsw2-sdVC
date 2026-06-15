@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: eliminarProyecto()](/documentos/casosDeUso/detalle/coordinador/eliminarProyecto/eliminarProyecto.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/eliminarProyecto/eliminarProyecto.svg) |
 |-|
-|Código fuente: [eliminarProyecto.puml](/documentos/casosDeUso/detalle/coordinador/eliminarProyecto/eliminarProyecto.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/eliminarProyecto/eliminarProyecto.puml) |
 
 </div>

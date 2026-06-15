@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: abrirRecompensa()](/documentos/casosDeUso/detalle/investigador/abrirRecompensa/abrirRecompensa.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirRecompensa/abrirRecompensa.svg) |
 |-|
-|Código fuente: [abrirRecompensa.puml](/documentos/casosDeUso/detalle/investigador/abrirRecompensa/abrirRecompensa.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirRecompensa/abrirRecompensa.puml) |
 
 </div>

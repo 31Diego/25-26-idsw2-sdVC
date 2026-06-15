@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: abrirPanelPrincipal()](/documentos/casosDeUso/detalle/investigador/abrirPanelPrincipal/abrirPanelPrincipal.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirPanelPrincipal/abrirPanelPrincipal.svg) |
 |-|
-|Código fuente: [abrirPanelPrincipal.puml](/documentos/casosDeUso/detalle/investigador/abrirPanelPrincipal/abrirPanelPrincipal.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirPanelPrincipal/abrirPanelPrincipal.puml) |
 
 </div>

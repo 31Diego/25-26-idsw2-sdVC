@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: eliminarEntregable()](/documentos/casosDeUso/detalle/investigador/eliminarEntregable/eliminarEntregable.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/eliminarEntregable/eliminarEntregable.svg) |
 |-|
-|Código fuente: [eliminarEntregable.puml](/documentos/casosDeUso/detalle/investigador/eliminarEntregable/eliminarEntregable.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/eliminarEntregable/eliminarEntregable.puml) |
 
 </div>

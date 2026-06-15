@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: eliminarInvestigador()](/documentos/casosDeUso/detalle/coordinador/eliminarInvestigador/eliminarInvestigador.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/eliminarInvestigador/eliminarInvestigador.svg) |
 |-|
-|Código fuente: [eliminarInvestigador.puml](/documentos/casosDeUso/detalle/coordinador/eliminarInvestigador/eliminarInvestigador.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/eliminarInvestigador/eliminarInvestigador.puml) |
 
 </div>

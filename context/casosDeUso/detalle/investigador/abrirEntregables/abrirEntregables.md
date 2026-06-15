@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: abrirEntregables()](/documentos/casosDeUso/detalle/investigador/abrirEntregables/abrirEntregables.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirEntregables/abrirEntregables.svg) |
 |-|
-|Código fuente: [abrirEntregable.puml](/documentos/casosDeUso/detalle/investigador/abrirEntregables/abrirEntregables.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirEntregables/abrirEntregables.puml) |
 
 </div>

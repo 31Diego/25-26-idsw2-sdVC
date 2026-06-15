@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: eliminarPerfil()](/documentos/casosDeUso/detalle/coordinador/eliminarPerfil/eliminarPerfil.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/eliminarPerfil/eliminarPerfil.svg) |
 |-|
-|Código fuente: [eliminarPerfil.puml](/documentos/casosDeUso/detalle/coordinador/eliminarPerfil/eliminarPerfil.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/eliminarPerfil/eliminarPerfil.puml) |
 
 </div>

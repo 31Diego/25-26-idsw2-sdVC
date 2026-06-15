@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: abrirProyecto()](/documentos/casosDeUso/detalle/investigador/abrirProyecto/abrirProyecto.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirProyecto/abrirProyecto.svg) |
 |-|
-|Código fuente: [abrirProyecto.puml](/documentos/casosDeUso/detalle/investigador/abrirProyecto/abrirProyecto.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirProyecto/abrirProyecto.puml) |
 
 </div>

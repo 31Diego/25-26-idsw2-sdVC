@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: iniciarSesion()](/documentos/casosDeUso/detalle/coordinador/iniciarSesion/iniciarSesion.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/iniciarSesion/iniciarSesion.svg) |
 |-|
-|Código fuente: [iniciarSesion.puml](/documentos/casosDeUso/detalle/coordinador/iniciarSesion/iniciarSesion.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/iniciarSesion/iniciarSesion.puml) |
 
 </div>

@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: editarPerfil()](/documentos/casosDeUso/detalle/investigador/editarPerfil/editarPerfil.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/editarPerfil/editarPerfil.svg) |
 |-|
-|Código fuente: [editarPerfil.puml](/documentos/casosDeUso/detalle/investigador/editarPerfil/editarPerfil.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/editarPerfil/editarPerfil.puml) |
 
 </div>

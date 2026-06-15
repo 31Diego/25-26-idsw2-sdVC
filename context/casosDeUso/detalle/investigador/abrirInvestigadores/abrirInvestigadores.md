@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: abrirInvestigadores()](/documentos/casosDeUso/detalle/investigador/abrirInvestigadores/abrirInvestigadores.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirInvestigadores/abrirInvestigadores.svg) |
 |-|
-|Código fuente: [abrirInvestigadores.puml](/documentos/casosDeUso/detalle/investigador/abrirInvestigadores/abrirInvestigadores.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/abrirInvestigadores/abrirInvestigadores.puml) |
 
 </div>

@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: eliminarRecompensa()](/documentos/casosDeUso/detalle/coordinador/eliminarRecompensa/eliminarRecompensa.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/eliminarRecompensa/eliminarRecompensa.svg) |
 |-|
-|Código fuente: [eliminarRecompensa.puml](/documentos/casosDeUso/detalle/coordinador/eliminarRecompensa/eliminarRecompensa.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/eliminarRecompensa/eliminarRecompensa.puml) |
 
 </div>

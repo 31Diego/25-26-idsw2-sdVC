@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: editarEntregable()](/documentos/casosDeUso/detalle/investigador/editarEntregable/editarEntregable.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/editarEntregable/editarEntregable.svg) |
 |-|
-|Código fuente: [editarEntregable.puml](/documentos/casosDeUso/detalle/investigador/editarEntregable/editarEntregable.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/investigador/editarEntregable/editarEntregable.puml) |
 
 </div>

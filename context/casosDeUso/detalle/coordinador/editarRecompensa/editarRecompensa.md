@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: editarRecompensa()](/documentos/casosDeUso/detalle/coordinador/editarRecompensa/editarRecompensa.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/editarRecompensa/editarRecompensa.svg) |
 |-|
-|Código fuente: [editarRecompensa.puml](/documentos/casosDeUso/detalle/coordinador/editarRecompensa/editarRecompensa.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/editarRecompensa/editarRecompensa.puml) |
 
 </div>

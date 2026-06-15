@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: editarPublicacion()](/documentos/casosDeUso/detalle/coordinador/editarPublicacion/editarPublicacion.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/editarPublicacion/editarPublicacion.svg) |
 |-|
-|Código fuente: [editarPublicacion.puml](/documentos/casosDeUso/detalle/coordinador/editarPublicacion/editarPublicacion.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/editarPublicacion/editarPublicacion.puml) |
 
 </div>

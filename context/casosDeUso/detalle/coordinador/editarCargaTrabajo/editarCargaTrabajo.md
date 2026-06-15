@@ -4,8 +4,8 @@
 
 <div align=center>
 
-|![Caso de uso: editarCargaTrabajo()](/documentos/casosDeUso/detalle/coordinador/editarCargaTrabajo/editarCargaTrabajo.svg)|
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/editarCargaTrabajo/editarCargaTrabajo.svg) |
 |-|
-|Código fuente: [editarCargaTrabajo.puml](/documentos/casosDeUso/detalle/coordinador/editarCargaTrabajo/editarCargaTrabajo.puml)|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/editarCargaTrabajo/editarCargaTrabajo.puml) |
 
 </div>

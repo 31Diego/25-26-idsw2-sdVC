@@ -7,6 +7,6 @@
 
 | ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/crearInvestigador/crearInvestigador.svg) |
 |-|
-|  [Código fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/crearInvestigador/crearInvestigador.puml) |
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/crearInvestigador/crearInvestigador.puml) |
 
 </div>
