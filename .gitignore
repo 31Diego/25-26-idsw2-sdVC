@@ -16,3 +16,7 @@ target/
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Herramientas de IA (estado local, no compartir)
+.claude/
+.claire/
