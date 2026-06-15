@@ -1,4 +1,4 @@
-# crearPublicacion() -> Detalle y prototipado
+﻿# crearPublicacion() -> Detalle y prototipado
 
 ## Diagrama de especificación
 
@@ -7,18 +7,5 @@
 |![Caso de uso: crearPublicacion()](/documentos/casosDeUso/detalle/coordinador/crearPublicacion/crearPublicacion.svg)|
 |-|
 |Código fuente: [crearPublicacion.puml](/documentos/casosDeUso/detalle/coordinador/crearPublicacion/crearPublicacion.puml)|
-
-</div>
-
-## Prototipo de interfaz
-
-### Wireframes
-
-#### Pantalla: crearPublicacion
-
-<div align=center>
-
-|![Wireframe: crearPublicacion](/documentos/casosDeUso/prototipos/coordinador/crearPublicacion/crearPublicacion-wireframe.svg)|
-|-|
 
 </div>

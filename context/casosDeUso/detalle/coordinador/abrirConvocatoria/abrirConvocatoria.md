@@ -6,21 +6,8 @@
 
 <div align=center>
 
-| ![Caso de uso: abrirConvocatoria()](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/detalle/coordinador/abrirConvocatoria/abrirConvocatoria.svg) |
+| ![Caso de uso: abrirConvocatoria()](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/abrirConvocatoria/abrirConvocatoria.svg) |
 |-|
-| [codigo fuente:](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/detalle/coordinador/abrirConvocatoria/abrirConvocatoria.puml) |
-
-</div>
-
-## Prototipo de interfaz
-
-### Wireframes
-
-#### Pantalla: convocatoria abierta
-
-<div align=center>
-
-| ![Wireframe: convocatoria abierta](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/prototipos/coordinador/abrirConvocatoria/convocatoriaAbierta-wireframe.svg) |
-|-|
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/detalle/coordinador/abrirConvocatoria/abrirConvocatoria.puml) |
 
 </div>

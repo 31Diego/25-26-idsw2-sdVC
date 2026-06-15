@@ -1,4 +1,4 @@
-# abrirEntregable() -> Detalle y prototipado
+﻿# abrirEntregable() -> Detalle y prototipado
 
 ## Diagrama de especificación
 
@@ -9,21 +9,3 @@
 |Código fuente: [abrirEntregable.puml](/documentos/casosDeUso/detalle/investigador/abrirEntregable/abrirEntregable.puml)|
 
 </div>
-
-## Prototipo de interfaz
-
-### Wireframes
-
-#### Pantalla: abrirEntregable
-<div align=center>
-  
-|![Wireframe: abrirEntregable](/documentos/casosDeUso/prototipos/investigador/abrirEntregable/entregableAbierto-wireframe.svg)|
-|-|
-
-</div>
-
-
-
-
-
-
