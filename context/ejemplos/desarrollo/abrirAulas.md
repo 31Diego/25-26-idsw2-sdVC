@@ -11,9 +11,7 @@
 
 Listado de todas las aulas del sistema con soporte para paginación. Permite visualizar todas las aulas existentes con sus datos completos.
 
-## Estado
 
-✅ **Completado** - Iteración 1
 
 ## Backend
 
