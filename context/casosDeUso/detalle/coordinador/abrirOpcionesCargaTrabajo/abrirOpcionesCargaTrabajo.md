@@ -5,9 +5,9 @@
 
 <div align=center>
 
-| ![Caso de uso: ](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/detalle/coordinador/abrirOpcionesCargaTrabajo/abrirOpcionesCargaTrabajo.svg) |
+| ![Caso de uso: ](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/images/analisis/coordinador/abrirOpcionesCargaTrabajo-analisis.svg) |
 |-|
-| [codigo fuente:](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/detalle/coordinador/abrirOpcionesCargaTrabajo/abrirOpcionesCargaTrabajo.puml) |
+| [codigo fuente:](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/modelosUML/analisis/coordinador/abrirOpcionesCargaTrabajo.puml) |
 
 </div>
 
@@ -19,7 +19,7 @@
 
 <div align=center>
 
-| ![Wireframe: ](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/prototipos/coordinador/abrirMisPublicaciones/abrirMisPublicaciones-wireframe.svg) |
+| *(imagen pendiente de generar)* |
 |-|
 
 </div>

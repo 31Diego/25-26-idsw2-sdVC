@@ -25,7 +25,7 @@
 
 ## Vocabulario del proyecto
 
-#### En base a nuestra primera reunión definimos los términos clave del proyecto y los explicamos, a continuación los términos mas importantes del [vocabulario](https://github.com/31Diego/ProyectoIDSW1-V2/blob/Desarrollo/documentaci%C3%B3n/ModeloDelDominio/Documentos/Vocabulario.md)
+#### En base a nuestra primera reunión definimos los términos clave del proyecto y los explicamos, a continuación los términos mas importantes del vocabulario
 
 ---
 
@@ -59,9 +59,9 @@
 
 <div align=center>
 
-|![](/documentos/modeloDelDominio/imagenes/clases/diagramaClasesProyectoRed.svg)|
+|![Diagrama de clases principal](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/clases/diagramaClasesProyectoRed.svg)|
 |:-:|
-|**[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/Desarrollo/documentaci%C3%B3n/ModeloDelDominio/Diagramas/Clases/DiagramaClasesProyectoRed.puml)**| 
+|código fuente pendiente de añadir a este repositorio| 
 </div>
 
 
@@ -70,9 +70,9 @@
 
 <div align=center>
 
-|![](/documentos/modeloDelDominio/imagenes/clases/diagramaClasesProyecto.svg)|![](/documentos/modeloDelDominio/imagenes/clases/diagramaClasesRed.svg)|
+|![Diagrama de clases: gestión de proyectos](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/clases/diagramaClasesProyecto.svg)|![Diagrama de clases: red de investigadores](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/clases/diagramaClasesRed.svg)|
 |:-:|:-:|
-|**[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/Desarrollo/documentaci%C3%B3n/ModeloDelDominio/Diagramas/Clases/DiagramaClasesProyecto.puml)**| **[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/Desarrollo/documentaci%C3%B3n/ModeloDelDominio/Diagramas/Clases/DiagramaClasesRed.puml)**|
+|código fuente pendiente| código fuente pendiente|
 </div>
 
 
@@ -86,9 +86,9 @@
 
 <div align=center>
 
-|![](/documentos/modeloDelDominio/imagenes/estados/diagramaEstadosProyectoGestion.svg)|![](/documentos/modeloDelDominio/imagenes/estados/diagramaEstadosProyectoRed.svg)|
+|![Estado proyectos: gestión](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/estados/diagramaEstadosProyectoGestion.svg)|![Estado proyectos: red](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/estados/diagramaEstadosProyectoRed.svg)|
 |:-:|:-:|
-|**[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/Desarrollo/documentaci%C3%B3n/ModeloDelDominio/Diagramas/Estados/DiagramaEstadosProyectoGestion.puml)**| **[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/modeloDelDominio/diagramas/estados/diagramaEstadosProyectoRed.puml)**|
+|código fuente pendiente| código fuente pendiente|
 </div>
 
 
@@ -96,9 +96,9 @@
 
 <div align=center>
 
-|![](/documentos/modeloDelDominio/imagenes/estados/diagramaEstadosInvestigadorGestion.svg)|![](/documentos/modeloDelDominio/imagenes/estados/diagramaEstadosInvestigadorRed.svg)|
+|![Estado investigador: gestión](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/estados/diagramaEstadosInvestigadorGestion.svg)|![Estado investigador: red](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/estados/diagramaEstadosInvestigadorRed.svg)|
 |:-:|:-:|
-|**[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/Desarrollo/documentaci%C3%B3n/ModeloDelDominio/Diagramas/Estados/DiagramaEstadosInvestigadorGestion.puml)**| **[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/modeloDelDominio/diagramas/estados/diagramaEstadosInvestigadorRed.puml)**|
+|código fuente pendiente| código fuente pendiente|
 </div>
 
 
@@ -109,9 +109,9 @@
 
 <div align=center>
 
-|![](/documentos/modeloDelDominio/imagenes/objetos/diagramaObjetosProyecto.svg)|
+|![Diagrama de objetos: proyecto](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/objetos/diagramaObjetosProyecto.svg)|
 |:-:|
-|**[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/modeloDelDominio/diagramas/objetos/diagramaObjetosProyecto.puml)**| 
+|código fuente pendiente| 
 </div>
 
 
@@ -119,9 +119,9 @@
 
 <div align=center>
 
-|![](/documentos/modeloDelDominio/imagenes/objetos/diagramaObjetosInvestigador.svg)|
+|![Diagrama de objetos: investigador](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/objetos/diagramaObjetosInvestigador.svg)|
 |:-:|
-|**[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/modeloDelDominio/diagramas/objetos/diagramaObjetosInvestigador.puml)**| 
+|código fuente pendiente| 
 </div>
 
 
@@ -131,9 +131,9 @@
 
 <div align=center>
 
-|![](/documentos/modeloDelDominio/imagenes/objetos/diagramaObjetosInvestigadorProyecto.svg)|
+|![Diagrama de objetos: unificado](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/modeloDelDominio/imagenes/objetos/diagramaObjetosInvestigadorProyecto.svg)|
 |:-:|
-|**[código](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/modeloDelDominio/diagramas/objetos/diagramaObjetosInvestigadorProyecto.puml)**| 
+|código fuente pendiente| 
 </div>
 
 

@@ -43,20 +43,20 @@ La identificación y estructuración de estos casos de uso sirve como base para 
 
 ## Diagramas
 - Diagrama de actores y casos de uso del **Investigador**:
-  
-![Diagrama de actores y casos de uso del Investigador](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/imagenes/cduInvestigador.svg)
 
-  - Código fuente: [abrirPanelPrincipal.puml](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/diagramas/cduInvestigador.puml)
+  ![CDU Investigador](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/imagenes/cduInvestigador.svg)
+
+  - Código fuente: [cduInvestigador.puml](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/diagramas/cduInvestigador.puml)
 ---
 - Diagrama de actores y casos de uso del **Coordinador**:
-  
-![Diagrama de actores y casos de uso del Coordinador](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/imagenes/cduCoordinador.svg)
 
-  - Código fuente: [abrirPanelPrincipal.puml](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/diagramas/cduCoordinador.puml)
+  ![CDU Coordinador](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/imagenes/cduCoordinador.svg)
+
+  - Código fuente: [cduCoordinador.puml](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/diagramas/cduCoordinador.puml)
 ---
 
   > Los **diagramas de contexto** se documentan en el apartado:  
-  > [Diagramas de contexto](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/diagramas/diagramasContexto.md)
+  > [Diagramas de contexto](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/diagramas/diagramasContexto.md)
 
 ---
 

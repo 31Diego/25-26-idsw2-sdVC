@@ -26,9 +26,9 @@ Cada diagrama define los **estados de pantalla** y las **transiciones** permitid
 
 <div align=center>
 
-|![Diagrama de contexto: Coordinador](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/imagenes/diagramaContextoCoordinador.svg)|
+|![Diagrama de contexto: Coordinador](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/imagenes/diagramaContextoCoordinador.svg)|
 |-|
-|Código fuente: [DiagramaContextoCoordinador.puml](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/diagramas/diagramaContextoCoordinador.puml)|
+|Código fuente: [diagramaContextoCoordinador.puml](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/diagramas/diagramaContextoCoordinador.puml)|
 
 </div>
 
@@ -46,9 +46,9 @@ Cada diagrama define los **estados de pantalla** y las **transiciones** permitid
 
 <div align=center>
 
-|![Diagrama de contexto: Investigador](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/imagenes/diagramaContextoInvestigador.svg)|
+|![Diagrama de contexto: Investigador](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/imagenes/diagramaContextoInvestigador.svg)|
 |-|
-|Código fuente: [DiagramaContextoInvestigador.puml](https://github.com/31Diego/ProyectoIDSW1-V2/blob/main/documentos/casosDeUso/diagramas/diagramaContextoInvestigador.puml)|
+|Código fuente: [diagramaContextoInvestigador.puml](https://github.com/31Diego/25-26-idsw2-sdVC/blob/main/context/casosDeUso/diagramas/diagramaContextoInvestigador.puml)|
 
 </div>
 
